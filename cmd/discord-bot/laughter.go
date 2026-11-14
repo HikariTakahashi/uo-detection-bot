@@ -67,11 +67,20 @@ func (s *shadowCollector) recordDrop(live bool) {
 func (s *shadowCollector) predictLaughter(ctx context.Context, job laughterJob) (shadowPrediction, error) {
 	endpoint := strings.TrimSuffix(s.config.Endpoint, "/classify") + "/classify/laughter"
 	input := map[string]string{"text": job.record.Text, "context": job.record.Context, "target_words": job.words}
+	expectedPrompt := laughterPrompt
+	if job.record.DecodedText != "" {
+		input["text"] = job.record.DecodedText
+		if job.words == "" {
+			endpoint = s.config.Endpoint
+			delete(input, "target_words")
+			expectedPrompt = "baseline"
+		}
+	}
 	for attempt := 0; ; attempt++ {
 		p, err := s.requestPrediction(ctx, endpoint, input)
 		if err == nil {
-			if p.Prompt != laughterPrompt {
-				return p, errors.New("unexpected laughter classifier prompt")
+			if p.Prompt != expectedPrompt {
+				return p, errors.New("unexpected live classifier prompt")
 			}
 			return p, nil
 		}

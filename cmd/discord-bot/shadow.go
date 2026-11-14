@@ -184,13 +184,23 @@ func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) bool {
 	if !canCount && !canSample {
 		return false
 	}
+	decoded := s.detector.transformedText(m.Content)
+	// The same exact/repetition rules own a recovered whole-message reaction.
+	// Keep that deterministic behavior available even when AI is disabled.
+	if decoded != "" && s.detector.literalCount(decoded) > 0 {
+		return false
+	}
 	r := shadowRecord{MessageID: m.ID, GuildID: m.GuildID, ChannelID: m.ChannelID, CapturedAt: time.Now(), Text: m.Content, CleanedText: shadowClean(m.Content), Selection: "non_candidate_sample", SampleEvery: 1, LegacyMatch: s.exactWords[m.Content], BotVersion: version}
+	if decoded != "" {
+		r.DecodedText = decoded
+		r.CleanedText = shadowClean(decoded)
+	}
 	normalized := shadowNormalize(r.CleanedText)
 	var matchedWords string
 	if canCount {
 		matchedWords = laughterWords(normalized, s.words)
 	}
-	live := matchedWords != ""
+	live := canCount && (matchedWords != "" || decoded != "")
 	if !live && !canSample {
 		return false
 	}
@@ -200,6 +210,9 @@ func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) bool {
 	}
 	if live {
 		r.Selection = "laughter_candidate"
+		if matchedWords == "" {
+			r.Selection = "transformed_candidate"
+		}
 	} else {
 		for _, word := range s.words {
 			if strings.Contains(normalized, word) {
@@ -268,7 +281,11 @@ func (s *shadowCollector) predict(ctx context.Context, r shadowRecord) (shadowPr
 	if r.CleanedText == "" {
 		return shadowPrediction{Label: "other", Model: "url_filter"}, nil
 	}
-	return s.requestPrediction(ctx, s.config.Endpoint, map[string]string{"text": r.Text, "context": r.Context})
+	text := r.Text
+	if r.DecodedText != "" {
+		text = r.DecodedText
+	}
+	return s.requestPrediction(ctx, s.config.Endpoint, map[string]string{"text": text, "context": r.Context})
 }
 
 func (s *shadowCollector) requestPrediction(ctx context.Context, endpoint string, input map[string]string) (shadowPrediction, error) {

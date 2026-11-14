@@ -34,6 +34,7 @@ type shadowRecord struct {
 	CapturedAt       time.Time        `json:"captured_at"`
 	Text             string           `json:"text"`
 	CleanedText      string           `json:"cleaned_text"`
+	DecodedText      string           `json:"decoded_text,omitempty"`
 	Context          string           `json:"context,omitempty"`
 	ContextMessageID string           `json:"context_message_id,omitempty"`
 	Selection        string           `json:"selection"`

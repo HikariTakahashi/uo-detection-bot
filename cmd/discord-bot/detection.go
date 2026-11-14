@@ -205,12 +205,12 @@ func (d *detector) handleMessage(s messageClient, event *discordgo.MessageCreate
 	if !d.eligibleMessage(event) {
 		return nil
 	}
-	increment := d.repetitionCount(event.Content)
+	increment := d.literalCount(event.Content)
 	if increment == 0 {
-		if !d.words[event.Content] {
-			return nil
-		}
-		increment = 1
+		increment = d.literalCount(d.transformedText(event.Content))
+	}
+	if increment == 0 {
+		return nil
 	}
 	return d.countAndReply(s, event.Author.ID, event.Reference(), increment, false)
 }

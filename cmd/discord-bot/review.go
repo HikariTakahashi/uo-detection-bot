@@ -187,6 +187,9 @@ func (h *reviewHandler) show(s reviewClient, i *discordgo.Interaction) error {
 		return reviewEdit(s, i, "未レビューの投稿はありません。処理待ち・判定エラー・他のレビュー担当者が確認中・スキップ中の投稿は表示されません。", nil, reviewNextButton())
 	}
 	embeds := []*discordgo.MessageEmbed{{Title: "投稿本文", Description: reviewQuote(r.Text)}}
+	if r.DecodedText != "" {
+		embeds = append(embeds, &discordgo.MessageEmbed{Title: "変換を復元した本文（AI判定用）", Description: reviewQuote(r.DecodedText)})
+	}
 	if r.Context != "" {
 		embeds = append(embeds, &discordgo.MessageEmbed{Title: "返信元（同じチャンネル）", Description: reviewQuote(r.Context)})
 	}
