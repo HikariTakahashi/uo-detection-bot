@@ -1,0 +1,66 @@
+name: Verify and release ARM64 bot
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: bot-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go test -race ./...
+      - run: go vet ./...
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+  release:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version-file: go.mod
+      - name: Build Linux ARM64 binary
+        env:
+          CGO_ENABLED: '0'
+          GOOS: linux
+          GOARCH: arm64
+        run: |
+          mkdir -p dist
+          go build -trimpath -ldflags "-s -w -X main.version=$GITHUB_SHA" -o dist/discord-bot-linux-arm64 ./cmd/discord-bot
+          cd dist
+          sha256sum discord-bot-linux-arm64 > SHA256SUMS
+      - name: Publish complete release for this exact commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="deploy-$GITHUB_SHA"
+          if gh release view "$tag" --json isDraft > /tmp/bot-release.json 2>/dev/null; then
+            if [ "$(python3 -c 'import json; print(json.load(open("/tmp/bot-release.json"))["isDraft"])')" = False ]; then
+              echo "Published release already exists; keeping its assets unchanged."
+              exit 0
+            fi
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" --draft --title "Deploy $GITHUB_SHA" --notes "Verified Linux ARM64 build for commit $GITHUB_SHA."
+          fi
+          gh release upload "$tag" dist/discord-bot-linux-arm64 dist/SHA256SUMS --clobber
+          gh release edit "$tag" --draft=false --latest=false
