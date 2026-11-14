@@ -193,8 +193,10 @@ func (h *reviewHandler) show(s reviewClient, i *discordgo.Interaction) error {
 	criteria := "相手を見下す・嘲る使い方なら「冷笑」、単なる引用・説明・驚き・語の一部なら「対象外」、文脈不足なら「判断困難」を選んでください。"
 	if r.Selection == "laughter_candidate" {
 		criteria = "投稿者自身が対象ワードに笑いの w を添えて使っていれば「冷笑」、単なる引用・説明や別の語の一部なら「対象外」、用法が分からなければ「判断困難」を選んでください。"
+	} else if r.Selection == "repetition_candidate" {
+		criteria = "繰り返しだけでは冷笑と判断しません。返信元も参考に、相手を見下す・嘲る用法なら「冷笑」、喜び・驚き・文字列の回答なら「対象外」、意図を判断できなければ「判断困難」を選んでください。この候補は判定結果にかかわらず加算・通知しません。"
 	}
-	text := fmt.Sprintf("%s AIの答えは保存後に表示します。\nチャンネル: <#%s> / 投稿ID: %s\nレビュー操作で通知・カウントは変更されません。画面の有効期限は15分です。", criteria, r.ChannelID, r.MessageID)
+	text := fmt.Sprintf("%s 判定結果は保存後に表示します。\nチャンネル: <#%s> / 投稿ID: %s\nレビュー操作で通知・カウントは変更されません。画面の有効期限は15分です。", criteria, r.ChannelID, r.MessageID)
 	return reviewEdit(s, i, text, embeds, reviewButtons(key))
 }
 
@@ -301,7 +303,11 @@ func (h *reviewHandler) handle(s reviewClient, event *discordgo.InteractionCreat
 	}
 	delete(h.leases, key)
 	titles := map[string]string{"mockery": "冷笑", "other": "対象外", "uncertain": "判断困難"}
-	text := fmt.Sprintf("正解「%s」を保存しました。\nAIの判定: %s\n通知・カウントは変更していません。", titles[action], titles[r.Prediction.Label])
+	source := "AIの判定"
+	if r.Prediction.Model == "repetition_filter" {
+		source = "事前判定（文脈不足・AI未使用）"
+	}
+	text := fmt.Sprintf("正解「%s」を保存しました。\n%s: %s\n通知・カウントは変更していません。", titles[action], source, titles[r.Prediction.Label])
 	return true, reviewEdit(s, i, text, nil, reviewNextButton())
 }
 
