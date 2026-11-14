@@ -176,7 +176,7 @@ func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) bool {
 	}
 	// The normal detector owns configured uo/うお repetitions. Do not create a
 	// second review record for a post that will receive its normal reply.
-	if s.detector.repetitionContent(m.Content) {
+	if s.detector.repetitionCount(m.Content) > 0 {
 		return false
 	}
 	canCount := s.config.CountLaughter && s.detector.eligibleMessage(event)

@@ -137,13 +137,13 @@ func TestLaughterPersistenceFailureDoesNotLeaveDedupMarker(t *testing.T) {
 	if err := os.MkdirAll(d.statePath, 0700); err != nil {
 		t.Fatal(err)
 	}
-	if err := d.countAndReply(sends, m.Author.ID, m.Reference(), true); err == nil || len(sends.messages) != 0 || d.alreadyAICounted(m.ID) || d.counts[testUser] != 0 {
+	if err := d.countAndReply(sends, m.Author.ID, m.Reference(), 1, true); err == nil || len(sends.messages) != 0 || d.alreadyAICounted(m.ID) || d.counts[testUser] != 0 {
 		t.Fatal("failed save changed count, left a deduplication marker, or sent a reply", err)
 	}
 	if err := os.Remove(d.statePath); err != nil {
 		t.Fatal(err)
 	}
-	if err := d.countAndReply(sends, m.Author.ID, m.Reference(), true); err != nil || len(sends.messages) != 1 || !d.alreadyAICounted(m.ID) || d.counts[testUser] != 1 {
+	if err := d.countAndReply(sends, m.Author.ID, m.Reference(), 1, true); err != nil || len(sends.messages) != 1 || !d.alreadyAICounted(m.ID) || d.counts[testUser] != 1 {
 		t.Fatal("retry after failed persistence did not count and reply", err)
 	}
 }

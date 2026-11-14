@@ -202,21 +202,28 @@ func (d *detector) eligibleMessage(event *discordgo.MessageCreate) bool {
 }
 
 func (d *detector) handleMessage(s messageClient, event *discordgo.MessageCreate) error {
-	if !d.eligibleMessage(event) || (!d.words[event.Content] && !d.repetitionContent(event.Content)) {
+	if !d.eligibleMessage(event) {
 		return nil
 	}
-	return d.countAndReply(s, event.Author.ID, event.Reference(), false)
+	increment := d.repetitionCount(event.Content)
+	if increment == 0 {
+		if !d.words[event.Content] {
+			return nil
+		}
+		increment = 1
+	}
+	return d.countAndReply(s, event.Author.ID, event.Reference(), increment, false)
 }
 
-// repetitionContent only accepts a whole message made of two or more
+// repetitionCount only accepts a whole message made of two or more
 // configured uo/うお forms. It deliberately does not split arbitrary detection
 // words, so a word sequence cannot turn ordinary prose into a detection.
-func (d *detector) repetitionContent(content string) bool {
+func (d *detector) repetitionCount(content string) uint64 {
 	words := make([]string, 0, len(d.words))
 	for word := range d.words {
 		words = append(words, word)
 	}
-	return repetitionCandidate(content, words)
+	return repetitionCount(content, words)
 }
 
 func (d *detector) handleIncoming(s messageClient, ai *shadowCollector, event *discordgo.MessageCreate) error {
@@ -232,17 +239,17 @@ func (d *detector) alreadyAICounted(id string) bool {
 	return d.aiCounted[id]
 }
 
-func (d *detector) countAndReply(s messageClient, id string, ref *discordgo.MessageReference, fromAI bool) error {
+func (d *detector) countAndReply(s messageClient, id string, ref *discordgo.MessageReference, increment uint64, fromAI bool) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if d.aiCounted[ref.MessageID] {
 		return nil
 	}
 	previous, existed := d.counts[id]
-	if previous == math.MaxUint64 {
+	if increment > math.MaxUint64-previous {
 		return errors.New("detection count overflow")
 	}
-	count := previous + 1
+	count := previous + increment
 	d.counts[id] = count
 	if fromAI {
 		d.aiCounted[ref.MessageID] = true
