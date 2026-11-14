@@ -1,6 +1,6 @@
 # 冷笑のAI判定とレビュー
 
-設定の `mode: "shadow"` はAIの評価用収集を有効にします。レビュー操作は通知・カウントを変更しません。`count_laughter: true` を設定すると、別途「対象ワード＋w」のAI判定を通知・加算に使えます。初期状態では両方とも無効です。
+設定の `mode: "shadow"` はAIの評価用収集を有効にします。レビュー操作は通知・カウントを変更しません。`count_laughter: true` を設定すると「対象ワード＋w」のAI判定を通知・加算に使えます。設定例では両方とも無効です。旧設定に `count_laughter` がなく、`mode: "shadow"` と `use_detection_channels: true` を併用している環境では、更新時にAI加算が有効になります。レビュー用の収集だけを続けるには `count_laughter: false` を指定してください。
 
 ## 対象ワード＋w をカウントする
 

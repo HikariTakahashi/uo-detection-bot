@@ -135,7 +135,7 @@ Message Content Intent・チャンネル権限を設定した後に、検知設�
 
 ## 運用
 
-「うおw」「どわーｗｗ」のように、設定済みワードの直後に笑いの `w` が付いた投稿は、`count_laughter: true` でAI判定を有効にできます。AIが冷笑と判定した投稿だけを既存の累計に1回加算し、元の投稿に返信します。全角・大文字・連続の `w` に対応します。導入方法と、評価用のshadow収集・指定ロール専用 `/review` については [AI判定とレビューの手順](docs/shadow-review.md) を参照してください。
+「うおw」「どわーｗｗ」のように、設定済みワードの直後に笑いの `w` が付いた投稿は、`count_laughter: true` でAI判定を有効にできます。AIが冷笑と判定した投稿だけを既存の累計に1回加算し、元の投稿に返信します。全角・大文字・連続の `w` に対応します。既存設定からの移行条件や `/review` の使い方は [AI判定とレビューの手順](docs/shadow-review.md) を参照してください。
 
 ```sh
 systemctl status discord-bot.service discord-bot-update.timer

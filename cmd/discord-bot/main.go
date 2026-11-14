@@ -140,7 +140,8 @@ func run(ctx context.Context) error {
 		scope = "guild"
 	}
 	slog.Info("bot ready", "version", version, "command_scope", scope,
-		"detection_enabled", detection.enabled(), "scheduled_notifications_enabled", notifications.enabled())
+		"detection_enabled", detection.enabled(), "laughter_count_enabled", detection.enabled() && shadow != nil && shadow.config.CountLaughter,
+		"scheduled_notifications_enabled", notifications.enabled())
 	if notifications.enabled() {
 		go runScheduledNotifications(ctx, s, notifications)
 	}

@@ -56,6 +56,28 @@ func TestShadowConfig(t *testing.T) {
 		t.Fatal("invalid config must fail open for legacy bot")
 	}
 }
+
+func TestLaughterConfigForExistingInstallations(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "shadow.json")
+	for _, tc := range []struct {
+		config string
+		count  bool
+		valid  bool
+	}{
+		{`{"mode":"shadow","use_detection_channels":true}`, true, true},
+		{`{"mode":"shadow","use_detection_channels":true,"count_laughter":false}`, false, true},
+		{`{"mode":"shadow","channel_ids":["333333333333333333"]}`, false, true},
+		{`{"mode":"off","use_detection_channels":true}`, false, true},
+		{`{"mode":"off","count_laughter":true}`, true, true},
+		{`{"mode":"shadow","use_detection_channels":true,"count_laughter":null}`, false, false},
+	} {
+		writeTestFile(t, path, tc.config)
+		c, err := loadShadowConfig(path)
+		if (err == nil) != tc.valid || err == nil && c.CountLaughter != tc.count {
+			t.Errorf("%s: count=%v, err=%v", tc.config, c.CountLaughter, err)
+		}
+	}
+}
 func TestShadowSelectionAndIsolation(t *testing.T) {
 	for _, tc := range []struct{ text, selection, clean string }{{"ちゅううおう", "keyword_candidate", "ちゅううおう"}, {"https://example.com/uo", "url_only_sample", ""}, {"ＵＯ ウオ！", "keyword_candidate", "ＵＯ ウオ！"}, {"こんにちは", "non_candidate_sample", "こんにちは"}} {
 		s := testShadow(t)

@@ -46,8 +46,22 @@ func loadShadowConfig(path string) (shadowConfig, error) {
 	if err != nil {
 		return c, err
 	}
-	if err := decodeJSON(data, &c); err != nil {
+	// Keep absence distinct from an explicit false for existing installs.
+	var file struct {
+		*shadowConfig
+		CountLaughter json.RawMessage `json:"count_laughter"`
+	}
+	file.shadowConfig = &c
+	if err := decodeJSON(data, &file); err != nil {
 		return c, err
+	}
+	// Existing installations that already run AI in the detection channels
+	// can receive the live feature in a binary-only update. Explicit settings
+	// still take precedence, and review-only channels are not opted in.
+	if len(file.CountLaughter) == 0 {
+		c.CountLaughter = c.Mode == "shadow" && c.UseDetectionChannels
+	} else if bytes.Equal(file.CountLaughter, []byte("null")) || json.Unmarshal(file.CountLaughter, &c.CountLaughter) != nil {
+		return c, errors.New("count_laughter must be a boolean")
 	}
 	if c.Mode != "off" && c.Mode != "shadow" {
 		return c, errors.New("shadow mode must be off or shadow")
