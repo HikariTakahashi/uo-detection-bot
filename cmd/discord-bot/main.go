@@ -44,12 +44,27 @@ func run(ctx context.Context) error {
 	if guild != "" && !isSnowflake(guild) {
 		return errors.New("DISCORD_GUILD_ID must be a numeric server ID")
 	}
+	detection, err := newDetector(
+		envPath("DETECTION_CONFIG_PATH", defaultDetectionConfigPath),
+		envPath("DETECTION_STATE_PATH", defaultDetectionStatePath),
+	)
+	if err != nil {
+		return err
+	}
 	s, err := discordgo.New("Bot " + token)
 	if err != nil {
 		return errors.New("cannot create Discord session")
 	}
-	// Slash commands need no privileged intents or message content access.
+	// Keep /ping usable without privileged intents when detection is disabled.
 	s.Identify.Intents = 0
+	if detection.enabled() {
+		s.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsMessageContent
+		s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+			if err := detection.handleMessage(s, m); err != nil {
+				slog.Error("message detection failed", "error", err)
+			}
+		})
+	}
 	s.Client.Timeout = 20 * time.Second
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		if i == nil || i.Interaction == nil || i.Type != discordgo.InteractionApplicationCommand {
@@ -83,7 +98,7 @@ func run(ctx context.Context) error {
 	if guild != "" {
 		scope = "guild"
 	}
-	slog.Info("bot ready", "version", version, "command_scope", scope)
+	slog.Info("bot ready", "version", version, "command_scope", scope, "detection_enabled", detection.enabled())
 	ticker := time.NewTicker(15 * time.Second)
 	defer ticker.Stop()
 	for {

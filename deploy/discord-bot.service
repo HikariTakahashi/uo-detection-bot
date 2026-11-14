@@ -1,5 +1,5 @@
 [Unit]
-Description=Discord ping bot
+Description=Discord detection bot
 Wants=network-online.target
 After=network-online.target
 StartLimitIntervalSec=300
@@ -11,6 +11,8 @@ NotifyAccess=main
 User=discord-bot
 Group=discord-bot
 WorkingDirectory=/opt/discord-bot
+StateDirectory=discord-bot
+StateDirectoryMode=0700
 EnvironmentFile=/etc/discord-bot.env
 Environment=GOMEMLIMIT=64MiB
 ExecStart=/opt/discord-bot/current/discord-bot

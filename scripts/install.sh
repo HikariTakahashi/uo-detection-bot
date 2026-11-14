@@ -9,7 +9,7 @@ if [[ $(uname -m) != aarch64 ]]; then
   exit 1
 fi
 repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-for file in deploy/discord-bot.service deploy/discord-bot-update.service deploy/discord-bot-update.timer scripts/update-bot.py; do
+for file in deploy/discord-bot.service deploy/discord-bot-update.service deploy/discord-bot-update.timer scripts/update-bot.py detection.config.example.json; do
   test -f "$repo_dir/$file"
 done
 if [[ ! -f /etc/discord-bot.env ]]; then
@@ -23,7 +23,7 @@ if ! grep -Eq '^DISCORD_TOKEN=.+$' /etc/discord-bot.env; then
 fi
 backup_dir=$(mktemp -d /var/backups/discord-bot.XXXXXXXX)
 chmod 0700 "$backup_dir"
-for file in /etc/systemd/system/discord-bot.service /etc/systemd/system/discord-bot-update.service /etc/systemd/system/discord-bot-update.timer /etc/discord-bot.env /opt/discord-bot/discord-bot; do
+for file in /etc/systemd/system/discord-bot.service /etc/systemd/system/discord-bot-update.service /etc/systemd/system/discord-bot-update.timer /etc/discord-bot.env /etc/discord-bot/config.json /opt/discord-bot/discord-bot; do
   if [[ -f "$file" ]]; then cp --parents -p "$file" "$backup_dir/"; fi
 done
 if ! getent group discord-bot >/dev/null; then groupadd --system discord-bot; fi
@@ -34,6 +34,10 @@ fi
 systemctl stop discord-bot.service
 install -d -o root -g root -m 0755 /opt/discord-bot /opt/discord-bot/releases /usr/local/lib/discord-bot
 install -d -o root -g root -m 0700 /var/lib/discord-bot-update
+install -d -o root -g discord-bot -m 0750 /etc/discord-bot
+if [[ ! -e /etc/discord-bot/config.json ]]; then
+  install -o root -g discord-bot -m 0640 "$repo_dir/detection.config.example.json" /etc/discord-bot/config.json
+fi
 chown root:root /etc/discord-bot.env
 chmod 0600 /etc/discord-bot.env
 install -o root -g root -m 0644 "$repo_dir/scripts/update-bot.py" /usr/local/lib/discord-bot/update-bot.py
