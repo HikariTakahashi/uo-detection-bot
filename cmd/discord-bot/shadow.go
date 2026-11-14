@@ -195,6 +195,10 @@ func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) bool {
 	}
 	if live {
 		r.Selection = "laughter_candidate"
+	} else if !r.LegacyMatch && repetitionCandidate(m.Content, s.words) {
+		// Review-only, even if the classifier later predicts mockery. Exact
+		// configured messages keep their existing detection behavior.
+		r.Selection = "repetition_candidate"
 	} else {
 		for _, word := range s.words {
 			if strings.Contains(normalized, word) {
@@ -260,6 +264,12 @@ func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) bool {
 }
 
 func (s *shadowCollector) predict(ctx context.Context, r shadowRecord) (shadowPrediction, error) {
+	if r.Selection == "repetition_candidate" {
+		// Repetition alone is not enough evidence of intent. Evaluation on the
+		// production model found false positives even when reply context was
+		// supplied, so retain context for human review but never ask the model.
+		return shadowPrediction{Label: "uncertain", Model: "repetition_filter"}, nil
+	}
 	if r.CleanedText == "" {
 		return shadowPrediction{Label: "other", Model: "url_filter"}, nil
 	}

@@ -65,6 +65,14 @@ cd /home/user/laya-sandbox
 
 [Piの実モデルでの検証結果](LAUGHTER_VALIDATION.md)では、引用・説明の前処理を追加した版が合成例11件すべてで期待どおりに動作しました。
 
+繰り返し候補に通常AI判定を使わない判断を確認するため、次の固定合成例を実モデルで評価できます。`uououo` 自体だけでは意図を決められないため、本文は同じにして返信元だけを変え、冷笑・対象外・判断困難を比較します。正解ラベルはモデルに渡しません。
+
+```sh
+./run.sh --evaluate repetition-eval.jsonl --compare baseline
+```
+
+この機能はレビュー専用です。評価結果は [REPETITION_VALIDATION.md](REPETITION_VALIDATION.md) に記録しています。モデルの結果を自動加算の根拠にはしません。評価では対象外を冷笑とした件数、冷笑の検出数、保留数を分けて記録してください。
+
 ## 結果の読み方
 
 - `label: mockery` — 冷笑という仮判定。
