@@ -264,6 +264,11 @@ func TestDetectionFailures(t *testing.T) {
 	if err := d.handleMessage(client, testMessage("うお")); err == nil || d.counts[testUser] != math.MaxUint64 {
 		t.Fatal("count overflow was not rejected")
 	}
+	d.counts[testUser] = math.MaxUint64 - 1
+	replies := len(client.messages)
+	if err := d.handleMessage(client, testMessage("うおうお")); err == nil || d.counts[testUser] != math.MaxUint64-1 || len(client.messages) != replies {
+		t.Fatal("overflow from a multi-word increment changed the count or sent a reply")
+	}
 }
 
 func TestCorruptCountsStopStartup(t *testing.T) {

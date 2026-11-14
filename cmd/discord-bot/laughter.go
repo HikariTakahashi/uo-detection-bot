@@ -124,7 +124,7 @@ func (s *shadowCollector) processLaughter(ctx context.Context, sender messageCli
 		return
 	}
 	ref := &discordgo.MessageReference{MessageID: r.MessageID, ChannelID: r.ChannelID, GuildID: r.GuildID}
-	if err := s.detector.countAndReply(sender, job.authorID, ref, true); err != nil {
+	if err := s.detector.countAndReply(sender, job.authorID, ref, 1, true); err != nil {
 		slog.Error("laughter count or reply failed", "message_id", r.MessageID, "error", err)
 	}
 }
