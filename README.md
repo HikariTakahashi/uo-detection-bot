@@ -14,7 +14,7 @@ Raspberry Pi (Linux ARM64) で動かす、小さな Go 製 Discord Bot です。
 go test -race ./...
 go vet ./...
 python3 -m unittest discover -s scripts -p 'test_*.py' -v
-go build -o /tmp/discord-bot ./cmd/discord-bot
+CGO_ENABLED=1 go build -tags netcgo -o /tmp/discord-bot ./cmd/discord-bot
 ```
 
 実行時は `DISCORD_TOKEN` を環境変数として指定します。`.env` の自動読み込みは行いません。
@@ -24,7 +24,9 @@ go build -o /tmp/discord-bot ./cmd/discord-bot
 
 ## Raspberry Piへの初回設置
 
-Debian系 ARM64、systemd、Python 3 が必要です。
+Debian系 ARM64、glibc 2.39以上、systemd、Python 3 が必要です（Debian 13で動作確認）。
+配布物はGitHubのUbuntu 24.04 ARM64環境でビルドし、`netcgo`でOS標準の名前解決を使います。
+このPiではGo単独のDNS解決が失敗し、OS標準の名前解決は成功するためです。
 Discord Developer Portal で Bot を作成し、`bot` と `applications.commands` スコープでサーバーに追加してください。
 
 ```sh

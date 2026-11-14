@@ -26,7 +26,7 @@ jobs:
   release:
     needs: verify
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: write
     steps:
@@ -38,12 +38,14 @@ jobs:
           go-version-file: go.mod
       - name: Build Linux ARM64 binary
         env:
-          CGO_ENABLED: '0'
+          CGO_ENABLED: '1'
           GOOS: linux
           GOARCH: arm64
         run: |
+          go test -tags netcgo ./...
           mkdir -p dist
-          go build -trimpath -ldflags "-s -w -X main.version=$GITHUB_SHA" -o dist/discord-bot-linux-arm64 ./cmd/discord-bot
+          go build -tags netcgo -trimpath -ldflags "-s -w -X main.version=$GITHUB_SHA" -o dist/discord-bot-linux-arm64 ./cmd/discord-bot
+          test "$(dist/discord-bot-linux-arm64 -version)" = "$GITHUB_SHA"
           cd dist
           sha256sum discord-bot-linux-arm64 > SHA256SUMS
       - name: Publish complete release for this exact commit
