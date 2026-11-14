@@ -1,0 +1,8 @@
+.venv/
+cache/
+models/
+vendor/
+run.lock
+model-receipt.json
+install-plan.json
+results*.jsonl

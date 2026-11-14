@@ -1,0 +1,24 @@
+{"id": "h_m01", "text": "うお、こんな簡単な問題も解けないの？口だけの秀才さん。", "context": "", "reference_label": "mockery"}
+{"id": "h_m02", "text": "どわー、また失敗したのに人に説教ですか。ずいぶん偉いんですね。", "context": "", "reference_label": "mockery"}
+{"id": "h_m03", "text": "uo、実績ゼロで上から目線とは、さすが大先生ですね。", "context": "", "reference_label": "mockery"}
+{"id": "h_m04", "text": "うお、自慢の作品がこの落書き？よく人前に出せたね。", "context": "", "reference_label": "mockery"}
+{"id": "h_m05", "text": "うお、他人のコピーを自分の才能だと言い張るとはご立派ですね。", "context": "", "reference_label": "mockery"}
+{"id": "h_m06", "text": "どわー、一行も読まずに評論家気取り。さすがですねえ。", "context": "", "reference_label": "mockery"}
+{"id": "h_m07", "text": "うお、自分は毎回遅刻なのに時間を守れと説教？お偉いことで。", "context": "", "reference_label": "mockery"}
+{"id": "h_m08", "text": "うお、人のせいにする才能だけは一流ですね。", "context": "また課題を出せなかった。全部先生が悪い。", "reference_label": "mockery"}
+{"id": "h_o01", "text": "来週の会議は午後三時からです。", "context": "", "reference_label": "other"}
+{"id": "h_o02", "text": "https://sample.invalid/path/uo?q=うお", "context": "", "reference_label": "other"}
+{"id": "h_o03", "text": "ウォーキングを毎朝続けています。", "context": "", "reference_label": "other"}
+{"id": "h_o04", "text": "この魚市場は「うおいちば」と読みます。", "context": "", "reference_label": "other"}
+{"id": "h_o05", "text": "uo はこの表の項目名です。", "context": "", "reference_label": "other"}
+{"id": "h_o06", "text": "「どわー」は驚いたときに使う言葉です。", "context": "", "reference_label": "other"}
+{"id": "h_o07", "text": "うお！ライブのチケット当たった！楽しみ！", "context": "", "reference_label": "other"}
+{"id": "h_o08", "text": "どわー！財布が見つかった、よかった！", "context": "", "reference_label": "other"}
+{"id": "h_o09", "text": "uo! ゲームクリアできた！手伝ってくれてありがとう！", "context": "", "reference_label": "other"}
+{"id": "h_o10", "text": "「うお、お前は役立たず」と言われて悲しかった。", "context": "", "reference_label": "other"}
+{"id": "h_o11", "text": "https://sample.invalid/uo うお！合格おめでとう、努力が実ったね！", "context": "", "reference_label": "other"}
+{"id": "h_o12", "text": "うお！おめでとう！ずっと応援していたよ。", "context": "念願の資格試験に合格した！", "reference_label": "other"}
+{"id": "h_u01", "text": "うお……", "context": "", "reference_label": "uncertain"}
+{"id": "h_u02", "text": "どわー、これか", "context": "", "reference_label": "uncertain"}
+{"id": "h_u03", "text": "uo、それはそう", "context": "", "reference_label": "uncertain"}
+{"id": "h_u04", "text": "うお、なるほどね", "context": "", "reference_label": "uncertain"}

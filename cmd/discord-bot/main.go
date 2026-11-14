@@ -55,6 +55,16 @@ func run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	shadow, shadowErr := newShadow(envPath("SHADOW_CONFIG_PATH", defaultShadowConfigPath), envPath("SHADOW_DATA_PATH", defaultShadowDataPath), detection)
+	if shadowErr != nil {
+		slog.Error("shadow collection disabled or unavailable", "error", safeError(shadowErr))
+	}
+	workerCtx, stopWorker := context.WithCancel(ctx)
+	defer stopWorker()
+	if shadow != nil {
+		go shadow.run(workerCtx)
+	}
+	reviews := newReview(shadow)
 	s, err := discordgo.New("Bot " + token)
 	if err != nil {
 		return errors.New("cannot create Discord session")
@@ -69,8 +79,36 @@ func run(ctx context.Context) error {
 			}
 		})
 	}
+	if shadow != nil && shadow.config.Mode == "shadow" {
+		s.Identify.Intents |= discordgo.IntentsGuildMessages | discordgo.IntentsMessageContent
+		s.AddHandler(func(_ *discordgo.Session, m *discordgo.MessageCreate) { shadow.enqueue(m) })
+	}
+	if shadow != nil {
+		s.AddHandler(func(_ *discordgo.Session, m *discordgo.MessageDelete) {
+			if m != nil && m.Message != nil {
+				if err := shadow.remove(m.ID, m.GuildID); err != nil {
+					slog.Error("shadow delete failed", "error", safeError(err))
+				}
+			}
+		})
+		s.AddHandler(func(_ *discordgo.Session, m *discordgo.MessageDeleteBulk) {
+			if m != nil {
+				for _, id := range m.Messages {
+					if err := shadow.remove(id, m.GuildID); err != nil {
+						slog.Error("shadow bulk delete failed", "error", safeError(err))
+					}
+				}
+			}
+		})
+	}
 	s.Client.Timeout = 20 * time.Second
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		if handled, err := reviews.handle(s, i); handled {
+			if err != nil {
+				slog.Error("review interaction failed", "error", safeError(err))
+			}
+			return
+		}
 		if i == nil || i.Interaction == nil || i.Type != discordgo.InteractionApplicationCommand {
 			return
 		}
@@ -94,6 +132,9 @@ func run(ctx context.Context) error {
 	}
 	if err := ensurePingCommand(s, s.State.User.ID, guild); err != nil {
 		return err
+	}
+	if err := ensureReviewCommand(s, s.State.User.ID, guild); err != nil {
+		slog.Error("review command registration failed", "error", err)
 	}
 	if err := notify("READY=1\nSTATUS=Discord connected; /ping registered; commit " + version); err != nil {
 		return fmt.Errorf("notify systemd: %w", err)

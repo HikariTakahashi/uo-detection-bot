@@ -1,0 +1,8 @@
+{"id":"url_only","text":"https://example.com/uo","reference_label":"other"}
+{"id":"inside_word","text":"ちゅううおう","reference_label":"other"}
+{"id":"explanation","text":"『うお』という言葉を検知するBotです。","reference_label":"other"}
+{"id":"joy","text":"うお！優勝おめでとう！本当にうれしい！","reference_label":"other"}
+{"id":"mockery","text":"うお、また自称天才のご登場ですか。何もできないくせに偉そうですね。","reference_label":"mockery"}
+{"id":"ambiguous","text":"うお","reference_label":"uncertain"}
+{"id":"url_and_mockery","text":"https://example.com/uo うお、また自称天才のご登場ですか。何もできないくせに偉そうですね。","reference_label":"mockery"}
+{"id":"normal","text":"明日の集合時間は10時です。","reference_label":"other"}

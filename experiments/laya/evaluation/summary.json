@@ -1,0 +1,265 @@
+{
+  "decision": "retain_baseline",
+  "eligible_candidates": [],
+  "holdout_evaluated": false,
+  "reason": "No candidate meets the predeclared development selection criteria.",
+  "input_sha256": {
+    "prompts.json": "289e6d3df19b6b126188b919593fe563831d83b2dfba111f88ecd068a2b68239",
+    "eval-dev.jsonl": "6f76c8b217e6ee92f114c26ab44e7d7c6c8819f986a5c6c7399a0afe11452447",
+    "eval-holdout.jsonl": "01eb60733396044051587175c3024e2910fef682005d1340073d561e0041ee24"
+  },
+  "summaries": [
+    {
+      "record_type": "summary",
+      "prompt": "baseline",
+      "prompt_sha256": "0a25fb9cd2581acbf771b33d70e9d9d55a3e61a3f6a67c680f505d6c5c4879fe",
+      "dataset_sha256": "6f76c8b217e6ee92f114c26ab44e7d7c6c8819f986a5c6c7399a0afe11452447",
+      "total": 16,
+      "correct": 9,
+      "model_total": 15,
+      "model_correct": 8,
+      "false_positives": 0,
+      "mockery_hits": 1,
+      "mockery_total": 4,
+      "mockery_precision": 1.0,
+      "mockery_recall": 0.25,
+      "abstained": 11,
+      "macro_f1": 0.5333333333333333,
+      "median_seconds": 1.585,
+      "truncated": 0,
+      "confusion": {
+        "mockery": {
+          "mockery": 1,
+          "other": 0,
+          "uncertain": 3
+        },
+        "other": {
+          "mockery": 0,
+          "other": 4,
+          "uncertain": 4
+        },
+        "uncertain": {
+          "mockery": 0,
+          "other": 0,
+          "uncertain": 4
+        }
+      }
+    },
+    {
+      "record_type": "summary",
+      "prompt": "ja_rules",
+      "prompt_sha256": "f4a25b05c7aab2eaf6303808b59b64a113c8bdf146578267b1b5146fb5c6148c",
+      "dataset_sha256": "6f76c8b217e6ee92f114c26ab44e7d7c6c8819f986a5c6c7399a0afe11452447",
+      "total": 16,
+      "correct": 8,
+      "model_total": 15,
+      "model_correct": 7,
+      "false_positives": 0,
+      "mockery_hits": 1,
+      "mockery_total": 4,
+      "mockery_precision": 1.0,
+      "mockery_recall": 0.25,
+      "abstained": 12,
+      "macro_f1": 0.48181818181818176,
+      "median_seconds": 1.78,
+      "truncated": 0,
+      "confusion": {
+        "mockery": {
+          "mockery": 1,
+          "other": 0,
+          "uncertain": 3
+        },
+        "other": {
+          "mockery": 0,
+          "other": 3,
+          "uncertain": 5
+        },
+        "uncertain": {
+          "mockery": 0,
+          "other": 0,
+          "uncertain": 4
+        }
+      }
+    },
+    {
+      "record_type": "summary",
+      "prompt": "en_rules",
+      "prompt_sha256": "5779b2cdebbe95934d8eb46aac7d66e062bc626621deebeb62ea2e5e6b30134d",
+      "dataset_sha256": "6f76c8b217e6ee92f114c26ab44e7d7c6c8819f986a5c6c7399a0afe11452447",
+      "total": 16,
+      "correct": 9,
+      "model_total": 15,
+      "model_correct": 8,
+      "false_positives": 0,
+      "mockery_hits": 2,
+      "mockery_total": 4,
+      "mockery_precision": 1.0,
+      "mockery_recall": 0.5,
+      "abstained": 3,
+      "macro_f1": 0.4678362573099415,
+      "median_seconds": 1.726,
+      "truncated": 0,
+      "confusion": {
+        "mockery": {
+          "mockery": 2,
+          "other": 0,
+          "uncertain": 2
+        },
+        "other": {
+          "mockery": 0,
+          "other": 7,
+          "uncertain": 1
+        },
+        "uncertain": {
+          "mockery": 0,
+          "other": 4,
+          "uncertain": 0
+        }
+      }
+    },
+    {
+      "record_type": "summary",
+      "prompt": "ja_examples",
+      "prompt_sha256": "434fe99c6c7d114a27f502f3b94711bba75bea1e804390eaceab737d0dfecf0e",
+      "dataset_sha256": "6f76c8b217e6ee92f114c26ab44e7d7c6c8819f986a5c6c7399a0afe11452447",
+      "total": 16,
+      "correct": 8,
+      "model_total": 15,
+      "model_correct": 7,
+      "false_positives": 6,
+      "mockery_hits": 4,
+      "mockery_total": 4,
+      "mockery_precision": 0.4,
+      "mockery_recall": 1.0,
+      "abstained": 2,
+      "macro_f1": 0.4682539682539682,
+      "median_seconds": 1.69,
+      "truncated": 0,
+      "confusion": {
+        "mockery": {
+          "mockery": 4,
+          "other": 0,
+          "uncertain": 0
+        },
+        "other": {
+          "mockery": 4,
+          "other": 3,
+          "uncertain": 1
+        },
+        "uncertain": {
+          "mockery": 2,
+          "other": 1,
+          "uncertain": 1
+        }
+      }
+    },
+    {
+      "record_type": "summary",
+      "prompt": "en_reactions",
+      "prompt_sha256": "a3ac19a8d2e8f14ee6d1d36c1b06f9a74d731d78400ab76dc497550d14953db7",
+      "dataset_sha256": "6f76c8b217e6ee92f114c26ab44e7d7c6c8819f986a5c6c7399a0afe11452447",
+      "total": 16,
+      "correct": 7,
+      "model_total": 15,
+      "model_correct": 6,
+      "false_positives": 2,
+      "mockery_hits": 3,
+      "mockery_total": 4,
+      "mockery_precision": 0.6,
+      "mockery_recall": 0.75,
+      "abstained": 9,
+      "macro_f1": 0.4581196581196581,
+      "median_seconds": 1.976,
+      "truncated": 0,
+      "confusion": {
+        "mockery": {
+          "mockery": 3,
+          "other": 0,
+          "uncertain": 1
+        },
+        "other": {
+          "mockery": 0,
+          "other": 2,
+          "uncertain": 6
+        },
+        "uncertain": {
+          "mockery": 2,
+          "other": 0,
+          "uncertain": 2
+        }
+      }
+    },
+    {
+      "record_type": "summary",
+      "prompt": "ja_focus",
+      "prompt_sha256": "f163613a74449ae9693497057bbe78aaed963bf8abcf7f402433f4f68d3cf107",
+      "dataset_sha256": "6f76c8b217e6ee92f114c26ab44e7d7c6c8819f986a5c6c7399a0afe11452447",
+      "total": 16,
+      "correct": 9,
+      "model_total": 15,
+      "model_correct": 8,
+      "false_positives": 3,
+      "mockery_hits": 4,
+      "mockery_total": 4,
+      "mockery_precision": 0.5714285714285714,
+      "mockery_recall": 1.0,
+      "abstained": 2,
+      "macro_f1": 0.4646464646464647,
+      "median_seconds": 1.615,
+      "truncated": 0,
+      "confusion": {
+        "mockery": {
+          "mockery": 4,
+          "other": 0,
+          "uncertain": 0
+        },
+        "other": {
+          "mockery": 1,
+          "other": 5,
+          "uncertain": 2
+        },
+        "uncertain": {
+          "mockery": 2,
+          "other": 2,
+          "uncertain": 0
+        }
+      }
+    },
+    {
+      "record_type": "summary",
+      "prompt": "en_literal",
+      "prompt_sha256": "ce5362888e37d759731c5550b63e02051ac7508442c8e793f26abf3b762bf370",
+      "dataset_sha256": "6f76c8b217e6ee92f114c26ab44e7d7c6c8819f986a5c6c7399a0afe11452447",
+      "total": 16,
+      "correct": 8,
+      "model_total": 15,
+      "model_correct": 7,
+      "false_positives": 1,
+      "mockery_hits": 2,
+      "mockery_total": 4,
+      "mockery_precision": 0.6666666666666666,
+      "mockery_recall": 0.5,
+      "abstained": 3,
+      "macro_f1": 0.41269841269841273,
+      "median_seconds": 1.9,
+      "truncated": 0,
+      "confusion": {
+        "mockery": {
+          "mockery": 2,
+          "other": 0,
+          "uncertain": 2
+        },
+        "other": {
+          "mockery": 1,
+          "other": 6,
+          "uncertain": 1
+        },
+        "uncertain": {
+          "mockery": 0,
+          "other": 4,
+          "uncertain": 0
+        }
+      }
+    }
+  ]
+}

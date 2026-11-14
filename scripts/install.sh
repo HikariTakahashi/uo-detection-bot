@@ -9,7 +9,7 @@ if [[ $(uname -m) != aarch64 ]]; then
   exit 1
 fi
 repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-for file in deploy/discord-bot.service deploy/discord-bot-update.service deploy/discord-bot-update.timer scripts/update-bot.py detection.config.example.json; do
+for file in deploy/discord-bot.service deploy/discord-bot-update.service deploy/discord-bot-update.timer scripts/update-bot.py detection.config.example.json shadow.config.example.json; do
   test -f "$repo_dir/$file"
 done
 if [[ ! -f /etc/discord-bot.env ]]; then
@@ -37,6 +37,9 @@ install -d -o root -g root -m 0700 /var/lib/discord-bot-update
 install -d -o root -g discord-bot -m 0750 /etc/discord-bot
 if [[ ! -e /etc/discord-bot/config.json ]]; then
   install -o root -g discord-bot -m 0640 "$repo_dir/detection.config.example.json" /etc/discord-bot/config.json
+fi
+if [[ ! -e /etc/discord-bot/shadow.json ]]; then
+  install -o root -g discord-bot -m 0640 "$repo_dir/shadow.config.example.json" /etc/discord-bot/shadow.json
 fi
 chown root:root /etc/discord-bot.env
 chmod 0600 /etc/discord-bot.env

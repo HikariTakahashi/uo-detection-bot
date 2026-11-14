@@ -135,6 +135,8 @@ Message Content Intent・チャンネル権限を設定した後に、検知設�
 
 ## 運用
 
+冷笑判定のshadow収集と管理者専用 `/review` の設定・利用方法は [shadowレビュー手順](docs/shadow-review.md) を参照してください。初期状態は無効です。有効化してもAIの結果は既存の通知・カウントへ反映しません。
+
 ```sh
 systemctl status discord-bot.service discord-bot-update.timer
 journalctl -u discord-bot.service -n 50

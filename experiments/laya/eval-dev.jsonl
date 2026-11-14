@@ -1,0 +1,16 @@
+{"id": "url_only", "text": "https://example.com/uo", "reference_label": "other"}
+{"id": "inside_word", "text": "ちゅううおう", "reference_label": "other"}
+{"id": "explanation", "text": "『うお』という言葉を検知するBotです。", "reference_label": "other"}
+{"id": "joy", "text": "うお！優勝おめでとう！本当にうれしい！", "reference_label": "other"}
+{"id": "mockery", "text": "うお、また自称天才のご登場ですか。何もできないくせに偉そうですね。", "reference_label": "mockery"}
+{"id": "ambiguous", "text": "うお", "reference_label": "uncertain"}
+{"id": "url_and_mockery", "text": "https://example.com/uo うお、また自称天才のご登場ですか。何もできないくせに偉そうですね。", "reference_label": "mockery"}
+{"id": "normal", "text": "明日の集合時間は10時です。", "reference_label": "other"}
+{"id": "dev_m1", "text": "うお、説明書も読めないんですか？その頭でよく偉そうにできますね。", "reference_label": "mockery"}
+{"id": "dev_m2", "text": "どわー、その程度でプロ気取りですか。笑わせないでください。", "reference_label": "mockery"}
+{"id": "dev_o1", "text": "魚はひらがなで「うお」とも読みます。", "reference_label": "other"}
+{"id": "dev_o2", "text": "変数名は uo にしてください。", "reference_label": "other"}
+{"id": "dev_o3", "text": "「うお、何もできないくせに」という発言は失礼なのでやめよう。", "reference_label": "other"}
+{"id": "dev_u1", "text": "どわー", "reference_label": "uncertain"}
+{"id": "dev_u2", "text": "uo", "reference_label": "uncertain"}
+{"id": "dev_u3", "text": "うお、それね", "reference_label": "uncertain"}
