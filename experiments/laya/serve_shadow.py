@@ -71,7 +71,8 @@ class Handler(BaseHTTPRequestHandler):
                    {"status": "ready"} if self.path == "/health" else {"error": "not_found"})
 
     def do_POST(self):
-        if self.path != "/classify":
+        laughter = self.path == "/classify/laughter"
+        if self.path != "/classify" and not laughter:
             self.reply(404, {"error": "not_found"})
             return
         if self.headers.get("Transfer-Encoding") or self.headers.get("Content-Type") != "application/json":
@@ -82,15 +83,19 @@ class Handler(BaseHTTPRequestHandler):
             if len(lengths) != 1:
                 raise ValueError()
             length = int(lengths[0])
-            if not 0 < length <= 16384:
+            if not 0 < length <= (32768 if laughter else 16384):
                 raise ValueError()
             data = self.rfile.read(length)
             if len(data) != length:
                 raise ValueError()
             value = json.loads(data)
-            if not isinstance(value, dict) or set(value) - {"text", "context"}:
+            allowed = {"text", "context", "target_words"} if laughter else {"text", "context"}
+            if not isinstance(value, dict) or set(value) - allowed:
                 raise ValueError()
             text, context = value.get("text"), value.get("context", "")
+            target_words = value.get("target_words", "")
+            if laughter and (not isinstance(target_words, str) or not target_words.strip() or len(target_words) > 2000):
+                raise ValueError()
             prepare(text, context)
         except (ValueError, TypeError, UnicodeError, TimeoutError):
             self.reply(400, {"error": "invalid_request"})
@@ -99,12 +104,19 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(503, {"error": "busy"})
             return
         try:
-            result = self.server.classifier.classify(text, context)
+            if laughter:
+                self.server.classifier.set_prompt("laughter")
+                try:
+                    result = self.server.classifier.classify(text, context, target_words)
+                finally:
+                    self.server.classifier.set_prompt("baseline")
+            else:
+                result = self.server.classifier.classify(text, context)
             output = {key: result[key] for key in
                       ("label", "model", "revision", "prompt", "prompt_sha256", "seconds")}
             output["truncated"] = result.get("truncated", False)
             output["probabilities"] = (result.get("answer", {}).get("probabilities")
-                                       if result.get("source") != "url_filter"
+                                       if result.get("source") not in {"url_filter", "laughter_filter"}
                                        else {"A": 0.0, "B": 1.0, "C": 0.0})
             self.reply(200, output)
         except Exception:

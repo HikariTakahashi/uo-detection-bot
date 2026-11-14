@@ -71,6 +71,9 @@ type reviewHandler struct {
 }
 
 func newReview(s *shadowCollector) *reviewHandler {
+	if s != nil && s.store == nil {
+		s = nil
+	}
 	return &reviewHandler{shadow: s, leases: make(map[string]reviewLease), skipped: make(map[string]map[string]time.Time), now: time.Now}
 }
 
@@ -187,7 +190,11 @@ func (h *reviewHandler) show(s reviewClient, i *discordgo.Interaction) error {
 	if r.Context != "" {
 		embeds = append(embeds, &discordgo.MessageEmbed{Title: "返信元（同じチャンネル）", Description: reviewQuote(r.Context)})
 	}
-	text := fmt.Sprintf("相手を見下す・嘲る使い方なら「冷笑」、単なる引用・説明・驚き・語の一部なら「対象外」、文脈不足なら「判断困難」を選んでください。AIの答えは保存後に表示します。\nチャンネル: <#%s> / 投稿ID: %s\n通知・カウントは変更されません。画面の有効期限は15分です。", r.ChannelID, r.MessageID)
+	criteria := "相手を見下す・嘲る使い方なら「冷笑」、単なる引用・説明・驚き・語の一部なら「対象外」、文脈不足なら「判断困難」を選んでください。"
+	if r.Selection == "laughter_candidate" {
+		criteria = "投稿者自身が対象ワードに笑いの w を添えて使っていれば「冷笑」、単なる引用・説明や別の語の一部なら「対象外」、用法が分からなければ「判断困難」を選んでください。"
+	}
+	text := fmt.Sprintf("%s AIの答えは保存後に表示します。\nチャンネル: <#%s> / 投稿ID: %s\nレビュー操作で通知・カウントは変更されません。画面の有効期限は15分です。", criteria, r.ChannelID, r.MessageID)
 	return reviewEdit(s, i, text, embeds, reviewButtons(key))
 }
 

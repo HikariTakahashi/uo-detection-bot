@@ -63,6 +63,11 @@ func testMessage(word string) *discordgo.MessageCreate {
 	}}
 }
 
+func loadCounts(path string) (map[string]uint64, error) {
+	state, err := loadDetectionState(path)
+	return state.Counts, err
+}
+
 func TestDetectionConfig(t *testing.T) {
 	for _, tc := range []struct {
 		name, data string

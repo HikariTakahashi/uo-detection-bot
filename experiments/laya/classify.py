@@ -10,6 +10,7 @@ import re
 import resource
 import sys
 import time
+import unicodedata
 
 ROOT = Path(__file__).resolve().parent
 MODEL_ID = "convaiinnovations/laya-multilingual"
@@ -20,6 +21,72 @@ URL = re.compile(r"(?:https?://|www\.)[^\s<>\"『』「」【】、。！？]+",
 LABELS = {"A": "mockery", "B": "other", "C": "uncertain"}
 DEFAULT_PROMPT = "baseline"
 PROMPTS = json.loads((ROOT / "prompts.json").read_text(encoding="utf-8"))
+
+LITERAL = re.compile(
+    r"^ {0,3}>>>[^\S\n]+[\s\S]*|^ {0,3}>[^\S\n]+[^\n]*|"
+    r"^ {0,3}`{3,}[\s\S]*?(?:^ {0,3}`{3,}[^\n]*|\Z)|"
+    r"(?P<ticks>`+)[^\n]+?(?P=ticks)|"
+    r'''「[^」]*」|『[^』]*』|“[^”]*”|‘[^’]*’|"[^"\n]*"|＂[^＂\n]*＂''', re.MULTILINE,
+)
+EXPLANATION = re.compile(
+    r"^\s*(?:の\s*)?(?:という\s*|って\s*)?(?:"
+    r"(?:意味|用法|使い方|書き方|表記|定義|読み方|単語|文字列|言葉|ふれーず|元ねた|由来)(?![a-z])|"
+    r"(?:と|って)\s*(?:書い(?:て|た)|言っ(?:て|た)|入力|投稿|表記|発言|引用)|"
+    r"(?:って|とは)\s*(?:何|なに|どういう意味)|(?:を|について)\s*説明|[ぁ-ん]{1,3}と表記され|"
+    r"(?:は|が|も|と)\s*(?:検知|判定|かうんと|分類)(?:され|する|の対象)"
+    r")"
+)
+
+
+def normalize_laughter(text):
+    # Match the Bot's width/case/kana normalization without changing offsets.
+    def char(c):
+        code = ord(c)
+        if 0xFF01 <= code <= 0xFF5E:
+            c = chr(code - 0xFEE0)
+        elif 0x30A1 <= code <= 0x30F6:
+            c = chr(code - 0x60)
+        return c.lower()[0]
+    return "".join(map(char, text))
+
+
+def word_character(c):
+    return bool(c) and (c == "_" or c.isdecimal() or "LATIN" in unicodedata.name(c, ""))
+
+
+def laughter_input(text, target_words):
+    # Remove literal passages before looking for a use. Keep spacing so that
+    # removing a passage cannot join a target word to an unrelated w.
+    body = LITERAL.sub(lambda match: re.sub(r"[^\n]", " ", match[0]), text)
+    normalized = normalize_laughter(body)
+    explaining = []
+    remaining = []
+    for word in dict.fromkeys(normalize_laughter(target_words).split("、")):
+        if not word:
+            continue
+        for match in re.finditer(re.escape(word) + r"w+", normalized):
+            start, end = match.span()
+            if (start and word_character(word[0]) and word_character(normalized[start - 1])
+                    or word_character(normalized[end:end + 1])):
+                continue
+            if EXPLANATION.match(normalized[end:]):
+                explaining.append((start, end))
+            else:
+                remaining.append((start, end, word))
+    # Configured words can overlap. A short match inside an explanatory
+    # occurrence must not reintroduce that occurrence as a candidate.
+    excluded = bytearray(len(body))
+    for start, end in explaining:
+        excluded[start:end] = b"\x01" * (end - start)
+    kept = [word for start, end, word in remaining if 1 not in excluded[start:end]]
+    if not kept:
+        return "", ""
+    if explaining:
+        masked = list(body)
+        for start, end in explaining:
+            masked[start:end] = " " * (end - start)
+        body = "".join(masked)
+    return body.strip(), "、".join(dict.fromkeys(kept))
 
 
 def prepare(text, context=""):
@@ -64,13 +131,18 @@ class Classifier:
         print(f"読み込み完了: {self.load_seconds}秒。通知・カウントへの接続はありません。",
               file=sys.stderr, flush=True)
 
-    def classify(self, text, context=""):
+    def classify(self, text, context="", target_words=""):
         state = prepare(text, context)
+        cleaned = state["投稿"]
+        if self.prompt_name == "laughter" and cleaned:
+            state["投稿"], target_words = laughter_input(cleaned, target_words)
+        if target_words:
+            state["対象ワード"] = target_words
         base = {"text": text, "context": context, "cleaned_text": state["投稿"],
                 "model": MODEL_ID, "revision": REVISION, "experimental": True,
                 "prompt": self.prompt_name, "prompt_sha256": self.prompt_sha256}
         if not state["投稿"]:
-            return {**base, "label": "other", "source": "url_filter",
+            return {**base, "label": "other", "source": "laughter_filter" if cleaned else "url_filter",
                     "seconds": 0, "probabilities": None}
         self.load()
         started = time.perf_counter()
@@ -106,9 +178,10 @@ def main():
     parser.add_argument("--compare", nargs="+", choices=list(PROMPTS),
                         help="--evaluateで比較する指示文の名前")
     parser.add_argument("--context", default="", help="任意の返信元。--textと併用")
+    parser.add_argument("--target-words", default="", help="候補になった対象ワード。--textと併用")
     args = parser.parse_args()
-    if args.context and args.text is None:
-        parser.error("--context は --text と併用してください")
+    if (args.context or args.target_words) and args.text is None:
+        parser.error("--context と --target-words は --text と併用してください")
     if args.compare and not args.evaluate:
         parser.error("--compare は --evaluate と併用してください")
     classifier = Classifier(args.prompt)
@@ -116,7 +189,7 @@ def main():
         from evaluate import evaluate
         evaluate(classifier, args.evaluate, args.compare or [args.prompt])
     elif args.text is not None:
-        emit(classifier.classify(args.text, args.context))
+        emit(classifier.classify(args.text, args.context, args.target_words))
     elif args.batch or args.examples:
         path = args.batch or ROOT / "examples.jsonl"
         with path.open(encoding="utf-8") as f:
@@ -124,7 +197,7 @@ def main():
                 if not line.strip():
                     continue
                 row = json.loads(line)
-                result = classifier.classify(row["text"], row.get("context", ""))
+                result = classifier.classify(row["text"], row.get("context", ""), row.get("target_words", ""))
                 emit({**result, "case": row.get("id", number),
                       "reference_label": row.get("reference_label")})
         metrics = {"peak_rss_mib": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1),

@@ -26,6 +26,7 @@ import (
 const defaultShadowConfigPath = "/etc/discord-bot/shadow.json"
 const defaultShadowDataPath = "/var/lib/discord-bot/shadow"
 const shadowDeadline = 10 * time.Second
+const laughterPrompt = "laughter"
 
 type shadowConfig struct {
 	Mode                     string   `json:"mode"`
@@ -33,6 +34,7 @@ type shadowConfig struct {
 	ChannelIDs               []string `json:"channel_ids,omitempty"`
 	Endpoint                 string   `json:"endpoint"`
 	SampleNonCandidatesEvery int      `json:"sample_non_candidates_every"`
+	CountLaughter            bool     `json:"count_laughter"`
 }
 
 func loadShadowConfig(path string) (shadowConfig, error) {
@@ -65,7 +67,7 @@ func loadShadowConfig(path string) (shadowConfig, error) {
 		}
 	}
 	u, err := url.Parse(c.Endpoint)
-	if err != nil || u.Scheme != "http" || u.Hostname() != "127.0.0.1" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.Path != "/classify" {
+	if err != nil || u.Scheme != "http" || u.Hostname() != "127.0.0.1" || u.User != nil || u.ForceQuery || u.RawQuery != "" || u.Fragment != "" || u.EscapedPath() != "/classify" {
 		return c, errors.New("shadow endpoint must be local HTTP /classify")
 	}
 	return c, nil
@@ -88,30 +90,46 @@ func shadowNormalize(text string) string {
 func validShadowLabel(s string) bool { return s == "mockery" || s == "other" || s == "uncertain" }
 
 type shadowCollector struct {
-	config     shadowConfig
-	channels   map[string]bool
-	words      []string
-	exactWords map[string]bool
-	store      *shadowStore
-	jobs       chan shadowRecord
-	client     *http.Client
-	mu         sync.Mutex
-	pending    map[string]shadowRecord
-	cancelled  map[string]bool
-	deleted    map[string]time.Time
-	dropped    atomic.Uint64
+	config          shadowConfig
+	channels        map[string]bool
+	words           []string
+	exactWords      map[string]bool
+	store           *shadowStore
+	jobs            chan shadowRecord
+	laughter        chan laughterJob
+	detector        *detector
+	client          *http.Client
+	mu              sync.Mutex
+	pending         map[string]shadowRecord
+	cancelled       map[string]bool
+	deleted         map[string]time.Time
+	dropped         atomic.Uint64
+	laughterDropped atomic.Uint64
 }
 
 func newShadow(configPath, dataPath string, d *detector) (*shadowCollector, error) {
-	store, err := openShadowStore(dataPath, time.Now())
-	if err != nil {
-		return nil, err
-	}
 	c, configErr := loadShadowConfig(configPath)
 	if configErr != nil {
 		c.Mode = "off"
+		c.CountLaughter = false
 	}
-	s := &shadowCollector{config: c, channels: make(map[string]bool), store: store, jobs: make(chan shadowRecord, 10), pending: make(map[string]shadowRecord), cancelled: make(map[string]bool), client: &http.Client{Timeout: shadowDeadline, Transport: &http.Transport{Proxy: nil, MaxConnsPerHost: 1}, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirect refused") }}}
+	store, storeErr := openShadowStore(dataPath, time.Now())
+	if storeErr != nil && !c.CountLaughter {
+		return nil, errors.Join(configErr, storeErr)
+	}
+	s := &shadowCollector{
+		config: c, channels: make(map[string]bool), store: store, detector: d,
+		jobs: make(chan shadowRecord, 10), laughter: make(chan laughterJob, 20),
+		pending: make(map[string]shadowRecord), cancelled: make(map[string]bool),
+		client: &http.Client{
+			Timeout:       shadowDeadline,
+			Transport:     &http.Transport{MaxConnsPerHost: 1},
+			CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirect refused") },
+		},
+	}
+	if storeErr != nil {
+		s.config.Mode = "off"
+	}
 	s.exactWords = d.words // Configuration is immutable for the lifetime of the bot.
 	if c.UseDetectionChannels {
 		for id := range d.channels {
@@ -129,35 +147,53 @@ func newShadow(configPath, dataPath string, d *detector) (*shadowCollector, erro
 		s.config.Mode = "off"
 		configErr = errors.New("shadow requires detection words")
 	}
-	return s, configErr
+	return s, errors.Join(configErr, storeErr)
 }
 
 // No network, disk writes, count mutations, or Discord sends on this path.
-func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) {
-	if s == nil || s.config.Mode != "shadow" || event == nil || event.Message == nil {
-		return
+// Returns true when the message belongs exclusively to the live AI path.
+func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) bool {
+	if s == nil || (!s.config.CountLaughter && s.config.Mode != "shadow") || event == nil || event.Message == nil {
+		return false
 	}
 	m := event.Message
-	if !isSnowflake(m.ID) || !isSnowflake(m.GuildID) || !s.channels[m.ChannelID] || m.Author == nil || m.Author.Bot || m.WebhookID != "" || m.Content == "" {
-		return
+	if !isSnowflake(m.ID) || !isSnowflake(m.GuildID) || m.Author == nil || m.Author.Bot || m.WebhookID != "" || m.Content == "" {
+		return false
 	}
-	if utf8.RuneCountInString(m.Content) > 2000 {
-		s.dropped.Add(1)
-		return
+	canCount := s.config.CountLaughter && s.detector.eligibleMessage(event)
+	canSample := s.config.Mode == "shadow" && s.channels[m.ChannelID]
+	if !canCount && !canSample {
+		return false
 	}
 	r := shadowRecord{MessageID: m.ID, GuildID: m.GuildID, ChannelID: m.ChannelID, CapturedAt: time.Now(), Text: m.Content, CleanedText: shadowClean(m.Content), Selection: "non_candidate_sample", SampleEvery: 1, LegacyMatch: s.exactWords[m.Content], BotVersion: version}
 	normalized := shadowNormalize(r.CleanedText)
-	for _, word := range s.words {
-		if strings.Contains(normalized, word) {
-			r.Selection = "keyword_candidate"
-			break
+	var matchedWords string
+	if canCount {
+		matchedWords = laughterWords(normalized, s.words)
+	}
+	live := matchedWords != ""
+	if !live && !canSample {
+		return false
+	}
+	if utf8.RuneCountInString(m.Content) > 2000 {
+		s.recordDrop(live)
+		return live
+	}
+	if live {
+		r.Selection = "laughter_candidate"
+	} else {
+		for _, word := range s.words {
+			if strings.Contains(normalized, word) {
+				r.Selection = "keyword_candidate"
+				break
+			}
 		}
 	}
 	if r.Selection == "non_candidate_sample" {
 		r.SampleEvery = s.config.SampleNonCandidatesEvery
 		h := sha256.Sum256([]byte(m.ID))
 		if binary.BigEndian.Uint64(h[:8])%uint64(s.config.SampleNonCandidatesEvery) != 0 {
-			return
+			return false
 		}
 		if r.CleanedText == "" {
 			r.Selection = "url_only_sample"
@@ -169,10 +205,12 @@ func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) {
 		r.Context = m.ReferencedMessage.Content
 		r.ContextMessageID = ref.MessageID
 	}
-	// Persistence/deletion may be slow. Never accumulate blocked Gateway handlers.
-	if !s.mu.TryLock() {
+	// Only best-effort evaluation samples are dropped on lock contention.
+	if live {
+		s.mu.Lock()
+	} else if !s.mu.TryLock() {
 		s.dropped.Add(1)
-		return
+		return false
 	}
 	defer s.mu.Unlock()
 	for id, until := range s.deleted {
@@ -181,37 +219,54 @@ func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) {
 		}
 	}
 	if _, ok := s.deleted[r.MessageID]; ok {
-		return
+		return live
 	}
 	if _, ok := s.deleted[r.ContextMessageID]; ok {
-		return
+		return live
 	}
 	if _, ok := s.pending[r.MessageID]; ok {
-		return
+		return live
 	}
-	select {
-	case s.jobs <- r:
-		s.pending[r.MessageID] = r
-	default:
-		s.dropped.Add(1)
+	if live {
+		select {
+		case s.laughter <- laughterJob{record: r, authorID: m.Author.ID, words: matchedWords}:
+			s.pending[r.MessageID] = r
+		default:
+			s.recordDrop(true)
+		}
+	} else {
+		select {
+		case s.jobs <- r:
+			s.pending[r.MessageID] = r
+		default:
+			s.dropped.Add(1)
+		}
 	}
+	return live
 }
 
 func (s *shadowCollector) predict(ctx context.Context, r shadowRecord) (shadowPrediction, error) {
 	if r.CleanedText == "" {
 		return shadowPrediction{Label: "other", Model: "url_filter"}, nil
 	}
-	data, _ := json.Marshal(map[string]string{"text": r.Text, "context": r.Context})
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, s.config.Endpoint, bytes.NewReader(data))
+	return s.requestPrediction(ctx, s.config.Endpoint, map[string]string{"text": r.Text, "context": r.Context})
+}
+
+func (s *shadowCollector) requestPrediction(ctx context.Context, endpoint string, input map[string]string) (shadowPrediction, error) {
+	data, _ := json.Marshal(input)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(data))
 	if err != nil {
 		return shadowPrediction{}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return shadowPrediction{}, errors.New("classifier unavailable or timed out")
+		return shadowPrediction{}, errClassifierUnavailable
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusServiceUnavailable {
+		return shadowPrediction{}, errClassifierUnavailable
+	}
 	if resp.StatusCode != http.StatusOK {
 		return shadowPrediction{}, errors.New("classifier returned non-success")
 	}
@@ -246,8 +301,17 @@ func (s *shadowCollector) predict(ctx context.Context, r shadowRecord) (shadowPr
 	return p, nil
 }
 
+var errClassifierUnavailable = errors.New("classifier unavailable or timed out")
+
+func (s *shadowCollector) finish(id string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.pending, id)
+	delete(s.cancelled, id)
+}
+
 func (s *shadowCollector) process(ctx context.Context, r shadowRecord) {
-	defer func() { s.mu.Lock(); delete(s.pending, r.MessageID); delete(s.cancelled, r.MessageID); s.mu.Unlock() }()
+	defer s.finish(r.MessageID)
 	s.mu.Lock()
 	cancelled := s.cancelled[r.MessageID]
 	s.mu.Unlock()
@@ -276,23 +340,46 @@ func (s *shadowCollector) process(ctx context.Context, r shadowRecord) {
 	}
 }
 
-func (s *shadowCollector) run(ctx context.Context) {
+func (s *shadowCollector) run(ctx context.Context, sender messageClient) {
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
 	for {
+		// Prioritize live decisions when both queues have work.
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			s.maintain()
+			continue
+		case job := <-s.laughter:
+			s.processLaughter(ctx, sender, job)
+			continue
+		default:
+		}
 		select {
 		case <-ctx.Done():
 			return
 		case r := <-s.jobs:
 			s.process(ctx, r)
+		case job := <-s.laughter:
+			s.processLaughter(ctx, sender, job)
 		case <-ticker.C:
-			if err := s.store.prune(time.Now()); err != nil {
-				slog.Error("shadow retention cleanup failed", "error", safeError(err))
-			}
-			if n := s.dropped.Swap(0); n > 0 {
-				slog.Warn("shadow samples skipped", "count", n)
-			}
+			s.maintain()
 		}
+	}
+}
+
+func (s *shadowCollector) maintain() {
+	if s.store != nil {
+		if err := s.store.prune(time.Now()); err != nil {
+			slog.Error("shadow retention cleanup failed", "error", safeError(err))
+		}
+	}
+	if n := s.dropped.Swap(0); n > 0 {
+		slog.Warn("shadow samples skipped", "count", n)
+	}
+	if n := s.laughterDropped.Swap(0); n > 0 {
+		slog.Warn("laughter candidates skipped", "count", n)
 	}
 }
 
@@ -319,5 +406,8 @@ func (s *shadowCollector) remove(id, guild string) error {
 			s.cancelled[key] = true
 		}
 	}
-	return s.store.remove(id, guild)
+	if s.store != nil {
+		return s.store.remove(id, guild)
+	}
+	return nil
 }

@@ -1,5 +1,6 @@
 {
   "mode": "off",
+  "count_laughter": false,
   "use_detection_channels": true,
   "endpoint": "http://127.0.0.1:8766/classify",
   "sample_non_candidates_every": 10

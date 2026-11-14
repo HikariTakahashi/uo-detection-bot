@@ -56,12 +56,22 @@ cd /home/user/laya-sandbox
 `--text` のコマンド引数はシェル履歴に残る場合があります。
 継続して試す場合は引数なしの対話モードを使ってください。
 
+「対象ワード＋w」の専用指示は、以下の合成例で試せます。`target_words` はBotが候補として抽出したワードです。`label` と `reference_label` を比較してください。実投稿の見逃し例・引用例でも確認してから加算を有効にします。
+
+```sh
+./run.sh --prompt laughter --batch laughter-examples.jsonl
+./run.sh --prompt laughter --target-words 'うお' --text 'うおｗｗ'
+```
+
+[Piの実モデルでの検証結果](LAUGHTER_VALIDATION.md)では、引用・説明の前処理を追加した版が合成例11件すべてで期待どおりに動作しました。
+
 ## 結果の読み方
 
 - `label: mockery` — 冷笑という仮判定。
 - `label: other` — 対象外という仮判定。
 - `label: uncertain` — 文脈不足などで判断困難。入力の切り捨てを検出した場合も保留。
 - `source: url_filter` — URLを除いた本文が空だったため、AIを呼ばずに対象外。
+- `source: laughter_filter` — 引用・コード・説明の用法を除いた後に「対象ワード＋w」が残らず、AIを呼ばずに対象外。
 - `source: laya` — モデルが分類した結果。
 - `answer` — 選択肢 A=冷笑、B=対象外、C=判断困難と、モデルの生の出力。
 - `seconds` — その投稿の推論時間。モデル読み込み時間は `load_seconds` に別記。

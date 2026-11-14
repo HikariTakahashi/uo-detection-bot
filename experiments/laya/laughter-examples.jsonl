@@ -1,0 +1,11 @@
+{"id":"bare","text":"うおw","target_words":"うお","reference_label":"mockery"}
+{"id":"bare-fullwidth","text":"うおｗｗ","target_words":"うお","reference_label":"mockery"}
+{"id":"wide-repeat","text":"ウオＷｗw！","target_words":"うお","reference_label":"mockery"}
+{"id":"in-sentence","text":"どわーｗｗ それは無理でしょ","target_words":"どわー","reference_label":"mockery"}
+{"id":"latin","text":"またやってる、ＵＯｗｗ","target_words":"uo","reference_label":"mockery"}
+{"id":"mixed-use","text":"『うおw』は例として書いただけ。どわーw また同じミスか","target_words":"うお、どわー","reference_label":"mockery"}
+{"id":"quote","text":"『うおw』は検知されますか？","target_words":"うお","reference_label":"other"}
+{"id":"reported-quote","text":"彼は「うおw」と書いた。","target_words":"うお","reference_label":"other"}
+{"id":"explanation","text":"うおｗｗの意味を説明します。","target_words":"うお","reference_label":"other"}
+{"id":"quoted-reply","text":"> うおｗｗ\nこの書き方は何ですか？","target_words":"うお","reference_label":"other"}
+{"id":"word-part","text":"『ちゅううおう』の内側の文字で、ちゅううおwうと表記されていた","target_words":"うお","reference_label":"other"}

@@ -57,31 +57,28 @@ func run(ctx context.Context) error {
 	}
 	shadow, shadowErr := newShadow(envPath("SHADOW_CONFIG_PATH", defaultShadowConfigPath), envPath("SHADOW_DATA_PATH", defaultShadowDataPath), detection)
 	if shadowErr != nil {
-		slog.Error("shadow collection disabled or unavailable", "error", safeError(shadowErr))
+		slog.Error("AI configuration or review storage unavailable", "error", safeError(shadowErr))
 	}
 	workerCtx, stopWorker := context.WithCancel(ctx)
 	defer stopWorker()
-	if shadow != nil {
-		go shadow.run(workerCtx)
-	}
 	reviews := newReview(shadow)
 	s, err := discordgo.New("Bot " + token)
 	if err != nil {
 		return errors.New("cannot create Discord session")
 	}
+	s.Client.Timeout = 20 * time.Second
+	if shadow != nil {
+		go shadow.run(workerCtx, s)
+	}
 	// Keep /ping usable without privileged intents when detection is disabled.
 	s.Identify.Intents = 0
-	if detection.enabled() {
+	if detection.enabled() || (shadow != nil && shadow.config.Mode == "shadow") {
 		s.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsMessageContent
 		s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-			if err := detection.handleMessage(s, m); err != nil {
+			if err := detection.handleIncoming(s, shadow, m); err != nil {
 				slog.Error("message detection failed", "error", err)
 			}
 		})
-	}
-	if shadow != nil && shadow.config.Mode == "shadow" {
-		s.Identify.Intents |= discordgo.IntentsGuildMessages | discordgo.IntentsMessageContent
-		s.AddHandler(func(_ *discordgo.Session, m *discordgo.MessageCreate) { shadow.enqueue(m) })
 	}
 	if shadow != nil {
 		s.AddHandler(func(_ *discordgo.Session, m *discordgo.MessageDelete) {
@@ -101,7 +98,6 @@ func run(ctx context.Context) error {
 			}
 		})
 	}
-	s.Client.Timeout = 20 * time.Second
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		if handled, err := reviews.handle(s, i); handled {
 			if err != nil {

@@ -9,6 +9,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
@@ -64,35 +65,73 @@ func loadDetectionConfig(path string) (detectionConfig, error) {
 	return config, nil
 }
 
-func loadCounts(path string) (map[string]uint64, error) {
-	counts := make(map[string]uint64)
+type detectionState struct {
+	Counts    map[string]uint64
+	AICounted map[string]bool // Discord message IDs, never message contents.
+}
+
+func loadDetectionState(path string) (detectionState, error) {
+	state := detectionState{Counts: make(map[string]uint64), AICounted: make(map[string]bool)}
 	data, err := os.ReadFile(path)
 	if errors.Is(err, os.ErrNotExist) {
-		return counts, nil
+		return state, nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("read detection counts: %w", err)
+		return state, fmt.Errorf("read detection counts: %w", err)
 	}
 	var stored map[string]*uint64
-	if err := decodeJSON(data, &stored); err != nil {
-		return nil, fmt.Errorf("decode detection counts: %w", err)
+	var fields map[string]json.RawMessage
+	if err := decodeJSON(data, &fields); err != nil {
+		return state, fmt.Errorf("decode detection counts: %w", err)
+	}
+	if _, versioned := fields["version"]; versioned {
+		var file struct {
+			Version   int                `json:"version"`
+			Counts    map[string]*uint64 `json:"counts"`
+			AICounted []string           `json:"ai_counted_message_ids"`
+		}
+		if err := decodeJSON(data, &file); err != nil || file.Version != 1 || file.AICounted == nil {
+			return state, errors.New("invalid detection state format")
+		}
+		for _, id := range file.AICounted {
+			if !isSnowflake(id) {
+				return state, errors.New("invalid AI-counted message ID")
+			}
+			state.AICounted[id] = true
+		}
+		stored = file.Counts
+	} else if err := decodeJSON(data, &stored); err != nil {
+		return state, fmt.Errorf("decode detection counts: %w", err)
 	}
 	if stored == nil {
-		return nil, errors.New("detection counts must be a JSON object")
+		return state, errors.New("detection counts must be a JSON object")
 	}
 	for id, count := range stored {
 		if !isSnowflake(id) || count == nil {
-			return nil, errors.New("detection counts require user IDs and unsigned integer values")
+			return state, errors.New("detection counts require user IDs and unsigned integer values")
 		}
-		counts[id] = *count
+		state.Counts[id] = *count
 	}
-	return counts, nil
+	return state, nil
 }
 
 // Write in the destination directory so rename atomically replaces the old file.
 // Until rename succeeds, every error leaves the previous counts intact.
-func saveCounts(path string, counts map[string]uint64) error {
-	data, err := json.Marshal(counts)
+func saveDetectionState(path string, counts map[string]uint64, aiCounted map[string]bool) error {
+	var value any = counts
+	if len(aiCounted) > 0 {
+		ids := make([]string, 0, len(aiCounted))
+		for id := range aiCounted {
+			ids = append(ids, id)
+		}
+		slices.Sort(ids)
+		value = struct {
+			Version   int               `json:"version"`
+			Counts    map[string]uint64 `json:"counts"`
+			AICounted []string          `json:"ai_counted_message_ids"`
+		}{1, counts, ids}
+	}
+	data, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
@@ -127,6 +166,7 @@ type detector struct {
 	words     map[string]bool
 	channels  map[string]bool
 	counts    map[string]uint64
+	aiCounted map[string]bool
 	statePath string
 }
 
@@ -135,11 +175,11 @@ func newDetector(configPath, statePath string) (*detector, error) {
 	if err != nil {
 		return nil, err
 	}
-	counts, err := loadCounts(statePath)
+	state, err := loadDetectionState(statePath)
 	if err != nil {
 		return nil, err
 	}
-	d := &detector{words: make(map[string]bool), channels: make(map[string]bool), counts: counts, statePath: statePath}
+	d := &detector{words: make(map[string]bool), channels: make(map[string]bool), counts: state.Counts, aiCounted: state.AICounted, statePath: statePath}
 	for _, word := range config.Words {
 		d.words[word] = true
 	}
@@ -153,27 +193,53 @@ func (d *detector) enabled() bool {
 	return len(d.words) > 0 && len(d.channels) > 0
 }
 
-func (d *detector) handleMessage(s messageClient, event *discordgo.MessageCreate) error {
+func (d *detector) eligibleMessage(event *discordgo.MessageCreate) bool {
 	if event == nil || event.Message == nil {
-		return nil
+		return false
 	}
 	m := event.Message
-	if m.GuildID == "" || m.Author == nil || m.Author.Bot || m.WebhookID != "" || !isSnowflake(m.Author.ID) {
+	return d.channels[m.ChannelID] && m.GuildID != "" && m.Author != nil && !m.Author.Bot && m.WebhookID == "" && isSnowflake(m.Author.ID)
+}
+
+func (d *detector) handleMessage(s messageClient, event *discordgo.MessageCreate) error {
+	if !d.eligibleMessage(event) || !d.words[event.Content] {
 		return nil
 	}
-	if !d.channels[m.ChannelID] || !d.words[m.Content] {
+	return d.countAndReply(s, event.Author.ID, event.Reference(), false)
+}
+
+func (d *detector) handleIncoming(s messageClient, ai *shadowCollector, event *discordgo.MessageCreate) error {
+	if ai.enqueue(event) {
 		return nil
 	}
+	return d.handleMessage(s, event)
+}
+
+func (d *detector) alreadyAICounted(id string) bool {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	id := m.Author.ID
+	return d.aiCounted[id]
+}
+
+func (d *detector) countAndReply(s messageClient, id string, ref *discordgo.MessageReference, fromAI bool) error {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.aiCounted[ref.MessageID] {
+		return nil
+	}
 	previous, existed := d.counts[id]
 	if previous == math.MaxUint64 {
 		return errors.New("detection count overflow")
 	}
 	count := previous + 1
 	d.counts[id] = count
-	if err := saveCounts(d.statePath, d.counts); err != nil {
+	if fromAI {
+		d.aiCounted[ref.MessageID] = true
+	}
+	if err := saveDetectionState(d.statePath, d.counts, d.aiCounted); err != nil {
+		if fromAI {
+			delete(d.aiCounted, ref.MessageID)
+		}
 		if existed {
 			d.counts[id] = previous
 		} else {
@@ -181,10 +247,10 @@ func (d *detector) handleMessage(s messageClient, event *discordgo.MessageCreate
 		}
 		return fmt.Errorf("save detection counts: %w", err)
 	}
-	_, err := s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
+	_, err := s.ChannelMessageSendComplex(ref.ChannelID, &discordgo.MessageSend{
 		Content:         fmt.Sprintf("冷笑を検知しました！\n<@%s>さんの%d回目の冷笑です！", id, count),
 		AllowedMentions: &discordgo.MessageAllowedMentions{Users: []string{id}},
-		Reference:       m.Reference(),
+		Reference:       ref,
 	})
 	if err != nil {
 		// The detection is still counted even when Discord rejects the notification.
