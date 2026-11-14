@@ -2,6 +2,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import tempfile
@@ -95,6 +96,16 @@ class UpdateTests(unittest.TestCase):
     def test_incomplete_release_does_not_deploy(self):
         release=dict(self.release);release['draft']=True
         with self.assertRaises(ValueError):u.prepare(NEW,release)
+
+    def test_private_updater_umask_still_allows_bot_to_execute(self):
+        checksum=hashlib.sha256(self.binary).hexdigest()
+        previous=os.umask(0o077)
+        try:
+            with patch.object(u,'request',side_effect=[(checksum+'  '+u.ASSET+'\n').encode(),self.binary]):u.prepare(NEW,self.release)
+        finally:os.umask(previous)
+        directory=u.ROOT/'releases'/NEW
+        self.assertEqual(directory.stat().st_mode & 0o777,0o755)
+        self.assertEqual((directory/'discord-bot').stat().st_mode & 0o777,0o755)
 
     def test_ci_pending_leaves_current(self):
         u.switch(OLD)

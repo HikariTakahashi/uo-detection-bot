@@ -136,6 +136,8 @@ def prepare(sha, release):
     directory.mkdir(parents=True, exist_ok=True)
     if directory.is_symlink():
         raise ValueError("release directory cannot be a symlink")
+    # The updater uses UMask=0077; the unprivileged bot must traverse this directory.
+    directory.chmod(0o755)
     temporary = directory / "discord-bot.new"
     with temporary.open("wb") as f:
         f.write(binary)
