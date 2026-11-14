@@ -44,6 +44,10 @@ func run(ctx context.Context) error {
 	if guild != "" && !isSnowflake(guild) {
 		return errors.New("DISCORD_GUILD_ID must be a numeric server ID")
 	}
+	notifications, err := loadNotificationConfig()
+	if err != nil {
+		return err
+	}
 	detection, err := newDetector(
 		envPath("DETECTION_CONFIG_PATH", defaultDetectionConfigPath),
 		envPath("DETECTION_STATE_PATH", defaultDetectionStatePath),
@@ -98,7 +102,11 @@ func run(ctx context.Context) error {
 	if guild != "" {
 		scope = "guild"
 	}
-	slog.Info("bot ready", "version", version, "command_scope", scope, "detection_enabled", detection.enabled())
+	slog.Info("bot ready", "version", version, "command_scope", scope,
+		"detection_enabled", detection.enabled(), "scheduled_notifications_enabled", notifications.enabled())
+	if notifications.enabled() {
+		go runScheduledNotifications(ctx, s, notifications)
+	}
 	ticker := time.NewTicker(15 * time.Second)
 	defer ticker.Stop()
 	for {

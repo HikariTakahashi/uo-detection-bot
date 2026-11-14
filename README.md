@@ -3,6 +3,7 @@
 Raspberry Pi (Linux ARM64) で動かす、小さな Go 製 Discord Bot です。
 `/ping` で `🏓 Pong! 42 ms` のように Discord Gateway の遅延を返します。
 指定チャンネルで冷笑ワードと完全一致する新規投稿を検知し、投稿者へのメンションと累計回数を通知します。
+設定すると、毎朝のYouTube通知と毎週金曜のメンションも送信します。
 音声・画像の検知機能はありません。
 
 元のソースが残っていなかったため、既存実行ファイルのビルド情報、関数名、コマンド説明、応答書式を調べて新しく実装しました。元ソースの完全な復元ではありません。
@@ -26,7 +27,7 @@ CGO_ENABLED=1 go build -tags netcgo -o /tmp/discord-bot ./cmd/discord-bot
 ## 冷笑ワードの検知
 
 設定ファイルは既定で `/etc/discord-bot/config.json` です。`detection.config.example.json` を参考に設定します。
-初期ワードは「うお」「どわー」、初期チャンネル一覧は空です。ファイルがない場合や `channel_ids` が空の場合は検知を無効にして `/ping` のみで動作します。
+初期ワードは「うお」「どわー」、初期チャンネル一覧は空です。ファイルがない場合や `channel_ids` が空の場合は検知を無効にします。
 ファイルがある場合は `words`（空でない文字列の配列、1語以上）と `channel_ids`（チャンネルIDの文字列配列）が必須です。不正なJSON・設定値は起動エラーになります。
 
 ```json
@@ -66,6 +67,26 @@ systemdでの保存先は既定ディレクトリ内を使用してください�
 sudoedit /etc/discord-bot/config.json
 sudo systemctl restart discord-bot.service
 ```
+
+## 定期通知
+
+[pi-discord-server](https://github.com/HikariTakahashi/pi-discord-server) から移植した通知です。時刻は Raspberry Pi のタイムゾーンに関係なく日本時間 (JST) です。
+
+- **毎朝 06:00:** 指定ユーザーをメンションし、YouTubeの最新動画の投稿から経過した日数（24時間単位）と動画URLを1通で送信します。RSSを取得できなかった場合は取得失敗を通知します。YouTubeのAPIキーは不要です。
+- **毎週金曜 00:00:** 指定ユーザーへのメンションを約1秒間隔で50通送り、最後に「今日なにするの」と投稿します。
+
+`/etc/discord-bot.env` に次の値を設定します。DiscordのIDは例なので、移植元の設定などから実際の値を入れてください。
+
+```sh
+DISCORD_CHANNEL_ID=123456789012345678
+DISCORD_USER_ID=234567890123456789
+# 省略すると移植元と同じチャンネルを使用
+YOUTUBE_CHANNEL_ID=UCiTxQj4a82_B6Y0DvVAE8Ww
+```
+
+Discordの2つのIDを両方指定すると、両方の通知が有効になります。両方が未設定なら定期通知は無効になり、片方だけの指定や不正なIDは起動エラーになります。Botが通知先チャンネルを閲覧でき、メッセージを送信できることを確認してください。定期通知用の追加の Gateway Intent は不要です。
+
+Go版の配布後に `sudo systemctl restart discord-bot.service` で設定を反映し、旧Python版をcronなどで動かしている場合は同じ通知の二重送信を避けるため停止してください。Go版の起動前や停止中に過ぎた分は後から送信しません。
 
 ## Raspberry Piへの初回設置
 
