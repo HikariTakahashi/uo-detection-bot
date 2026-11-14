@@ -265,8 +265,12 @@ func (d *detector) countAndReply(s messageClient, id string, ref *discordgo.Mess
 		}
 		return fmt.Errorf("save detection counts: %w", err)
 	}
+	notice := "冷笑を検知しました！"
+	if increment > 1 {
+		notice = fmt.Sprintf("冷笑を%d回検知しました！", increment)
+	}
 	_, err := s.ChannelMessageSendComplex(ref.ChannelID, &discordgo.MessageSend{
-		Content:         fmt.Sprintf("冷笑を検知しました！\n<@%s>さんの%d回目の冷笑です！", id, count),
+		Content:         fmt.Sprintf("%s\n<@%s>さんの%d回目の冷笑です！", notice, id, count),
 		AllowedMentions: &discordgo.MessageAllowedMentions{Users: []string{id}},
 		Reference:       ref,
 	})
