@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -14,14 +15,19 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-const reviewDescription = "shadow収集した投稿に正解ラベルを付けます（管理者専用）"
+const (
+	reviewDescription = "shadow収集した投稿に正解ラベルを付けます（指定ロール専用）"
+	reviewRoleID      = "1023596331392053388"
+)
 
 func ensureReviewCommand(s commandClient, app, guild string) error {
 	commands, err := s.ApplicationCommands(app, guild)
 	if err != nil {
 		return fmt.Errorf("list review commands: %s", safeError(err))
 	}
-	permissions := int64(discordgo.PermissionAdministrator)
+	// Set an explicit mask so edits replace the previous administrator-only default.
+	// Role IDs cannot be set in this mask; handle checks the role on every interaction.
+	permissions := int64(discordgo.PermissionUseApplicationCommands)
 	dm := false
 	contexts := []discordgo.InteractionContextType{discordgo.InteractionContextGuild}
 	desired := &discordgo.ApplicationCommand{Name: "review", Description: reviewDescription, Type: discordgo.ChatApplicationCommand, DefaultMemberPermissions: &permissions, Options: []*discordgo.ApplicationCommandOption{}}
@@ -68,8 +74,8 @@ func newReview(s *shadowCollector) *reviewHandler {
 	return &reviewHandler{shadow: s, leases: make(map[string]reviewLease), skipped: make(map[string]map[string]time.Time), now: time.Now}
 }
 
-func reviewAdmin(i *discordgo.Interaction) bool {
-	return i != nil && isSnowflake(i.GuildID) && i.Member != nil && i.Member.User != nil && isSnowflake(i.Member.User.ID) && i.Member.Permissions&discordgo.PermissionAdministrator != 0
+func canReview(i *discordgo.Interaction) bool {
+	return i != nil && isSnowflake(i.GuildID) && i.Member != nil && i.Member.User != nil && isSnowflake(i.Member.User.ID) && slices.Contains(i.Member.Roles, reviewRoleID)
 }
 
 func noReviewMentions() *discordgo.MessageAllowedMentions {
@@ -175,7 +181,7 @@ func (h *reviewHandler) show(s reviewClient, i *discordgo.Interaction) error {
 		return reviewEdit(s, i, "レビュー画面を準備できませんでした。", nil, nil)
 	}
 	if !ok {
-		return reviewEdit(s, i, "未レビューの投稿はありません。処理待ち・判定エラー・他の管理者が確認中・スキップ中の投稿は表示されません。", nil, reviewNextButton())
+		return reviewEdit(s, i, "未レビューの投稿はありません。処理待ち・判定エラー・他のレビュー担当者が確認中・スキップ中の投稿は表示されません。", nil, reviewNextButton())
 	}
 	embeds := []*discordgo.MessageEmbed{{Title: "投稿本文", Description: reviewQuote(r.Text)}}
 	if r.Context != "" {
@@ -223,8 +229,8 @@ func (h *reviewHandler) handle(s reviewClient, event *discordgo.InteractionCreat
 		return false, nil
 	}
 	// Command defaults are not sufficient: re-check every component and modal.
-	if !reviewAdmin(i) {
-		return true, reviewImmediate(s, i, "この操作はサーバーの管理者だけが利用できます。")
+	if !canReview(i) {
+		return true, reviewImmediate(s, i, "この操作は指定のレビューロールを持つメンバーだけが利用できます。")
 	}
 	if h.shadow == nil {
 		return true, reviewImmediate(s, i, "shadow保存先を利用できません。管理者がBotのログを確認してください。")

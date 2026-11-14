@@ -23,7 +23,7 @@ func (f *fakeReview) InteractionResponseEdit(_ *discordgo.Interaction, r *discor
 	return nil, nil
 }
 func reviewEvent(kind discordgo.InteractionType, id string) *discordgo.InteractionCreate {
-	i := &discordgo.Interaction{GuildID: "555555555555555555", ChannelID: testChannel, Member: &discordgo.Member{User: &discordgo.User{ID: testUser}, Permissions: discordgo.PermissionAdministrator}, Type: kind}
+	i := &discordgo.Interaction{GuildID: "555555555555555555", ChannelID: testChannel, Member: &discordgo.Member{User: &discordgo.User{ID: testUser}, Roles: []string{"1023596331392053388"}}, Type: kind}
 	switch kind {
 	case discordgo.InteractionApplicationCommand:
 		i.Data = discordgo.ApplicationCommandInteractionData{Name: id}
@@ -68,7 +68,7 @@ func beginReview(t *testing.T, h *reviewHandler) string {
 }
 func TestReviewPermissionsAndBinding(t *testing.T) {
 	for _, kind := range []discordgo.InteractionType{discordgo.InteractionApplicationCommand, discordgo.InteractionMessageComponent, discordgo.InteractionModalSubmit} {
-		for _, bad := range []string{"nonadmin", "dm", "otheruser", "otherguild", "otherchannel", "expired"} {
+		for _, bad := range []string{"norole", "adminwithoutrole", "dm", "otheruser", "otherguild", "otherchannel", "expired"} {
 			t.Run(string(rune(kind))+bad, func(t *testing.T) {
 				s := testShadow(t)
 				r := sampleRecord()
@@ -86,8 +86,11 @@ func TestReviewPermissionsAndBinding(t *testing.T) {
 				}
 				i := reviewEvent(kind, id)
 				switch bad {
-				case "nonadmin":
-					i.Member.Permissions = 0
+				case "norole":
+					i.Member.Roles = nil
+				case "adminwithoutrole":
+					i.Member.Roles = []string{"1023596331392053389"}
+					i.Member.Permissions = discordgo.PermissionAdministrator
 				case "dm":
 					i.GuildID = ""
 				case "otheruser":
@@ -103,7 +106,7 @@ func TestReviewPermissionsAndBinding(t *testing.T) {
 				if s.store.records[r.MessageID].HumanLabel != "" {
 					t.Fatal("unauthorized mutation")
 				}
-				if kind != discordgo.InteractionApplicationCommand || bad == "nonadmin" || bad == "dm" {
+				if kind != discordgo.InteractionApplicationCommand || bad == "norole" || bad == "adminwithoutrole" || bad == "dm" {
 					if len(f.edits) != 0 || f.responses[0].Type == discordgo.InteractionResponseModal {
 						t.Fatal("invalid access accepted")
 					}
@@ -178,6 +181,10 @@ func (f *captureReviewCommand) ApplicationCommandCreate(_ string, _ string, c *d
 	f.desired = c
 	return c, nil
 }
+func (f *captureReviewCommand) ApplicationCommandEdit(app, guild, id string, c *discordgo.ApplicationCommand, opts ...discordgo.RequestOption) (*discordgo.ApplicationCommand, error) {
+	f.desired = c
+	return f.fakeCommands.ApplicationCommandEdit(app, guild, id, c, opts...)
+}
 func TestReviewRegistration(t *testing.T) {
 	f := &captureReviewCommand{}
 	f.commands = []*discordgo.ApplicationCommand{{Name: "ping", Type: discordgo.ChatApplicationCommand}}
@@ -185,7 +192,7 @@ func TestReviewRegistration(t *testing.T) {
 		t.Fatal(err)
 	}
 	c := f.desired
-	if c.Name != "review" || c.DefaultMemberPermissions == nil || *c.DefaultMemberPermissions != discordgo.PermissionAdministrator || c.Contexts == nil || len(*c.Contexts) != 1 || (*c.Contexts)[0] != discordgo.InteractionContextGuild {
+	if c.Name != "review" || c.DefaultMemberPermissions == nil || *c.DefaultMemberPermissions != discordgo.PermissionUseApplicationCommands || c.Contexts == nil || len(*c.Contexts) != 1 || (*c.Contexts)[0] != discordgo.InteractionContextGuild {
 		t.Fatal(c)
 	}
 	if f.edited != 0 {
@@ -202,5 +209,17 @@ func TestReviewRegistration(t *testing.T) {
 	}
 	if guild.desired.Contexts != nil || guild.desired.DMPermission != nil {
 		t.Fatal("global-only fields on guild command")
+	}
+	// An existing registration must receive a new mask, not an omitted permissions field.
+	old := *c
+	old.ID = "review-id"
+	admin := int64(discordgo.PermissionAdministrator)
+	old.DefaultMemberPermissions = &admin
+	f.commands[1] = &old
+	if err := ensureReviewCommand(f, "app", ""); err != nil {
+		t.Fatal(err)
+	}
+	if f.edited != 1 || f.editedID != old.ID || f.desired == nil || f.desired.DefaultMemberPermissions == nil || *f.desired.DefaultMemberPermissions != discordgo.PermissionUseApplicationCommands {
+		t.Fatal("existing administrator-only registration was not migrated")
 	}
 }
