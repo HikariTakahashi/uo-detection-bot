@@ -52,8 +52,9 @@ func TestRepetitionAddsEveryWordAndRepliesOnce(t *testing.T) {
 			if len(sends.messages) != 1 || d.counts[testUser] != want {
 				t.Fatal("wrong reply count or total", len(sends.messages), d.counts)
 			}
-			if !strings.Contains(sends.messages[0].Content, fmt.Sprintf("%d回目", want)) {
-				t.Fatalf("reply does not show updated total: %q", sends.messages[0].Content)
+			wantReply := fmt.Sprintf("冷笑を%d回検知しました！\n<@%s>さんの%d回目の冷笑です！", increment, testUser, want)
+			if got := sends.messages[0].Content; got != wantReply {
+				t.Fatalf("reply = %q, want %q", got, wantReply)
 			}
 			if counts, err := loadCounts(d.statePath); err != nil || counts[testUser] != want {
 				t.Fatalf("wrong persisted total: %v, %v", counts, err)
