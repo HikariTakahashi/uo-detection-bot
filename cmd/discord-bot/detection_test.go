@@ -58,7 +58,7 @@ func testDetector(t *testing.T) *detector {
 
 func testMessage(word string) *discordgo.MessageCreate {
 	return &discordgo.MessageCreate{Message: &discordgo.Message{
-		GuildID: "555555555555555555", ChannelID: testChannel,
+		ID: "999999999999999999", GuildID: "555555555555555555", ChannelID: testChannel,
 		Content: word, Author: &discordgo.User{ID: testUser},
 	}}
 }
@@ -124,6 +124,10 @@ func TestDetectionExactMatchAndScope(t *testing.T) {
 		{"empty", func(m *discordgo.MessageCreate) { m.Content = "" }, false},
 		{"unlisted channel or thread", func(m *discordgo.MessageCreate) { m.ChannelID = "666666666666666666" }, false},
 		{"listed thread", func(m *discordgo.MessageCreate) { m.ChannelID = testThread }, true},
+		{"reply", func(m *discordgo.MessageCreate) {
+			m.Type = discordgo.MessageTypeReply
+			m.MessageReference = &discordgo.MessageReference{MessageID: "101010101010101010", ChannelID: m.ChannelID}
+		}, true},
 		{"bot", func(m *discordgo.MessageCreate) { m.Author.Bot = true }, false},
 		{"webhook", func(m *discordgo.MessageCreate) { m.WebhookID = "777777777777777777" }, false},
 		{"DM", func(m *discordgo.MessageCreate) { m.GuildID = "" }, false},
@@ -143,6 +147,10 @@ func TestDetectionExactMatchAndScope(t *testing.T) {
 				want := "冷笑を検知しました！\n<@" + testUser + ">さんの1回目の冷笑です！"
 				if client.messages[0].Content != want || client.channels[0] != m.ChannelID {
 					t.Fatalf("wrong notification: %+v", client.messages[0])
+				}
+				ref := client.messages[0].Reference
+				if ref == nil || ref.MessageID != m.ID || ref.ChannelID != m.ChannelID || ref.GuildID != m.GuildID {
+					t.Fatalf("wrong reply reference: %+v", ref)
 				}
 				if !reflect.DeepEqual(client.messages[0].AllowedMentions, &discordgo.MessageAllowedMentions{Users: []string{testUser}}) {
 					t.Fatal("mentions are not restricted to the author")

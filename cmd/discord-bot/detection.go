@@ -184,6 +184,7 @@ func (d *detector) handleMessage(s messageClient, event *discordgo.MessageCreate
 	_, err := s.ChannelMessageSendComplex(m.ChannelID, &discordgo.MessageSend{
 		Content:         fmt.Sprintf("冷笑を検知しました！\n<@%s>さんの%d回目の冷笑です！", id, count),
 		AllowedMentions: &discordgo.MessageAllowedMentions{Users: []string{id}},
+		Reference:       m.Reference(),
 	})
 	if err != nil {
 		// The detection is still counted even when Discord rejects the notification.
