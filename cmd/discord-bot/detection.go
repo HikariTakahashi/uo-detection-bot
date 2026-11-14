@@ -202,10 +202,21 @@ func (d *detector) eligibleMessage(event *discordgo.MessageCreate) bool {
 }
 
 func (d *detector) handleMessage(s messageClient, event *discordgo.MessageCreate) error {
-	if !d.eligibleMessage(event) || !d.words[event.Content] {
+	if !d.eligibleMessage(event) || (!d.words[event.Content] && !d.repetitionContent(event.Content)) {
 		return nil
 	}
 	return d.countAndReply(s, event.Author.ID, event.Reference(), false)
+}
+
+// repetitionContent only accepts a whole message made of two or more
+// configured uo/うお forms. It deliberately does not split arbitrary detection
+// words, so a word sequence cannot turn ordinary prose into a detection.
+func (d *detector) repetitionContent(content string) bool {
+	words := make([]string, 0, len(d.words))
+	for word := range d.words {
+		words = append(words, word)
+	}
+	return repetitionCandidate(content, words)
 }
 
 func (d *detector) handleIncoming(s messageClient, ai *shadowCollector, event *discordgo.MessageCreate) error {

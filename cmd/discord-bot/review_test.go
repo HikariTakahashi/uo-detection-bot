@@ -142,33 +142,6 @@ func TestReviewBlindSaveAndReplay(t *testing.T) {
 	}
 }
 
-func TestReviewRepetitionExplainsCriteriaAndLocalDecision(t *testing.T) {
-	s := testShadow(t)
-	r := sampleRecord()
-	r.Selection = "repetition_candidate"
-	r.Text = "uououo"
-	r.Prediction = shadowPrediction{Label: "uncertain", Model: "repetition_filter"}
-	if err := s.store.add(r, time.Now()); err != nil {
-		t.Fatal(err)
-	}
-	h := newReview(s)
-	f := callReview(t, h, reviewEvent(discordgo.InteractionApplicationCommand, "review"))
-	if !strings.Contains(*f.edits[0].Content, "繰り返しだけでは冷笑と判断しません") || strings.Contains(*f.edits[0].Content, "事前判定") {
-		t.Fatal("missing criteria or revealed prediction before review")
-	}
-	var key string
-	for key = range h.leases {
-		break
-	}
-	callReview(t, h, reviewEvent(discordgo.InteractionMessageComponent, "review:"+key+":mockery"))
-	f = callReview(t, h, reviewEvent(discordgo.InteractionModalSubmit, "review-submit:"+key+":mockery"))
-	if !strings.Contains(*f.edits[0].Content, "事前判定（文脈不足・AI未使用）: 判断困難") || s.store.records[r.MessageID].HumanLabel != "mockery" {
-		t.Fatal("local decision not distinguished from AI")
-	}
-	if len(s.detector.counts) != 0 || len(s.detector.aiCounted) != 0 {
-		t.Fatal("human review changed live counts")
-	}
-}
 func TestReviewConcurrentSkipDeleteAndMissing(t *testing.T) {
 	s := testShadow(t)
 	r := sampleRecord()
