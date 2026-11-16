@@ -62,6 +62,7 @@ func run(ctx context.Context) error {
 	workerCtx, stopWorker := context.WithCancel(ctx)
 	defer stopWorker()
 	reviews := newReview(shadow)
+	recovery := &sshRecovery{ctx: workerCtx}
 	s, err := discordgo.New("Bot " + token)
 	if err != nil {
 		return errors.New("cannot create Discord session")
@@ -108,6 +109,12 @@ func run(ctx context.Context) error {
 		if i == nil || i.Interaction == nil || i.Type != discordgo.InteractionApplicationCommand {
 			return
 		}
+		if i.ApplicationCommandData().Name == sshRecoveryCommand {
+			if err := recovery.handle(s, i.Interaction); err != nil {
+				slog.Error("SSH recovery interaction failed", "error", safeError(err))
+			}
+			return
+		}
 		if i.ApplicationCommandData().Name != "ping" {
 			return
 		}
@@ -135,6 +142,7 @@ func run(ctx context.Context) error {
 	if err := notify("READY=1\nSTATUS=Discord connected; /ping registered; commit " + version); err != nil {
 		return fmt.Errorf("notify systemd: %w", err)
 	}
+	go recovery.registerCommand(s, s.State.User.ID, guild)
 	scope := "global"
 	if guild != "" {
 		scope = "guild"
