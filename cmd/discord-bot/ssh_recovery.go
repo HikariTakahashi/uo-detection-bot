@@ -128,6 +128,7 @@ func (h *sshRecovery) serve(ctx context.Context) string {
 	defer os.RemoveAll(dir)
 	// tsnet logs the enrollment URL internally. Disable upload and console output.
 	envknob.SetNoLogsNoSupport()
+	configureSSHRecoveryNetwork()
 	server := &tsnet.Server{
 		Dir: dir, Store: &mem.Store{}, Ephemeral: true,
 		Hostname: "pi-ssh-recovery", UserLogf: logger.Discard,
@@ -135,6 +136,7 @@ func (h *sshRecovery) serve(ctx context.Context) string {
 	}
 	client, err := server.LocalClient()
 	if err != nil {
+		slog.Error("SSH recovery Tailscale startup failed", "error", safeError(err))
 		return "ラズパイでTailscaleを起動できませんでした。"
 	}
 	defer server.Close()
