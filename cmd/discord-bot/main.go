@@ -135,7 +135,6 @@ func run(ctx context.Context) error {
 	if err := notify("READY=1\nSTATUS=Discord connected; /ping registered; commit " + version); err != nil {
 		return fmt.Errorf("notify systemd: %w", err)
 	}
-	go removeSSHRecoveryCommand(workerCtx, s, s.State.User.ID, guild)
 	scope := "global"
 	if guild != "" {
 		scope = "guild"
@@ -161,23 +160,6 @@ func run(ctx context.Context) error {
 			if !ack.IsZero() && time.Since(ack) < 90*time.Second {
 				_ = notify("WATCHDOG=1")
 			}
-		}
-	}
-}
-
-func removeSSHRecoveryCommand(ctx context.Context, s *discordgo.Session, app, guild string) {
-	commands, err := s.ApplicationCommands(app, guild, discordgo.WithContext(ctx))
-	if err != nil {
-		slog.Error("list commands for SSH recovery cleanup", "error", safeError(err))
-		return
-	}
-	for _, command := range commands {
-		if command.Name == "ssh-recovery" && command.Type == discordgo.ChatApplicationCommand &&
-			command.Description == "ラズパイの臨時SSHを準備・確認します（許可ユーザー専用）" {
-			if err := s.ApplicationCommandDelete(app, guild, command.ID, discordgo.WithContext(ctx)); err != nil {
-				slog.Error("remove SSH recovery command", "error", safeError(err))
-			}
-			return
 		}
 	}
 }
