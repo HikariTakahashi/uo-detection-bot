@@ -62,7 +62,6 @@ func run(ctx context.Context) error {
 	workerCtx, stopWorker := context.WithCancel(ctx)
 	defer stopWorker()
 	reviews := newReview(shadow)
-	recovery := &sshRecovery{ctx: workerCtx}
 	s, err := discordgo.New("Bot " + token)
 	if err != nil {
 		return errors.New("cannot create Discord session")
@@ -109,12 +108,6 @@ func run(ctx context.Context) error {
 		if i == nil || i.Interaction == nil || i.Type != discordgo.InteractionApplicationCommand {
 			return
 		}
-		if i.ApplicationCommandData().Name == sshRecoveryCommand {
-			if err := recovery.handle(s, i.Interaction); err != nil {
-				slog.Error("SSH recovery interaction failed", "error", safeError(err))
-			}
-			return
-		}
 		if i.ApplicationCommandData().Name != "ping" {
 			return
 		}
@@ -142,7 +135,7 @@ func run(ctx context.Context) error {
 	if err := notify("READY=1\nSTATUS=Discord connected; /ping registered; commit " + version); err != nil {
 		return fmt.Errorf("notify systemd: %w", err)
 	}
-	go recovery.registerCommand(s, s.State.User.ID, guild)
+	go removeSSHRecoveryCommand(workerCtx, s, s.State.User.ID, guild)
 	scope := "global"
 	if guild != "" {
 		scope = "guild"
@@ -168,6 +161,23 @@ func run(ctx context.Context) error {
 			if !ack.IsZero() && time.Since(ack) < 90*time.Second {
 				_ = notify("WATCHDOG=1")
 			}
+		}
+	}
+}
+
+func removeSSHRecoveryCommand(ctx context.Context, s *discordgo.Session, app, guild string) {
+	commands, err := s.ApplicationCommands(app, guild, discordgo.WithContext(ctx))
+	if err != nil {
+		slog.Error("list commands for SSH recovery cleanup", "error", safeError(err))
+		return
+	}
+	for _, command := range commands {
+		if command.Name == "ssh-recovery" && command.Type == discordgo.ChatApplicationCommand &&
+			command.Description == "ラズパイの臨時SSHを準備・確認します（許可ユーザー専用）" {
+			if err := s.ApplicationCommandDelete(app, guild, command.ID, discordgo.WithContext(ctx)); err != nil {
+				slog.Error("remove SSH recovery command", "error", safeError(err))
+			}
+			return
 		}
 	}
 }
