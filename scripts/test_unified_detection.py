@@ -167,6 +167,45 @@ class UnifiedDetectionTests(unittest.TestCase):
             self.assertEqual(seen,[])
             self.assertFalse((Path(tmp)/'discovery').exists())
 
+    def test_repeated_variants_and_spaces_skip_model_after_restoration(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            r,seen=self.make(tmp,('base64','base32'))
+            def unavailable(*args):raise AssertionError('repeated reaction reached model inference')
+            r.predict=unavailable
+            for body,units in [('うぉうぉ',2),('うぉ うぉ',2),('うぉ　うぉ',2),
+                               ('うお うぉuo！！',3),('ウォ 　うぉ？！',2)]:
+                texts=[body,synthetic.encode('percent',body),synthetic.encode('unicode',body),
+                       synthetic.encode('base32',body),
+                       synthetic.encode('base64',synthetic.encode('percent',body))]
+                if body=='うぉ うぉ':
+                    # The reported input preserves a raw space between escaped words.
+                    texts.append('%E3%81%86%E3%81%89 %E3%81%86%E3%81%89')
+                for text in texts:
+                    with self.subTest(text=text):
+                        result=r.analyze({**self.request(text),'words':['うお','うぉ','uo']})
+                        self.assertEqual((result['unknown'],result['label'],result['units'],result['families']),
+                                         (False,'mockery',units,[]))
+            self.assertEqual(seen,[])
+            self.assertFalse((Path(tmp)/'discovery').exists())
+
+    def test_repeated_reaction_boundaries_still_reach_judgment(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            r,seen=self.make(tmp,('base32',))
+            def predict(route,value):
+                seen.append((route,value['text']))
+                return {'suspected':False} if route=='detect' else {'label':'other','units':0}
+            r.predict=predict
+            for body,words in [('うぉ うぉ ありがとう',['うぉ']),('「うぉ うぉ」',['うぉ']),
+                               ('うぉ\nうぉ',['うぉ']),('うぉ\tうぉ',['うぉ']),
+                               (' うぉうぉ',['うぉ']),('うぉうぉ　',['うぉ']),
+                               ('うぉうぉ',['うお']),('うおうお',['うぉ'])]:
+                for text in [body,synthetic.encode('percent',body),synthetic.encode('base32',body)]:
+                    with self.subTest(text=text,words=words):
+                        seen.clear()
+                        result=r.analyze({**self.request(text),'words':words})
+                        self.assertEqual((result['unknown'],result['label'],result['units']),(False,'other',0))
+                        self.assertEqual(seen,[('detect',body),('judge',body)])
+
     def test_interleaved_fixed_and_adopted_layers(self):
         inner='E4F25FE4F28318'
         percent=lambda text:''.join('%%%02X'%b for b in text.encode())

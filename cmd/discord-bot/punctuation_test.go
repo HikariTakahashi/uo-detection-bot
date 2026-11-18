@@ -13,12 +13,14 @@ func TestPunctuatedReactionBoundaries(t *testing.T) {
 	for text, want := range map[string]uint64{
 		"うぉ？": 1, "うお!": 1, "どわー！？！？": 1, "uo?": 1,
 		"うおうお！！": 2, "uoＵＯウオ!?？！": 3,
+		"うぉうぉ": 2, "うぉ うぉ": 2, "うぉ　うぉ？！": 2,
+		"うお うぉuo！！": 3, "うおうぉ？": 2,
 		"うお": 1, "うおうお": 2,
 		"": 0, "！？": 0, "うぉ？本当？": 0, "うぉ？です": 0,
 		"「うぉ？」": 0, "`うぉ？`": 0, "> うぉ？": 0,
 		" うぉ？": 0, "うぉ？ ": 0, "うぉ？\n": 0, "うぉ ？": 0,
 		"？うぉ": 0, "うぉ。": 0, "うぉ…？": 0, "うぉ‼": 0,
-		"未登録？": 0, "うお？うお": 0, "うおうぉ？": 0,
+		"未登録？": 0, "うお？うお": 0, "うぉ うぉ ？": 0,
 		"https://example.com/uo?": 0,
 	} {
 		t.Run(text, func(t *testing.T) {
@@ -30,7 +32,7 @@ func TestPunctuatedReactionBoundaries(t *testing.T) {
 }
 
 func TestPunctuatedReactionCountsWithoutReview(t *testing.T) {
-	for text, units := range map[string]uint64{"うぉ？": 1, "どわー！？！？": 1, "うおうお！！": 2} {
+	for text, units := range map[string]uint64{"うぉ？": 1, "どわー！？！？": 1, "うおうお！！": 2, "うぉうぉ": 2, "うぉ うぉ": 2, "うぉ　うぉ？！": 2} {
 		t.Run(text, func(t *testing.T) {
 			d := testDetector(t)
 			d.words["うぉ"] = true
@@ -58,7 +60,11 @@ func TestPunctuatedReactionCountsWithoutReview(t *testing.T) {
 }
 
 func TestPunctuatedHeldReactionResolvesOnce(t *testing.T) {
-	for text, units := range map[string]uint64{"うぉ？": 1, "うおうお！！": 2} {
+	for text, units := range map[string]uint64{
+		"うぉ？": 1, "うおうお！！": 2,
+		"%E3%81%86%E3%81%89%E3%81%86%E3%81%89":  2,
+		"%E3%81%86%E3%81%89 %E3%81%86%E3%81%89": 2,
+	} {
 		t.Run(text, func(t *testing.T) {
 			a, f, out := reviewSetup(t)
 			a.detector.words["うぉ"] = true
@@ -73,6 +79,9 @@ func TestPunctuatedHeldReactionResolvesOnce(t *testing.T) {
 			oldNotice := f.replies[0].Content
 			a = reloadReview(t, a)
 			view := fixedView(text, []string{"うお", "うぉ"})
+			if view.LiteralUnits == 0 && len(view.Candidates) == 1 {
+				view = fixedView(view.Candidates[0], []string{"うお", "うぉ"})
+			}
 			if view.LiteralUnits != units {
 				t.Fatal("helper did not resolve held reaction", view)
 			}

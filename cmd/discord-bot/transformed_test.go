@@ -139,12 +139,15 @@ func TestTransformedExactAndRepetitionCountsWithoutAI(t *testing.T) {
 		{"e38186e3818a", 1}, {"e38186e3818ae38186e3818a", 2},
 		{"うおe38186e3818a", 2},
 		{"75756f", 0}, {"756f756f756f", 3}, {`\u3046\u304a`, 1},
-		{"%E3%81%86%E3%81%8A", 1}, {"うお e38186e3818a", 0},
+		{"%E3%81%86%E3%81%8A", 1}, {"うお e38186e3818a", 2},
+		{"%E3%81%86%E3%81%89%E3%81%86%E3%81%89", 2},
+		{"%E3%81%86%E3%81%89 %E3%81%86%E3%81%89", 2},
 		{"e381a9e38081e381a9e3828fe383bc", 0}, // Context needs AI, not substring counting.
 		{"e38186e3818aw", 0}, {"「e38186e3818a」", 0},
 	} {
 		d := testDetector(t)
 		d.words["uo"] = true
+		d.words["うぉ"] = true
 		client := &fakeMessages{}
 		if err := d.handleIncoming(client, nil, testMessage(tc.text)); err != nil || d.counts[testUser] != tc.want {
 			t.Errorf("%q: count=%d want=%d err=%v", tc.text, d.counts[testUser], tc.want, err)

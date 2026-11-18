@@ -8,14 +8,23 @@ import (
 
 func TestRepetitionCountBoundaries(t *testing.T) {
 	words := []string{"uo", "うお", "どわー", "ワオ", "♓", "うぉ", "u", "o"}
-	for text, want := range map[string]uint64{"uouo": 2, "uououo": 3, "うおうお": 2, "uoＵＯウオ": 3, strings.Repeat("uo", 1000): 1000} {
+	for text, want := range map[string]uint64{
+		"uouo": 2, "uououo": 3, "うおうお": 2, "uoＵＯウオ": 3,
+		"うぉうぉ": 2, "うぉ うぉ": 2, "うぉ　うぉ": 2, "uo uo": 2,
+		"うお うぉuo": 3, "うぉ 　うぉ": 2, "ウォ うぉ": 2,
+		strings.Repeat("uo", 1000): 1000,
+	} {
 		if got := repetitionCount(text, words); got != want {
 			t.Errorf("%q: counted %d words, want %d", text, got, want)
 		}
 	}
 	for _, text := range []string{
 		"", "uo", "うお", "uou", "uouou", "duououo", "uououox", "uououow", "uoどわー",
-		"ワオワオ", "♓♓", "うぉうぉ", "ｳｵｳｵ", "uuoo", "uo uo", "uo\nuo", " uouo", "uouo\n",
+		"ワオワオ", "♓♓", "ｳｵｳｵ", "uuoo", "uo\nuo", " uouo", "uouo\n",
+		"うぉ", "うぉ ", "うぉ　", "うぉうぉ ", "うぉうぉ　", "　うぉうぉ",
+		"u o uo", "u　o uo", "う ぉうぉ", "うぉ\tうぉ", "うぉ\rうぉ",
+		"うぉ\u00a0うぉ", "うぉ\u2003うぉ", "うぉ　う", "うぉ うぉ ありがとう",
+		"「うぉ うぉ」", "`うぉ うぉ`", "> うぉ うぉ", "うぉ？うぉ",
 		"uouo！", "uouoは入力例", "「uouo」", "`uouo`", "> uouo", "https://example.com/uouo",
 		"uouo https://example.com", "uo「説明」uo", "uo\u200buo",
 	} {
@@ -23,7 +32,7 @@ func TestRepetitionCountBoundaries(t *testing.T) {
 			t.Errorf("unexpected candidate %q", text)
 		}
 	}
-	for _, text := range []string{"uouo", "uoうお"} {
+	for _, text := range []string{"uouo", "uoうお", "うぉうぉ", "うお うぉ", "うぉ うぉ"} {
 		if repetitionCount(text, []string{"うお"}) != 0 {
 			t.Errorf("accepted unconfigured form %q", text)
 		}
@@ -31,13 +40,17 @@ func TestRepetitionCountBoundaries(t *testing.T) {
 	if repetitionCount("ＵＯuo", []string{"ＵＯ"}) != 2 {
 		t.Fatal("configured normalized form not recognized")
 	}
+	if repetitionCount("うぉ ウォ", []string{"ウォ"}) != 2 || repetitionCount("うおうお", []string{"うぉ"}) != 0 {
+		t.Fatal("small kana must remain a distinct configured form")
+	}
 }
 
 func TestRepetitionAddsEveryWordAndRepliesOnce(t *testing.T) {
-	for text, increment := range map[string]uint64{"うおうお": 2, "uououo": 3, "uoうお": 2, "うおうおうおうお": 4} {
+	for text, increment := range map[string]uint64{"うおうお": 2, "uououo": 3, "uoうお": 2, "うおうおうおうお": 4, "うぉうぉ": 2, "うぉ うぉ": 2, "うぉ　うぉ": 2} {
 		t.Run(text, func(t *testing.T) {
 			d := testDetector(t)
 			d.words["uo"] = true
+			d.words["うぉ"] = true
 			d.words["うおうお"] = true // A full match must not hide its component words.
 			d.counts[testUser] = 7
 			s := testShadow(t)

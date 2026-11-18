@@ -254,7 +254,8 @@ func (d *detector) handleMessage(s messageClient, event *discordgo.MessageCreate
 }
 
 // repetitionCount only accepts a whole message made of two or more
-// configured uo/うお forms. It deliberately does not split arbitrary detection
+// configured uo/うお/うぉ forms, optionally separated by half/full-width spaces.
+// It deliberately does not split arbitrary detection
 // words, so a word sequence cannot turn ordinary prose into a detection.
 func (d *detector) repetitionCount(content string) uint64 {
 	words := make([]string, 0, len(d.words))
