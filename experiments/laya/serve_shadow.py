@@ -71,8 +71,9 @@ class Handler(BaseHTTPRequestHandler):
                    {"status": "ready"} if self.path == "/health" else {"error": "not_found"})
 
     def do_POST(self):
+        adaptive = self.path in ("/adaptive/detect", "/adaptive/judge")
         laughter = self.path == "/classify/laughter"
-        if self.path != "/classify" and not laughter:
+        if self.path != "/classify" and not laughter and not adaptive:
             self.reply(404, {"error": "not_found"})
             return
         if self.headers.get("Transfer-Encoding") or self.headers.get("Content-Type") != "application/json":
@@ -89,7 +90,7 @@ class Handler(BaseHTTPRequestHandler):
             if len(data) != length:
                 raise ValueError()
             value = json.loads(data)
-            allowed = {"text", "context", "target_words"} if laughter else {"text", "context"}
+            allowed = {"text", "words"} if adaptive else ({"text", "context", "target_words"} if laughter else {"text", "context"})
             if not isinstance(value, dict) or set(value) - allowed:
                 raise ValueError()
             text, context = value.get("text"), value.get("context", "")
@@ -97,6 +98,10 @@ class Handler(BaseHTTPRequestHandler):
             if laughter and (not isinstance(target_words, str) or not target_words.strip() or len(target_words) > 2000):
                 raise ValueError()
             prepare(text, context)
+            if adaptive:
+                words = value.get("words", [])
+                if not isinstance(words,list) or len(words)>64 or any(not isinstance(w,str) or not 1<=len(w)<=80 for w in words):
+                    raise ValueError()
         except (ValueError, TypeError, UnicodeError, TimeoutError):
             self.reply(400, {"error": "invalid_request"})
             return
@@ -104,6 +109,11 @@ class Handler(BaseHTTPRequestHandler):
             self.reply(503, {"error": "busy"})
             return
         try:
+            if adaptive:
+                from production_policy import detect, judge
+                result = detect(self.server.classifier, text, words) if self.path == "/adaptive/detect" else judge(self.server.classifier, text, words)
+                self.reply(200, result)
+                return
             if laughter:
                 self.server.classifier.set_prompt("laughter")
                 try:

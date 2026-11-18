@@ -1,0 +1,9 @@
+[Unit]
+Description=Advance approved Luna jobs without a Mac
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+RandomizedDelaySec=10
+Unit=laya-decoder-generate.service
+[Install]
+WantedBy=timers.target

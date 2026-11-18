@@ -1,0 +1,27 @@
+[Unit]
+Description=Verify and activate an explicitly approved decoder release
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+ConditionPathExists=/etc/laya-decoder/approved-release.json
+ConditionPathExists=/etc/laya-decoder/github-token
+
+[Service]
+Type=oneshot
+User=laya-decoder
+Group=laya-decoder
+SupplementaryGroups=docker
+WorkingDirectory=/opt/laya-decoder/current
+StateDirectory=laya-decoder
+StateDirectoryMode=0700
+LoadCredential=github-token:/etc/laya-decoder/github-token
+ExecStart=/usr/bin/python3 services/decoder/release.py --state /var/lib/laya-decoder --approval /etc/laya-decoder/approved-release.json --image sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+Environment=PYTHONDONTWRITEBYTECODE=1 GH_PROMPT_DISABLED=1
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+TimeoutStartSec=1200
+CPUQuota=100%
+Nice=10
+LimitCORE=0

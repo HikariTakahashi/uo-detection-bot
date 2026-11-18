@@ -47,8 +47,10 @@ jobs:
           mkdir -p dist
           go build -tags netcgo -trimpath -ldflags "-s -w -X main.version=$GITHUB_SHA" -o dist/discord-bot-linux-arm64 ./cmd/discord-bot
           test "$(dist/discord-bot-linux-arm64 -version)" = "$GITHUB_SHA"
+          python3 scripts/package-adaptive.py --binary dist/discord-bot-linux-arm64 --output dist/decoder-production.tar.gz
           cd dist
           sha256sum discord-bot-linux-arm64 > SHA256SUMS
+          sha256sum decoder-production.tar.gz > ADAPTIVE-SHA256SUMS
       - name: Publish complete release for this exact commit
         env:
           GH_TOKEN: ${{ github.token }}
@@ -65,5 +67,5 @@ jobs:
           else
             gh release create "$tag" --target "$GITHUB_SHA" --draft --title "Deploy $GITHUB_SHA" --notes "Verified Linux ARM64 build for commit $GITHUB_SHA."
           fi
-          gh release upload "$tag" dist/discord-bot-linux-arm64 dist/SHA256SUMS --clobber
+          gh release upload "$tag" dist/discord-bot-linux-arm64 dist/decoder-production.tar.gz dist/SHA256SUMS dist/ADAPTIVE-SHA256SUMS --clobber
           gh release edit "$tag" --draft=false --latest=false

@@ -1,0 +1,9 @@
+[Unit]
+Description=Check the approved decoder release every two minutes
+[Timer]
+OnBootSec=30
+OnUnitInactiveSec=2min
+RandomizedDelaySec=15
+Unit=laya-decoder-update.service
+[Install]
+WantedBy=timers.target

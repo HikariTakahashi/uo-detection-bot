@@ -1,0 +1,33 @@
+[Unit]
+Description=Approved decoder runtime (Pi loopback only)
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+User=laya-decoder
+Group=laya-decoder
+SupplementaryGroups=docker
+WorkingDirectory=/opt/laya-decoder/current
+ExecStart=/usr/bin/python3 services/decoder/runtime.py --state /var/lib/laya-decoder/current --image sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+Restart=on-failure
+RestartSec=15
+StateDirectory=laya-decoder
+StateDirectoryMode=0700
+Environment=PYTHONDONTWRITEBYTECODE=1
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+CPUQuota=100%
+Nice=10
+TasksMax=64
+LimitAS=536870912
+LimitCORE=0
+
+[Install]
+WantedBy=multi-user.target

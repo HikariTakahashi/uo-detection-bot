@@ -65,13 +65,21 @@ func loadDetectionConfig(path string) (detectionConfig, error) {
 	return config, nil
 }
 
+type reviewReceipt struct {
+	UserID   string `json:"user_id"`
+	Revision string `json:"revision"`
+	Units    uint64 `json:"units"`
+	Total    uint64 `json:"total"`
+}
+
 type detectionState struct {
-	Counts    map[string]uint64
-	AICounted map[string]bool // Discord message IDs, never message contents.
+	ReviewReceipts map[string]reviewReceipt
+	Counts         map[string]uint64
+	AICounted      map[string]bool // Discord message IDs, never message contents.
 }
 
 func loadDetectionState(path string) (detectionState, error) {
-	state := detectionState{Counts: make(map[string]uint64), AICounted: make(map[string]bool)}
+	state := detectionState{Counts: make(map[string]uint64), AICounted: make(map[string]bool), ReviewReceipts: make(map[string]reviewReceipt)}
 	data, err := os.ReadFile(path)
 	if errors.Is(err, os.ErrNotExist) {
 		return state, nil
@@ -86,11 +94,12 @@ func loadDetectionState(path string) (detectionState, error) {
 	}
 	if _, versioned := fields["version"]; versioned {
 		var file struct {
-			Version   int                `json:"version"`
-			Counts    map[string]*uint64 `json:"counts"`
-			AICounted []string           `json:"ai_counted_message_ids"`
+			ReviewReceipts map[string]reviewReceipt `json:"review_receipts,omitempty"`
+			Version        int                      `json:"version"`
+			Counts         map[string]*uint64       `json:"counts"`
+			AICounted      []string                 `json:"ai_counted_message_ids"`
 		}
-		if err := decodeJSON(data, &file); err != nil || file.Version != 1 || file.AICounted == nil {
+		if err := decodeJSON(data, &file); err != nil || (file.Version != 1 && file.Version != 2) || file.AICounted == nil {
 			return state, errors.New("invalid detection state format")
 		}
 		for _, id := range file.AICounted {
@@ -98,6 +107,12 @@ func loadDetectionState(path string) (detectionState, error) {
 				return state, errors.New("invalid AI-counted message ID")
 			}
 			state.AICounted[id] = true
+		}
+		for id, receipt := range file.ReviewReceipts {
+			if !isSnowflake(id) || !isSnowflake(receipt.UserID) || len(receipt.Revision) != 64 || receipt.Units > 2000 {
+				return state, errors.New("invalid review receipt")
+			}
+			state.ReviewReceipts[id] = receipt
 		}
 		stored = file.Counts
 	} else if err := decodeJSON(data, &stored); err != nil {
@@ -117,7 +132,7 @@ func loadDetectionState(path string) (detectionState, error) {
 
 // Write in the destination directory so rename atomically replaces the old file.
 // Until rename succeeds, every error leaves the previous counts intact.
-func saveDetectionState(path string, counts map[string]uint64, aiCounted map[string]bool) error {
+func saveDetectionState(path string, counts map[string]uint64, aiCounted map[string]bool, reviews ...map[string]reviewReceipt) error {
 	var value any = counts
 	if len(aiCounted) > 0 {
 		ids := make([]string, 0, len(aiCounted))
@@ -130,6 +145,19 @@ func saveDetectionState(path string, counts map[string]uint64, aiCounted map[str
 			Counts    map[string]uint64 `json:"counts"`
 			AICounted []string          `json:"ai_counted_message_ids"`
 		}{1, counts, ids}
+	}
+	if len(reviews) > 0 && len(reviews[0]) > 0 {
+		ids := []string{}
+		for id := range aiCounted {
+			ids = append(ids, id)
+		}
+		slices.Sort(ids)
+		value = struct {
+			Version   int                      `json:"version"`
+			Counts    map[string]uint64        `json:"counts"`
+			AICounted []string                 `json:"ai_counted_message_ids"`
+			Receipts  map[string]reviewReceipt `json:"review_receipts"`
+		}{2, counts, ids, reviews[0]}
 	}
 	data, err := json.Marshal(value)
 	if err != nil {
@@ -154,7 +182,16 @@ func saveDetectionState(path string, counts map[string]uint64, aiCounted map[str
 	if err := f.Close(); err != nil {
 		return err
 	}
-	return os.Rename(f.Name(), path)
+	if err := os.Rename(f.Name(), path); err != nil {
+		return err
+	}
+	// The rename is the commit point. Directory fsync is best effort here: an
+	// error after the rename must not roll back only the in-memory count.
+	if directory, err := os.Open(dir); err == nil {
+		_ = directory.Sync()
+		_ = directory.Close()
+	}
+	return nil
 }
 
 type messageClient interface {
@@ -162,12 +199,13 @@ type messageClient interface {
 }
 
 type detector struct {
-	mu        sync.Mutex // Serializes increment, persistence, and notification.
-	words     map[string]bool
-	channels  map[string]bool
-	counts    map[string]uint64
-	aiCounted map[string]bool
-	statePath string
+	mu             sync.Mutex // Serializes increment, persistence, and notification.
+	words          map[string]bool
+	channels       map[string]bool
+	counts         map[string]uint64
+	aiCounted      map[string]bool
+	statePath      string
+	reviewReceipts map[string]reviewReceipt
 }
 
 func newDetector(configPath, statePath string) (*detector, error) {
@@ -179,7 +217,7 @@ func newDetector(configPath, statePath string) (*detector, error) {
 	if err != nil {
 		return nil, err
 	}
-	d := &detector{words: make(map[string]bool), channels: make(map[string]bool), counts: state.Counts, aiCounted: state.AICounted, statePath: statePath}
+	d := &detector{words: make(map[string]bool), channels: make(map[string]bool), counts: state.Counts, aiCounted: state.AICounted, statePath: statePath, reviewReceipts: state.ReviewReceipts}
 	for _, word := range config.Words {
 		d.words[word] = true
 	}
@@ -242,7 +280,7 @@ func (d *detector) alreadyAICounted(id string) bool {
 func (d *detector) countAndReply(s messageClient, id string, ref *discordgo.MessageReference, increment uint64, fromAI bool) error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	if d.aiCounted[ref.MessageID] {
+	if _, reviewed := d.reviewReceipts[ref.MessageID]; reviewed || d.aiCounted[ref.MessageID] {
 		return nil
 	}
 	previous, existed := d.counts[id]
@@ -254,7 +292,7 @@ func (d *detector) countAndReply(s messageClient, id string, ref *discordgo.Mess
 	if fromAI {
 		d.aiCounted[ref.MessageID] = true
 	}
-	if err := saveDetectionState(d.statePath, d.counts, d.aiCounted); err != nil {
+	if err := saveDetectionState(d.statePath, d.counts, d.aiCounted, d.reviewReceipts); err != nil {
 		if fromAI {
 			delete(d.aiCounted, ref.MessageID)
 		}
@@ -286,4 +324,44 @@ func envPath(name, fallback string) string {
 		return path
 	}
 	return fallback
+}
+
+// The count and receipt commit together. Repeating a result returns its original
+// total; changing a message revision replaces only this review's contribution.
+func (d *detector) applyReview(id, user, revision string, units uint64) (uint64, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if !isSnowflake(id) || !isSnowflake(user) || len(revision) != 64 || units > 2000 {
+		return 0, errors.New("invalid review result")
+	}
+	if d.reviewReceipts == nil {
+		d.reviewReceipts = make(map[string]reviewReceipt)
+	}
+	old, exists := d.reviewReceipts[id]
+	if exists && old.UserID != user {
+		return 0, errors.New("review author mismatch")
+	}
+	if exists && old.Revision == revision && old.Units == units {
+		return old.Total, nil
+	}
+	if d.aiCounted[id] && !exists {
+		return 0, errors.New("already owned by legacy AI")
+	}
+	previous := d.counts[user]
+	if previous < old.Units || math.MaxUint64-(previous-old.Units) < units {
+		return 0, errors.New("invalid count adjustment")
+	}
+	total := previous - old.Units + units
+	d.counts[user] = total
+	d.reviewReceipts[id] = reviewReceipt{user, revision, units, total}
+	if err := saveDetectionState(d.statePath, d.counts, d.aiCounted, d.reviewReceipts); err != nil {
+		d.counts[user] = previous
+		if exists {
+			d.reviewReceipts[id] = old
+		} else {
+			delete(d.reviewReceipts, id)
+		}
+		return 0, err
+	}
+	return total, nil
 }

@@ -59,6 +59,10 @@ func run(ctx context.Context) error {
 	if shadowErr != nil {
 		slog.Error("AI configuration or review storage unavailable", "error", safeError(shadowErr))
 	}
+	adaptive, err := newAdaptive(envPath("ADAPTIVE_CONFIG_PATH", "/etc/discord-bot/adaptive.json"), envPath("ADAPTIVE_DATA_PATH", "/var/lib/discord-bot/adaptive"), detection)
+	if err != nil {
+		return fmt.Errorf("adaptive state unavailable: %w", err)
+	}
 	workerCtx, stopWorker := context.WithCancel(ctx)
 	defer stopWorker()
 	reviews := newReview(shadow)
@@ -75,8 +79,37 @@ func run(ctx context.Context) error {
 	if detection.enabled() || (shadow != nil && shadow.config.Mode == "shadow") {
 		s.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsMessageContent
 		s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+			if owned, err := adaptive.enqueue(m); owned {
+				if err != nil {
+					slog.Error("adaptive intake failed", "error", safeError(err))
+				}
+				return
+			}
 			if err := detection.handleIncoming(s, shadow, m); err != nil {
 				slog.Error("message detection failed", "error", err)
+			}
+		})
+	}
+	if adaptive != nil {
+		s.AddHandler(func(_ *discordgo.Session, m *discordgo.MessageUpdate) {
+			if err := adaptive.edit(m); err != nil {
+				slog.Error("adaptive edit failed", "error", safeError(err))
+			}
+		})
+		s.AddHandler(func(_ *discordgo.Session, m *discordgo.MessageDelete) {
+			if m != nil && m.Message != nil {
+				if err := adaptive.remove(m.ID, m.GuildID); err != nil {
+					slog.Error("adaptive delete failed", "error", safeError(err))
+				}
+			}
+		})
+		s.AddHandler(func(_ *discordgo.Session, m *discordgo.MessageDeleteBulk) {
+			if m != nil {
+				for _, id := range m.Messages {
+					if err := adaptive.remove(id, m.GuildID); err != nil {
+						slog.Error("adaptive delete failed", "error", safeError(err))
+					}
+				}
 			}
 		})
 	}
@@ -142,6 +175,10 @@ func run(ctx context.Context) error {
 	slog.Info("bot ready", "version", version, "command_scope", scope,
 		"detection_enabled", detection.enabled(), "laughter_count_enabled", detection.enabled() && shadow != nil && shadow.config.CountLaughter,
 		"scheduled_notifications_enabled", notifications.enabled())
+	if adaptive != nil {
+		adaptive.botID = s.State.User.ID
+		go adaptive.run(workerCtx, s)
+	}
 	if notifications.enabled() {
 		go runScheduledNotifications(ctx, s, notifications)
 	}

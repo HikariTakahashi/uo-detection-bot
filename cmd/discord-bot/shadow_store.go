@@ -75,7 +75,14 @@ func atomicShadowJSON(path string, value any) error {
 	if err = f.Close(); err != nil {
 		return err
 	}
-	return os.Rename(f.Name(), path)
+	if err := os.Rename(f.Name(), path); err != nil {
+		return err
+	}
+	if directory, err := os.Open(filepath.Dir(path)); err == nil {
+		_ = directory.Sync()
+		_ = directory.Close()
+	}
+	return nil
 }
 
 func openShadowStore(dir string, now time.Time) (*shadowStore, error) {
