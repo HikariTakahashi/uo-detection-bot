@@ -149,6 +149,24 @@ class UnifiedDetectionTests(unittest.TestCase):
                     self.assertEqual((out['unknown'],out['label'],out['units']),(False,'mockery',units))
             self.assertEqual(seen,[])
 
+    def test_punctuated_reactions_and_restorations_skip_model(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            r,seen=self.make(tmp,('base64',))
+            # Deterministic reactions must work even if inference is unavailable.
+            def unavailable(*args):raise AssertionError('reaction reached model inference')
+            r.predict=unavailable
+            for body,units in [('うぉ？',1),('どわー！？！？',1),('うおうお！！',2)]:
+                for text in [body,synthetic.encode('percent',body),
+                             synthetic.encode('base64',body),
+                             synthetic.encode('base64',synthetic.encode('percent',body))]:
+                    with self.subTest(text=text):
+                        request={**self.request(text),'words':['うお','うぉ','どわー','uo']}
+                        out=r.analyze(request)
+                        self.assertEqual((out['unknown'],out['label'],out['units'],out['families']),
+                                         (False,'mockery',units,[]))
+            self.assertEqual(seen,[])
+            self.assertFalse((Path(tmp)/'discovery').exists())
+
     def test_interleaved_fixed_and_adopted_layers(self):
         inner='E4F25FE4F28318'
         percent=lambda text:''.join('%%%02X'%b for b in text.encode())

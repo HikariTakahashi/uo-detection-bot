@@ -278,6 +278,16 @@ func (d *detector) transformedText(text string) string {
 }
 
 func (d *detector) literalCount(text string) uint64 {
+	// Keep existing whole-message matches, including explicitly configured
+	// punctuation. Otherwise allow only a trailing run of question/exclamation
+	// marks; whitespace, quotations and surrounding prose remain significant.
+	if n := d.bareLiteralCount(text); n > 0 {
+		return n
+	}
+	return d.bareLiteralCount(strings.TrimRight(text, "?!？！"))
+}
+
+func (d *detector) bareLiteralCount(text string) uint64 {
 	if n := d.repetitionCount(text); n > 0 {
 		return n
 	}

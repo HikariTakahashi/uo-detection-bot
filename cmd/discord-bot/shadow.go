@@ -174,9 +174,10 @@ func (s *shadowCollector) enqueue(event *discordgo.MessageCreate) bool {
 	if !isSnowflake(m.ID) || !isSnowflake(m.GuildID) || m.Author == nil || m.Author.Bot || m.WebhookID != "" || m.Content == "" {
 		return false
 	}
-	// The normal detector owns configured uo/うお repetitions. Do not create a
-	// second review record for a post that will receive its normal reply.
-	if s.detector.repetitionCount(m.Content) > 0 {
+	// The normal detector owns repetitions and punctuation-only reactions.
+	// Preserve sampling of existing exact words, but do not enqueue the newly
+	// accepted reactions for a second AI judgment or review record.
+	if s.detector.repetitionCount(m.Content) > 0 || (!s.exactWords[m.Content] && s.detector.literalCount(m.Content) > 0) {
 		return false
 	}
 	canCount := s.config.CountLaughter && s.detector.eligibleMessage(event)

@@ -121,7 +121,7 @@ func TestDetectionExactMatchAndScope(t *testing.T) {
 	}{
 		{"uo", func(m *discordgo.MessageCreate) {}, true},
 		{"dowa", func(m *discordgo.MessageCreate) { m.Content = "どわー" }, true},
-		{"punctuation", func(m *discordgo.MessageCreate) { m.Content = "うお！" }, false},
+		{"punctuation", func(m *discordgo.MessageCreate) { m.Content = "うお！" }, true},
 		{"leading space", func(m *discordgo.MessageCreate) { m.Content = " うお" }, false},
 		{"trailing space", func(m *discordgo.MessageCreate) { m.Content = "うお " }, false},
 		{"newline", func(m *discordgo.MessageCreate) { m.Content = "うお\n" }, false},
