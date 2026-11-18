@@ -45,7 +45,7 @@ install)
     chmod -R go-w "$target"
     ln -s "$target" /opt/laya-decoder/next
     mv -Tf /opt/laya-decoder/next /opt/laya-decoder/current
-    for unit in laya-decoder.service laya-decoder-update.service laya-decoder-update.timer laya-decoder-generate.service laya-decoder-generate.timer laya-decoder-approval.service laya-decoder-approval.timer; do
+    for unit in laya-decoder.service laya-decoder-update.service laya-decoder-update.timer laya-decoder-generate.service laya-decoder-generate.timer laya-decoder-approval.service laya-decoder-approval.timer laya-decoder-publication.service laya-decoder-publication.timer; do
         install -m 0644 "$source_dir/deploy/$unit" "/etc/systemd/system/$unit"
     done
     # Backup every replaced inference adapter file. Reuse existing offline model.
@@ -100,6 +100,18 @@ EOF
     systemctl enable --now laya-decoder-approval.timer
     echo 'Production adoption DM approvals enabled; current decoder snapshot retained.'
     ;;
+automatic)
+    # Requires separate explicit consent to this bounded future publication policy.
+    (cd "$source_dir" && sha256sum --check --quiet DEPLOY-SHA256SUMS)
+    test -f /etc/laya-decoder/dm-approval.json
+    test -f /opt/laya-decoder/current/services/decoder/autopublish.py
+    printf '%s\n' '{"schema":1,"synthetic_recipes":["x9"],"publish_validated":true,"repository":"HikariTakahashi/uo-decoder-evaluation","daily_jobs":3}' > /etc/laya-decoder/automatic.json
+    chown root:root /etc/laya-decoder/automatic.json
+    chmod 0644 /etc/laya-decoder/automatic.json
+    systemctl daemon-reload
+    systemctl enable --now laya-decoder-generate.timer laya-decoder-publication.timer laya-decoder-approval.timer
+    echo 'Automatic x9 synthetic preparation and validated data publication enabled; production adoption still requires DM approval.'
+    ;;
 enable)
     test -s /etc/laya-decoder/github-token
     test -s /etc/laya-decoder/luna-key
@@ -145,5 +157,5 @@ disable)
     systemctl restart discord-bot.service
     echo 'Adaptive intake/counting stopped; receipts/counts retained. Do not restore an old binary over v2 counts.'
     ;;
-*) echo 'Usage: install-adaptive.sh prepare|credentials|install|approvals|enable|disable' >&2;exit 2;;
+*) echo 'Usage: install-adaptive.sh prepare|credentials|install|approvals|automatic|enable|disable' >&2;exit 2;;
 esac

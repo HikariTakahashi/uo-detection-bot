@@ -2,6 +2,7 @@ import http.client
 import json
 import threading
 import unittest
+from unittest.mock import patch
 
 from classify import Classifier
 from serve_shadow import ShadowServer
@@ -23,6 +24,21 @@ class FakeClassifier:
 
 
 class ServerTests(unittest.TestCase):
+    def test_adaptive_large_vocabulary_and_bounded_body(self):
+        words=[f'未使用語{i}' for i in range(270)]+['うお']
+        for route in ('detect','judge'):
+            with patch('production_policy.'+route,return_value={'ok':True}) as call:
+                self.assertEqual(self.request(json.dumps({'text':'うおw','words':words}),path='/adaptive/'+route),(200,{'ok':True}))
+                self.assertEqual(call.call_args.args[2],words)
+                for invalid in (['語']*1025,['語'*81],[None]):
+                    self.assertEqual(self.request(json.dumps({'text':'うおw','words':invalid}),path='/adaptive/'+route)[0],400)
+                self.assertEqual(call.call_count,1)
+        # Adaptive requests share the decoder's 32 KiB cap, ordinary classify does not.
+        with patch('production_policy.detect',return_value={'ok':True}):
+            body=json.dumps({'text':'a','words':['語'*20]*150})
+            self.assertGreater(len(body),16384)
+            self.assertEqual(self.request(body,path='/adaptive/detect')[0],200)
+        self.assertEqual(self.request('x'*32769,path='/adaptive/detect')[0],400)
     def setUp(self):
         self.classifier = FakeClassifier()
         self.server = ShadowServer(("127.0.0.1", 0), self.classifier)

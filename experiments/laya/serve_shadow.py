@@ -84,7 +84,7 @@ class Handler(BaseHTTPRequestHandler):
             if len(lengths) != 1:
                 raise ValueError()
             length = int(lengths[0])
-            if not 0 < length <= (32768 if laughter else 16384):
+            if not 0 < length <= (32768 if laughter or adaptive else 16384):
                 raise ValueError()
             data = self.rfile.read(length)
             if len(data) != length:
@@ -100,7 +100,7 @@ class Handler(BaseHTTPRequestHandler):
             prepare(text, context)
             if adaptive:
                 words = value.get("words", [])
-                if not isinstance(words,list) or len(words)>64 or any(not isinstance(w,str) or not 1<=len(w)<=80 for w in words):
+                if not isinstance(words,list) or len(words)>1024 or any(not isinstance(w,str) or not 1<=len(w)<=80 for w in words):
                     raise ValueError()
         except (ValueError, TypeError, UnicodeError, TimeoutError):
             self.reply(400, {"error": "invalid_request"})

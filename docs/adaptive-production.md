@@ -46,23 +46,24 @@ Macは開発・初回配置にだけ使う。稼働中はPiのGo BotがDiscord�
 - 既存user unit `laya-shadow.service`: `/adaptive/detect` と `/adaptive/judge` を追加。固定済みのオフラインモデルを使用。
 - `laya-decoder.service`: 127.0.0.1:8767。生成コードはネットワークなし・読み取り専用・非rootのDockerのみで実行。Python runner内部にもメモリ/CPU上限を設定し、Piのmemory cgroup無効時を補完。
 - `laya-decoder-update.timer`: 2分ごとに `/etc/laya-decoder/approved-release.json` の固定commit/indexを確認。検証成功後だけsnapshotへのsymlinkを原子的に切り替える。
-- `laya-decoder-generate.timer`: 1分ごとに承認済み合成テンプレートの依頼を進める。1状態ディレクトリにつき新規依頼3件まで。POST直前にIDを保存し、応答不明時は同一IDのGETだけ。ERROR/TIMEOUTは自動再送しない。
+- `laya-decoder-generate.timer`: 1分ごとに承認済み合成テンプレートの依頼を進める。従来モードは1状態ディレクトリにつき新規依頼3件まで、自動モードはUTC日ごとに3件まで。POST直前にIDを保存し、応答不明時は同一IDのGETだけ。ERROR/TIMEOUTは自動再送しない。
 
 デコーダーのtrusted controllerはdockerグループを使用するため、そのcontrollerとインストール済みソースはroot所有にする。生成コードにDocker socketや資格情報をマウントしない。Botのユーザーはdockerグループに加えない。
 
 ## 合成例・生成・公開・本番採用
 
-無数の未知方式から独立した正解を自動で作ることはできない。初期運用は次の承認点を残す。Macは不要で、Pi上で完結する。
+未知検知後、Piはroot所有の `/etc/laya-decoder/automatic.json` で許可された公開仕様から、共有用サンプル3件と独立した正常・不正入力の検証契約を自動生成する。実投稿本文・ID・その可逆符号列はLunaへ送らない。生成器に渡す仕様と合成例、非共有の検証例は、Lunaの回答より前に固定する。生成コード自身から正解を作らない。
 
-1. 未知形式のselectorだけを `/var/lib/laya-decoder/discovery/` に保存する。実投稿本文・ID・符号列をLunaへ送らない。
-2. 運用者が公開可能な合成例と、それと独立した正常/不正入力の正解を用意し、root所有の `/etc/laya-decoder/public-templates/<family>.json` に置く。テンプレートがない未知形式は `awaiting_public_samples` のまま。
-3. テンプレートの字段は `family`, `selector`, `samples`, `cases`（各text/expected）, `public_synthetic_approved: true`。復元器にはcasesの正解を与えない。
-4. Luna本人性照合・コード制限・Docker内の独立検証を通過したものだけ `proposals/` に保存する。
-5. Piの専用評価repo checkoutで `services/decoder/publication.py prepare` を実行する。対象はindex・contracts・registry/bundlesのみ。base commit・具体的title・全ファイルhashを `publication-plan.json` に保存する。
-6. その具体案への承認後、同じJSONを `--approval` に渡して `publication.py publish` を実行する。Commit・Push後にCIが評価用Releaseを作成する。応答不明なら `publication-pending.json` の同一commitを確認し、再Commitしない。
-7. 本番採用するcommit/indexを `approved-release.json` に設定する。Piのtimerが取得・ハッシュ確認・全復元器再検証後に有効化し、Botが保留投稿を自動再判定する。
+初期の自動許可は `x9:` のみ。UTF-8各バイトを `(73*b+41)%256` に置換して大文字hexにする、既存評価で明示された公開仕様を使う。これを「仕様も鍵も未知の方式を推定した成功」とは扱わない。裸のhexや別の接頭辞へこの仕様を推定適用しない。標準hex/Base64/Base32/percent/Unicode escapeにも合成レシピを実装しているが、root方針で個別に許可するまで自動送信しない。方式が特定できないselectorは `preparation/<family>.json` の `needs_format_spec` で保持する。
 
-GitHubの初期取得は専用repoのContents read権限だけでよい。Piから将来の承認済みCommit/Pushを実行するときは専用repoだけの書き込み資格情報とGitのcredential設定を別途用意する。BotトークンやMac Keychainの値を転用しない。
+1. 復元後の未解決本文に `x9:` があれば、外層・内層を問わず専用prefix selectorを登録する。明示的なprefix復元器は広いshape復元器より優先する。
+2. `laya-decoder-generate.timer` が合成準備、Luna依頼、本人性確認、隔離Dockerでの独立検証を進める。自動モードはUTC日ごとに新規3件まで。上限に達した未送信依頼は翌日へ持ち越す。送信前にIDを保存し、応答不明後はGETのみ。失敗/期限切れ/検証不一致は勝手に再送しない。
+3. 公開可能な仕様・合成例だけをLunaへ送る。正解付き検証例は送らない。候補が全検証を通るまで本番は変更しない。
+4. 自動公開方針を別途明示承認して `publish_validated=true` にした場合、`laya-decoder-publication.timer` が専用repoの更新案を作り、独立検証を再実行し、index・当該contract・bundleの最大5ファイルだけをCommit/Pushする。Pi専用トークンに対象repoのContents read/write、Actions readが必要。自動公開を許可していない場合は従来の具体的Commit承認で止まる。
+5. 公開前にbase・title・全差分ハッシュを永続化。Commit後/Push応答不明でも同一Commitを再利用し、force pushはしない。差分ドリフト・遠隔競合は停止して既存結果を保持する。未決の本番採用DMがある間は次候補で置き換えない。
+6. CI/Release成功と受取側の検証後、指定ユーザーへ本番採用DMを1件送る。DMで承認されてからPiが反映し、既存の待機投稿を最新版で再判定する。対象外・保留は非加算、確定分は台帳で二重加算を防ぐ。
+
+`automatic` 導入モードは、具体的にレビューした自動公開範囲への承認後のみ実行する。BotやMacの資格情報は転用しない。従来のroot所有手動テンプレートは引き続き使用でき、その提案は自動公開の対象外。
 
 ## 導入
 
@@ -85,7 +86,7 @@ GitHubの初期取得は専用repoのContents read権限だけでよい。Piか�
 
 `install-adaptive.sh approvals` で有効化する。既存の本番版と累計を引き継ぎ、従来の固定版更新timerを停止して `laya-decoder-approval.timer` に切り替える。Botの新しいバイナリと配布ソースを先に配置する必要がある。GitHub資格情報には専用評価リポジトリの Contents read に加えて **Actions read** が必要。
 
-Piの `publication-pushed.json` に記録されたCommit/indexだけを候補にする。専用評価workflowの最新push実行が成功し、Releaseのハッシュ・全復元器の独立検証が通った後、ユーザー `845282954636951583` のDMに「本番採用を許可／却下」のボタンを1件送る。実投稿本文は送らない。Commit・Pushや合成例登録の承認を代替しない。
+Piの `publication-pushed.json` に記録されたCommit/indexだけを候補にする。専用評価workflowの最新push実行が成功し、Releaseのハッシュ・全復元器の独立検証が通った後、ユーザー `845282954636951583` のDMに「本番採用を許可／却下」のボタンを1件送る。実投稿本文は送らない。合成準備・限定したGitHub自動公開への事前承認を代替しない。自動方針の範囲外は個別承認が必要。
 
 回答期限は依頼作成から7日。催促は送らない。本人・DMチャンネル・Bot返信ID・依頼のハッシュを一致確認する。承認は候補Commit/indexと依頼時の本番版に固定され、候補や本番版の変更、期限切れ、却下では使えない。回答を永続化後、PiはCIと配布物を再検証し、同じ配備ロックの中で基準版の一致を確認して切り替える。成功後は既存の保留再判定を使う。DMは同じメッセージを編集し、反映完了・失敗・却下・失効を表示する。
 

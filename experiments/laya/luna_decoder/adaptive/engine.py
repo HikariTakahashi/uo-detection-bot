@@ -11,6 +11,10 @@ def explore(text,decoders,image,max_depth=8,max_nodes=32,max_seconds=60,execute=
         current,chain=queue.pop(0)
         if time.monotonic()-started>=max_seconds:return {'status':'budget','edges':edges,'errors':errors}
         matched=[(r,dispatch(r,current)) for r in decoders if dispatch(r,current) is not None]
+        # An explicitly scoped format owns its wrapper; broad lexical decoders
+        # must not reinterpret that wrapper's payload as a different encoding.
+        explicit=[(r,p) for r,p in matched if r.get('selector',{}).get('kind')=='prefix' or 'selector' not in r]
+        if explicit:matched=explicit
         if not matched:
             leaves[current]=chain;continue
         if len(chain)>=max_depth:return {'status':'budget','edges':edges,'errors':errors}

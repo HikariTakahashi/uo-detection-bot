@@ -27,6 +27,13 @@ class FakeRegistry:
     def active(self):return self.records
 
 class ProductionPolicyTests(unittest.TestCase):
+    def test_large_vocabulary_keeps_actual_targets_and_small_prompt(self):
+        words=[f'未使用語{i}' for i in range(270)]+['うお','uo','ＵＯ','どわー']
+        c=FakeClassifier(['A','B'])
+        self.assertEqual(policy.judge(c,'ＵＯww。どわー、ありがとう！',words),{'label':'mockery','units':1})
+        self.assertEqual(c.agent.states[0]['対象ワード'],'uo')
+        self.assertNotIn('未使用語',json.dumps(c.agent.states,ensure_ascii=False))
+        self.assertLess(len(json.dumps(c.agent.states)),500)
     def test_long_detection_is_bounded(self):
         c=FakeClassifier(['A']);self.assertTrue(policy.detect(c,'01'*900)['suspected'])
         self.assertLess(len(json.dumps(c.agent.states[0])),300)
@@ -43,6 +50,22 @@ class ProductionPolicyTests(unittest.TestCase):
         self.assertEqual(policy.judge(FakeClassifier(['A','C']),'うおw。どわー。',['うお','どわー']),{'label':'uncertain','units':0})
 
 class RuntimeTests(unittest.TestCase):
+    def test_large_vocabulary_unknown_and_restored_target(self):
+        words=[f'未使用語{i}' for i in range(270)]+['うお']
+        with tempfile.TemporaryDirectory() as tmp:
+            seen=[]
+            def predict(route,value):
+                seen.append(value['words'])
+                return policy.detect(FakeClassifier(['A']),value['text'],value['words']) if route=='detect' else policy.judge(FakeClassifier(['A']),value['text'],value['words'])
+            r=self.setup_runtime(tmp,[],predict)
+            out=r.analyze({'text':'x9:E4F25FE4F28318','revision':'b'*64,'words':words})
+            self.assertTrue(out['unknown']);self.assertEqual(out['units'],0)
+            with patch.object(runtime,'explore',return_value={'status':'terminal','text':'うおw','chain':['decoder']}):
+                out=r.analyze({'text':'encoded','revision':'b'*64,'words':words})
+            self.assertEqual((out['label'],out['units']),('mockery',1))
+            self.assertTrue(all(v==words for v in seen))
+            for invalid in (["語"]*1025,["語"*81],[None]):
+                with self.assertRaises(ValueError):r.analyze({'text':'text','revision':'b'*64,'words':invalid})
     def setup_runtime(self,path,records,predict):
         r=runtime.Runtime(Path(path)/'current','sha256:'+'0'*64,predict=predict)
         r.snapshot=lambda:('a'*64,FakeRegistry(records))

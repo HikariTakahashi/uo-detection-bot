@@ -67,8 +67,11 @@ def judge(classifier, text, words):
         if not any(start>=match.end() for start,_ in spans):
             clause=match[0]+following
         else:clause=match[0]
-        adjacent=any(re.search(re.escape(normalize_laughter(w))+r'w+',clause) for w in words)
-        state={'投稿':clause, '対象ワード':'、'.join(words)}
+        # Match against the full configured vocabulary, but do not fill the
+        # model context with hundreds of spelling variants absent from this clause.
+        clause_words=sorted({body[start:end] for start,end in spans if match.start()<=start<match.end()})
+        adjacent=any(re.search(re.escape(w)+r'w+',clause) for w in clause_words)
+        state={'投稿':clause, '対象ワード':'、'.join(clause_words)}
         if not adjacent:
             # The reaction marker itself is not evidence of hostility. Judge
             # the surrounding words without letting 'uo' bias the sentiment.

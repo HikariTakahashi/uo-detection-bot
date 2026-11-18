@@ -13,8 +13,8 @@ FILES=[
  'scripts/install-adaptive.sh','adaptive.config.example.json',
  'experiments/laya/serve_shadow.py','experiments/laya/production_policy.py',
  *['experiments/laya/luna_decoder/'+p for p in LIBRARY],
- *['services/decoder/'+p for p in ['runtime.py','release.py','generate.py','publication.py','approval.py','initial-release.json']],
- *['deploy/'+p for p in ['laya-decoder.service','laya-decoder-update.service','laya-decoder-update.timer','laya-decoder-generate.service','laya-decoder-generate.timer','laya-decoder-approval.service','laya-decoder-approval.timer']],
+ *['services/decoder/'+p for p in ['runtime.py','release.py','generate.py','synthetic.py','autopublish.py','publication.py','approval.py','initial-release.json']],
+ *['deploy/'+p for p in ['laya-decoder.service','laya-decoder-update.service','laya-decoder-update.timer','laya-decoder-generate.service','laya-decoder-generate.timer','laya-decoder-approval.service','laya-decoder-approval.timer','laya-decoder-publication.service','laya-decoder-publication.timer']],
 ]
 
 def package(root,binary,output):

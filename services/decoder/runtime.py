@@ -17,6 +17,7 @@ from adaptive.common import atomic, canonical, digest, read
 from adaptive.discovery import candidate, dispatch
 from adaptive.engine import explore
 from adaptive.registry import Registry
+import synthetic
 
 
 def inference(route, value):
@@ -31,7 +32,10 @@ def inference(route, value):
 class Runtime:
     def __init__(self,state,image,predict=inference,execute=None):
         self.state=Path(state);self.image=image;self.predict=predict;self.execute=execute
-        self.policy=digest((ROOT/'experiments/laya/production_policy.py').read_bytes())
+        self.policy=digest(canonical([digest(p.read_bytes()) for p in (
+            ROOT/'experiments/laya/production_policy.py', Path(__file__),
+            ROOT/'services/decoder/synthetic.py',
+            ROOT/'experiments/laya/luna_decoder/adaptive/engine.py')]))
 
     def snapshot(self):
         snapshot=self.state.resolve(strict=True)
@@ -47,7 +51,7 @@ class Runtime:
         if set(value)!={'text','revision','words'}:raise ValueError('invalid fields')
         text,revision,words=value['text'],value['revision'],value['words']
         if not isinstance(text,str) or not 1<=len(text)<=2000 or not re.fullmatch('[a-f0-9]{64}',revision):raise ValueError('input bounds')
-        if not isinstance(words,list) or not 1<=len(words)<=64 or any(not isinstance(w,str) or not 1<=len(w)<=80 for w in words):raise ValueError('word bounds')
+        if not isinstance(words,list) or not 1<=len(words)<=1024 or any(not isinstance(w,str) or not 1<=len(w)<=80 for w in words):raise ValueError('word bounds')
         release,registry=self.snapshot();records=registry.active()
         # Always try installed decoders FIRST. A model context limit cannot block
         # a deterministic restoration already available in the approved registry.
@@ -61,7 +65,7 @@ class Runtime:
         if any(ord(c)<32 and c not in '\n\t' for c in body):
             result['unknown']=True;return result
         detection=self.predict('detect',{'text':body,'words':words})
-        c=candidate(body,detection['suspected'])
+        c=synthetic.explicit_candidate(body) or candidate(body,detection['suspected'])
         matched=[r for r in records if dispatch(r,body) is not None]
         unresolved=bool(c or ((detection['suspected'] or detection.get('technical_hold')) and not detection.get('has_authored_target',False)))
         if unresolved:

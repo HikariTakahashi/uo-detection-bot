@@ -1,0 +1,9 @@
+[Unit]
+Description=Continue validated decoder publication
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+RandomizedDelaySec=15
+Unit=laya-decoder-publication.service
+[Install]
+WantedBy=timers.target

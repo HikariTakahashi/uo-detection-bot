@@ -8,12 +8,14 @@ from pathlib import Path
 import sys
 import urllib.request
 import uuid
+import time
 ROOT=Path(__file__).resolve().parents[2]
 sys.path[:0]=[str(ROOT/'experiments/laya/luna_decoder'),str(ROOT/'experiments/laya')]
 from adaptive.common import read,atomic,canonical,digest
 from adaptive.discovery import blind_prompt,validate_selector
 from adaptive.registry import Registry
 from pipeline import verify_reply
+import synthetic
 
 ORIGIN='https://luna-direct-api.hikarit0407.workers.dev'
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -29,21 +31,27 @@ def call(path,method='GET',value=None):
         return json.loads(raw)
 
 
-def advance(state,templates,image,transport=call):
+def advance(state,templates,image,transport=call,automatic=None,now=None):
     state=Path(state);templates=Path(templates);state.mkdir(parents=True,exist_ok=True)
     with (state/'generation.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         jobs=state/'jobs';jobs.mkdir(exist_ok=True)
-        attempted=sum(read(p).get('state')!='queued' for p in jobs.glob('*.json'))
+        now=int(time.time()) if now is None else now
+        generated=synthetic.prepare(state,automatic['synthetic_recipes']) if automatic else None
+        attempted=sum(read(p).get('state')!='queued' and (not automatic or read(p).get('submitted_at',now)//86400==now//86400) for p in jobs.glob('*.json'))
         # Default lifetime budget three. A new explicitly reviewed batch is needed
         # for more; restarts and retries do not reset this limit.
         for discovery in sorted((state/'discovery').glob('*.json')):
             item=read(discovery)
             if item['state']=='known_rejection':continue
             family=item['family'];template=templates/(family+'.json')
+            if not template.exists() and generated:template=generated/(family+'.json')
             if not template.exists():continue
             t=read(template)
-            if set(t)!={'family','selector','samples','cases','public_synthetic_approved'} or t['family']!=family or t['selector']!=item['selector'] or t['public_synthetic_approved'] is not True:raise ValueError('approved public synthetic template required')
+            fields={'family','selector','samples','cases','public_synthetic_approved'}
+            if 'specification' in t:fields.add('specification')
+            if set(t)!=fields or t['family']!=family or t['selector']!=item['selector'] or t['public_synthetic_approved'] is not True:raise ValueError('approved public synthetic template required')
+            prompt=synthetic.prompt(t) if 'specification' in t else blind_prompt(t['samples'])
             validate_selector(t['selector'])
             if family!='discovered-'+digest(canonical(t['selector']))[:16]:raise ValueError('family selector mismatch')
             if not isinstance(t['samples'],list) or not 1<=len(t['samples'])<=3 or any(not isinstance(v,str) or len(v)>400 for v in t['samples']):raise ValueError('sample bounds')
@@ -56,10 +64,9 @@ def advance(state,templates,image,transport=call):
             if job['template_sha256']!=sha:raise ValueError('submitted template changed')
             if job['state'] not in ('queued','submitted'):continue
             if job['state']=='queued':
-                if attempted>=3:continue
+                if attempted>=(automatic['daily_jobs'] if automatic else 3):continue
                 if not transport('/v1/connection').get('send_enabled'):return
-                prompt=blind_prompt(t['samples'])
-                job.update(state='submitted',prompt_sha256=digest(prompt));atomic(path,job);attempted+=1
+                job.update(state='submitted',prompt_sha256=digest(prompt),submitted_at=now);atomic(path,job);attempted+=1
                 try:transport('/v1/jobs','POST',{'request_id':job['request_id'],'prompt':prompt,'share_approved':True})
                 except Exception:continue # Only GET on all subsequent invocations.
             try:reply=transport('/v1/jobs/'+job['request_id'])
@@ -81,7 +88,7 @@ def advance(state,templates,image,transport=call):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--state',type=Path,required=True);p.add_argument('--templates',type=Path,required=True);p.add_argument('--image',required=True);a=p.parse_args()
-    try:advance(a.state,a.templates,a.image)
+    try:advance(a.state,a.templates,a.image,automatic=synthetic.policy())
     except Exception:print('Generation deferred; inspect local job states (no automatic resubmission).',file=sys.stderr);raise SystemExit(1)
 
 if __name__=='__main__':main()
