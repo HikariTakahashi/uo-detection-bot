@@ -105,12 +105,12 @@ automatic)
     (cd "$source_dir" && sha256sum --check --quiet DEPLOY-SHA256SUMS)
     test -f /etc/laya-decoder/dm-approval.json
     test -f /opt/laya-decoder/current/services/decoder/autopublish.py
-    printf '%s\n' '{"schema":1,"synthetic_recipes":["x9"],"publish_validated":true,"repository":"HikariTakahashi/uo-decoder-evaluation","daily_jobs":3}' > /etc/laya-decoder/automatic.json
+    printf '%s\n' '{"schema":1,"synthetic_recipes":["x9","hex-or-x9","base64","base32","percent","unicode"],"publish_validated":true,"repository":"HikariTakahashi/uo-decoder-evaluation","daily_jobs":3}' > /etc/laya-decoder/automatic.json
     chown root:root /etc/laya-decoder/automatic.json
     chmod 0644 /etc/laya-decoder/automatic.json
     systemctl daemon-reload
     systemctl enable --now laya-decoder-generate.timer laya-decoder-publication.timer laya-decoder-approval.timer
-    echo 'Automatic x9 synthetic preparation and validated data publication enabled; production adoption still requires DM approval.'
+    echo 'Automatic bounded prefixless/multilayer synthetic preparation and validated data publication enabled; production adoption still requires DM approval.'
     ;;
 enable)
     test -s /etc/laya-decoder/github-token

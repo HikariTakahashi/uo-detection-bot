@@ -47,6 +47,23 @@ class Runtime:
     def release(self):
         return self.snapshot()[0]
 
+    def prepare_candidates(self,text,registry,release):
+        inference=synthetic.infer_chain(text)
+        records=registry.active();pending=[]
+        for plan in inference['plans']:
+            matches=[r for r in records if r.get('family')==plan['family'] or r.get('selector')==plan['selector']]
+            # A historical hex decoder cannot prove the new competing-candidate contract.
+            covered=bool(matches)
+            if covered and plan['recipe']=='hex-or-x9':
+                covered=any(read(registry.path/'bundles'/r['id']/'verification.json')['cases']==synthetic.build('hex-or-x9')['cases'] for r in matches)
+            if covered:continue
+            pending.append(plan['family'])
+            path=self.state.parent/'discovery'/(plan['family']+'.json')
+            value={**plan,'state':'awaiting_public_samples','release':release}
+            previous=read(path) if path.exists() else None
+            if previous!=value:atomic(path,value)
+        return sorted(set(pending)),inference['state']
+
     def analyze(self,value):
         if set(value)!={'text','revision','words'}:raise ValueError('invalid fields')
         text,revision,words=value['text'],value['revision'],value['words']
@@ -56,14 +73,26 @@ class Runtime:
         # Always try installed decoders FIRST. A model context limit cannot block
         # a deterministic restoration already available in the approved registry.
         kwargs={} if self.execute is None else {'execute':self.execute}
-        graph=explore(text,records,self.image,**kwargs)
         result={'revision':revision,'release':release,'unknown':False,'label':'uncertain','units':0,'families':[]}
+        pending,inference_state=self.prepare_candidates(text,registry,release)
+        if pending:
+            # Trusted inverses are preparation evidence only. Count/classification
+            # waits for Luna code, independent validation and exact DM adoption.
+            return {**result,'unknown':True,'families':pending}
+        if inference_state=='ambiguous_candidates':return {**result,'unknown':True}
+        graph=explore(text,records,self.image,**kwargs)
         if graph['status']!='terminal':
             result['unknown']=True
+            for body in graph.get('candidates',[])[:8]:
+                pending,_=self.prepare_candidates(body,registry,release)
+                result['families'].extend(pending)
+            result['families']=sorted(set(result['families']))
             return result
         body=graph['text']
         if any(ord(c)<32 and c not in '\n\t' for c in body):
             result['unknown']=True;return result
+        pending,inference_state=self.prepare_candidates(body,registry,release)
+        if pending or inference_state=='ambiguous_candidates':return {**result,'unknown':True,'families':pending}
         detection=self.predict('detect',{'text':body,'words':words})
         c=synthetic.explicit_candidate(body) or candidate(body,detection['suspected'])
         matched=[r for r in records if dispatch(r,body) is not None]

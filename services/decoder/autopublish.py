@@ -99,7 +99,7 @@ def advance(state,checkout,shared,image,policy):
             if job['state']!='awaiting_publication_approval':continue
             family=p.stem;template=state/'auto-templates'/(family+'.json')
             if not template.exists():continue  # manual proposals still require manual approval
-            t=read(template);name=synthetic.identify(t['selector'])
+            t=read(template);name=synthetic.template_recipe(t)
             if name not in policy['synthetic_recipes'] or t!=synthetic.build(name) or job['template_sha256']!=digest(synthetic.canonical(t)):
                 raise ValueError('proposal not from approved automatic recipe')
             # Require the immutable contract to be the independently generated gold.
