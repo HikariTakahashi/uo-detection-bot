@@ -279,7 +279,7 @@ assert read(shared/'results'/(r['id']+'.json'))['state']=='active'
 	out.Units = 2
 	runReview(t, review, discord, out.Release)
 	runReview(t, review, discord, out.Release)
-	if s.sent != 1 || s.edits != 1 || discord.sends != 1 || review.detector.counts[reviewUser] != 9 {
+	if s.sent != 1 || s.edits != 1 || discord.sends != 2 || discord.edits != 0 || discord.replies[0].Content != unknownMessage(reviewUser) || discord.replies[1].Content != resultMessage("mockery", reviewUser, 9) || review.detector.counts[reviewUser] != 9 {
 		t.Fatal("duplicate approval, reply, or count")
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"net/http"
 	"net/http/httptest"
@@ -41,7 +42,7 @@ func (f *reviewFake) ChannelMessage(c, id string, _ ...discordgo.RequestOption) 
 }
 func (f *reviewFake) ChannelMessageSendComplex(c string, m *discordgo.MessageSend, _ ...discordgo.RequestOption) (*discordgo.Message, error) {
 	f.sends++
-	r := &discordgo.Message{ID: "567890123456789012", Content: m.Content, Author: &discordgo.User{ID: "999999999999999999"}, MessageReference: m.Reference}
+	r := &discordgo.Message{ID: fmt.Sprint(567890123456789011 + f.sends), Content: m.Content, Author: &discordgo.User{ID: "999999999999999999"}, MessageReference: m.Reference}
 	f.replies = append(f.replies, r)
 	if f.failSend {
 		return nil, errors.New("response lost")
@@ -61,7 +62,11 @@ func (f *reviewFake) ChannelMessageDelete(c, id string, _ ...discordgo.RequestOp
 	return nil
 }
 func (f *reviewFake) ChannelMessages(string, int, string, string, string, ...discordgo.RequestOption) ([]*discordgo.Message, error) {
-	return f.replies, nil
+	out := append([]*discordgo.Message(nil), f.replies...)
+	for i, j := 0, len(out)-1; i < j; i, j = i+1, j-1 {
+		out[i], out[j] = out[j], out[i]
+	}
+	return out, nil
 }
 func reviewSetup(t *testing.T) (*adaptiveReviews, *reviewFake, *adaptiveResult) {
 	t.Helper()
@@ -106,7 +111,7 @@ func TestAdaptivePendingReleaseExactlyOnce(t *testing.T) {
 	out.Units = 2
 	runReview(t, a, f, out.Release)
 	runReview(t, a, f, out.Release)
-	if f.sends != 1 || a.detector.counts[reviewUser] != 9 || f.replies[0].Content != resultMessage("mockery", reviewUser, 9) {
+	if f.sends != 2 || f.edits != 0 || a.detector.counts[reviewUser] != 9 || f.replies[0].Content != unknownMessage(reviewUser) || f.replies[1].Content != resultMessage("mockery", reviewUser, 9) {
 		t.Fatal("wrong final count/notice")
 	}
 	state, e := loadDetectionState(a.detector.statePath)
@@ -132,20 +137,20 @@ func TestAdaptiveAmbiguousSendReconciles(t *testing.T) {
 		t.Fatal("must find existing reply")
 	}
 }
-func TestAdaptiveEditFailureDoesNotRecount(t *testing.T) {
+func TestAdaptiveResultSendFailureDoesNotRecount(t *testing.T) {
 	a, f, out := reviewSetup(t)
 	runReview(t, a, f, out.Release)
 	out.Release = strings.Repeat("b", 64)
 	out.Unknown = false
 	out.Label = "mockery"
 	out.Units = 1
-	f.failEdit = true
+	f.failSend = true
 	if a.process(context.Background(), f, reviewID, out.Release) == nil {
-		t.Fatal("expected edit failure")
+		t.Fatal("expected send failure")
 	}
-	f.failEdit = false
+	f.failSend = false
 	runReview(t, a, f, out.Release)
-	if a.detector.counts[reviewUser] != 8 || f.sends != 1 {
+	if a.detector.counts[reviewUser] != 8 || f.sends != 2 || f.edits != 0 {
 		t.Fatal("duplicate count or reply")
 	}
 }
@@ -184,13 +189,13 @@ func TestAdaptiveOtherAndHoldRelease(t *testing.T) {
 	out.Unknown = false
 	out.Label = "uncertain"
 	runReview(t, a, f, out.Release)
-	if a.records[reviewID].State != "waiting" || f.replies[0].Content != resultMessage("uncertain", reviewUser, 7) {
+	if a.records[reviewID].State != "waiting" || f.replies[1].Content != resultMessage("uncertain", reviewUser, 7) {
 		t.Fatal("hold not retained")
 	}
 	out.Release = strings.Repeat("c", 64)
 	out.Label = "other"
 	runReview(t, a, f, out.Release)
-	if a.records[reviewID].State != "done" || a.detector.counts[reviewUser] != 7 || f.sends != 1 {
+	if a.records[reviewID].State != "done" || a.detector.counts[reviewUser] != 7 || f.sends != 3 || f.edits != 0 {
 		t.Fatal("other wrong")
 	}
 }
@@ -229,7 +234,7 @@ func TestAdaptiveReceiptSurvivesReviewCheckpointFailure(t *testing.T) {
 	}
 	a.dir = original
 	runReview(t, a, f, out.Release)
-	if a.detector.counts[reviewUser] != 8 || f.sends != 1 {
+	if a.detector.counts[reviewUser] != 8 || f.sends != 2 || f.edits != 0 {
 		t.Fatal("replayed checkpoint added again")
 	}
 }
@@ -295,5 +300,137 @@ func TestAdaptiveCancellationAfterFailedCheckpointWithdrawsReceipt(t *testing.T)
 	runReview(t, a, f, out.Release)
 	if a.detector.counts[reviewUser] != 7 || a.records[reviewID].CancelPending {
 		t.Fatal("cancelled pending count survived")
+	}
+}
+
+func reloadReview(t *testing.T, a *adaptiveReviews) *adaptiveReviews {
+	t.Helper()
+	config := filepath.Join(filepath.Dir(a.dir), "config.json")
+	b, err := newAdaptive(config, a.dir, a.detector)
+	if err != nil {
+		t.Fatal(err)
+	}
+	b.endpoint, b.botID = a.endpoint, a.botID
+	return b
+}
+
+func TestAdaptiveRepeatedHoldRecoveryUsesLatestNotification(t *testing.T) {
+	a, f, out := reviewSetup(t)
+	runReview(t, a, f, out.Release)
+	out.Release = strings.Repeat("b", 64)
+	runReview(t, a, f, out.Release)
+	previous := a.records[reviewID].ReplyID
+	out.Release = strings.Repeat("c", 64)
+	f.failSend = true
+	if a.process(context.Background(), f, reviewID, out.Release) == nil {
+		t.Fatal("expected lost response")
+	}
+	a = reloadReview(t, a)
+	f.failSend = false
+	runReview(t, a, f, out.Release)
+	if f.sends != 3 || f.edits != 0 || a.records[reviewID].ReplyID == previous || a.records[reviewID].ReplyID != f.replies[2].ID {
+		t.Fatal("matched an earlier identical hold")
+	}
+	a = reloadReview(t, a)
+	runReview(t, a, f, out.Release)
+	if f.sends != 3 || a.detector.counts[reviewUser] != 7 {
+		t.Fatal("restart duplicated notification/count")
+	}
+	if err := a.remove(reviewID, reviewGuild); err != nil {
+		t.Fatal(err)
+	}
+	runReview(t, a, f, out.Release)
+	if f.deletes != 3 || len(a.records[reviewID].ReplyHistory) != 0 {
+		t.Fatal("cancellation left notices")
+	}
+}
+
+func TestAdaptiveMissingAmbiguousResultDoesNotReusePendingOrResend(t *testing.T) {
+	a, f, out := reviewSetup(t)
+	runReview(t, a, f, out.Release)
+	out.Release = strings.Repeat("b", 64)
+	out.Unknown = false
+	out.Label = "mockery"
+	out.Units = 1
+	f.failSend = true
+	if a.process(context.Background(), f, reviewID, out.Release) == nil {
+		t.Fatal("expected lost response")
+	}
+	f.replies = f.replies[:1] // Server did not retain the attempted result.
+	f.failSend = false
+	a = reloadReview(t, a)
+	if a.process(context.Background(), f, reviewID, out.Release) == nil {
+		t.Fatal("uncertain delivery must remain blocked")
+	}
+	if f.sends != 2 || a.detector.counts[reviewUser] != 8 || !a.records[reviewID].NoticeDirty {
+		t.Fatal("blind retry or duplicate count")
+	}
+}
+
+func TestAdaptiveLegacyDeliveredNoticeNotReplayed(t *testing.T) {
+	a, f, out := reviewSetup(t)
+	runReview(t, a, f, out.Release)
+	r := a.records[reviewID]
+	r.NoticeVersion = 0
+	if err := a.save(r); err != nil {
+		t.Fatal(err)
+	}
+	a = reloadReview(t, a)
+	runReview(t, a, f, out.Release)
+	if f.sends != 1 {
+		t.Fatal("legacy notice replayed")
+	}
+	out.Release = strings.Repeat("b", 64)
+	out.Unknown = false
+	out.Label = "other"
+	runReview(t, a, f, out.Release)
+	if f.sends != 2 || f.edits != 0 || f.replies[0].Content != unknownMessage(reviewUser) {
+		t.Fatal("legacy pending was edited")
+	}
+}
+
+func TestAdaptiveLegacyUnfinishedEditBecomesNewReply(t *testing.T) {
+	a, f, out := reviewSetup(t)
+	runReview(t, a, f, out.Release)
+	r := a.records[reviewID]
+	r.NoticeVersion = 0
+	r.Notice = resultMessage("other", reviewUser, 7)
+	r.NoticeDirty = true
+	r.State = "done"
+	r.Label = "other"
+	if err := a.save(r); err != nil {
+		t.Fatal(err)
+	}
+	a = reloadReview(t, a)
+	runReview(t, a, f, out.Release)
+	a = reloadReview(t, a)
+	runReview(t, a, f, out.Release)
+	if f.sends != 2 || f.edits != 0 || f.replies[0].Content != unknownMessage(reviewUser) || f.replies[1].Content != r.Notice {
+		t.Fatal("legacy unfinished edit was not delivered once")
+	}
+}
+
+func TestAdaptiveEditedPostGetsNewResultWithoutDuplicatingContribution(t *testing.T) {
+	a, f, out := reviewSetup(t)
+	runReview(t, a, f, out.Release)
+	out.Release = strings.Repeat("b", 64)
+	out.Unknown = false
+	out.Label = "mockery"
+	out.Units = 2
+	runReview(t, a, f, out.Release)
+	oldNotice := f.replies[1].Content
+	f.source.Content = "novel:edited"
+	now := time.Now()
+	f.source.EditedTimestamp = &now
+	out.Revision = contentRevision(f.source)
+	out.Units = 1
+	if err := a.edit(&discordgo.MessageUpdate{Message: f.source}); err != nil {
+		t.Fatal(err)
+	}
+	runReview(t, a, f, out.Release)
+	a = reloadReview(t, a)
+	runReview(t, a, f, out.Release)
+	if f.sends != 3 || f.edits != 0 || a.detector.counts[reviewUser] != 8 || f.replies[1].Content != oldNotice || f.replies[2].Content != resultMessage("mockery", reviewUser, 8) {
+		t.Fatal("edited post was not separately announced with replacement count")
 	}
 }

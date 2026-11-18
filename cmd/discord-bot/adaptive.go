@@ -37,6 +37,8 @@ type adaptiveRecord struct {
 	Revision      string    `json:"revision"`
 	Edited        string    `json:"edited"`
 	ReplyID       string    `json:"reply_id"`
+	ReplyHistory  []string  `json:"reply_history,omitempty"`
+	NoticeVersion int       `json:"notice_version,omitempty"`
 	Sending       bool      `json:"sending"` // persisted before POST; uncertain POSTs are reconciled, never blindly retried
 	State         string    `json:"state"`   // queued, waiting, done, cancelled
 	Release       string    `json:"release"`
@@ -59,7 +61,6 @@ type adaptiveResult struct {
 type adaptiveClient interface {
 	messageClient
 	ChannelMessage(string, string, ...discordgo.RequestOption) (*discordgo.Message, error)
-	ChannelMessageEditComplex(*discordgo.MessageEdit, ...discordgo.RequestOption) (*discordgo.Message, error)
 	ChannelMessageDelete(string, string, ...discordgo.RequestOption) error
 	ChannelMessages(string, int, string, string, string, ...discordgo.RequestOption) ([]*discordgo.Message, error)
 }
@@ -121,6 +122,22 @@ func newAdaptive(config, dir string, d *detector) (*adaptiveReviews, error) {
 		}
 		if r.State != "queued" && r.State != "waiting" && r.State != "done" && r.State != "cancelled" {
 			return nil, errors.New("invalid review state")
+		}
+		if r.NoticeVersion < 0 || r.NoticeVersion > 1 || (r.ReplyID != "" && !isSnowflake(r.ReplyID)) {
+			return nil, errors.New("invalid review delivery state")
+		}
+		for _, id := range r.ReplyHistory {
+			if !isSnowflake(id) {
+				return nil, errors.New("invalid review reply history")
+			}
+		}
+		// Existing completed notices stay delivered. An unfinished legacy edit
+		// becomes a new reply without changing its already committed count.
+		if r.NoticeVersion == 0 && r.NoticeDirty && r.ReplyID != "" {
+			queueReviewNotice(&r, r.Notice)
+			if e := a.save(r); e != nil {
+				return nil, e
+			}
 		}
 		a.records[r.ID] = r
 	}
@@ -217,6 +234,20 @@ func resultMessage(label, user string, total uint64) string {
 		return "**審査継続**\n判定が保留されました！\n<@845282954636951583>、なんとかしろ！"
 	}
 }
+
+// A persisted notice is immutable until its delivery is reconciled. The last
+// completed reply bounds recovery so an earlier identical hold cannot match.
+func queueReviewNotice(r *adaptiveRecord, content string) {
+	if r.ReplyID != "" {
+		r.ReplyHistory = append(r.ReplyHistory, r.ReplyID)
+	}
+	r.ReplyID = ""
+	r.Sending = false
+	r.NoticeVersion = 1
+	r.Notice = content
+	r.NoticeDirty = true
+}
+
 func reviewMentions(r adaptiveRecord) *discordgo.MessageAllowedMentions {
 	users := []string{}
 	if r.Label == "uncertain" {
@@ -287,6 +318,10 @@ func (a *adaptiveReviews) release(ctx context.Context) (string, error) {
 // If a POST's outcome is unknown, find the existing reply. Never issue a second
 // POST merely because a timeout or process crash lost its response.
 func (a *adaptiveReviews) reconcile(s adaptiveClient, r adaptiveRecord) (string, error) {
+	boundary := r.ID
+	if len(r.ReplyHistory) > 0 {
+		boundary = r.ReplyHistory[len(r.ReplyHistory)-1]
+	}
 	before := ""
 	for page := 0; page < 100; page++ {
 		msgs, e := s.ChannelMessages(r.Channel, 100, before, "", "", discordgo.WithContext(context.Background()))
@@ -294,11 +329,11 @@ func (a *adaptiveReviews) reconcile(s adaptiveClient, r adaptiveRecord) (string,
 			return "", e
 		}
 		for _, m := range msgs {
-			if m.Author != nil && m.Author.ID == a.botID && m.MessageReference != nil && m.MessageReference.MessageID == r.ID {
-				return m.ID, nil
-			}
-			if len(m.ID) < len(r.ID) || (len(m.ID) == len(r.ID) && m.ID <= r.ID) {
+			if len(m.ID) < len(boundary) || (len(m.ID) == len(boundary) && m.ID <= boundary) {
 				return "", nil
+			}
+			if m.Author != nil && m.Author.ID == a.botID && m.MessageReference != nil && m.MessageReference.MessageID == r.ID && m.Content == r.Notice {
+				return m.ID, nil
 			}
 		}
 		if len(msgs) < 100 {
@@ -332,7 +367,19 @@ func (a *adaptiveReviews) notify(s adaptiveClient, id string) error {
 			if e != nil {
 				return e
 			}
+			if reply == "" {
+				return errors.New("review reply delivery unresolved; operator reconciliation required")
+			}
 			r.ReplyID = reply
+		}
+		for len(r.ReplyHistory) > 0 {
+			if e := s.ChannelMessageDelete(r.Channel, r.ReplyHistory[0]); e != nil && !discordMissing(e) {
+				return e
+			}
+			r.ReplyHistory = r.ReplyHistory[1:]
+			if e := a.save(r); e != nil {
+				return e
+			}
 		}
 		if r.ReplyID != "" {
 			if e := s.ChannelMessageDelete(r.Channel, r.ReplyID); e != nil && !discordMissing(e) {
@@ -366,17 +413,12 @@ func (a *adaptiveReviews) notify(s adaptiveClient, id string) error {
 				return e
 			}
 			r.ReplyID = msg.ID
-			// Save the response ID before subsequent message updates.
+			// Save the response ID before marking this notice delivered.
 			if e = a.save(r); e != nil {
 				return e
 			}
 		}
 	}
-	content := r.Notice
-	_, e := s.ChannelMessageEditComplex(&discordgo.MessageEdit{ID: r.ReplyID, Channel: r.Channel, Content: &content, AllowedMentions: reviewMentions(r)})
-	if e != nil {
-		return e
-	} // A manually removed Bot reply is not recreated.
 	r.NoticeDirty = false
 	return a.save(r)
 }
@@ -475,8 +517,7 @@ func (a *adaptiveReviews) process(ctx context.Context, s adaptiveClient, id, rel
 		current.Release = result.Release
 		current.Families = result.Families
 		current.Label = ""
-		current.Notice = unknownMessage(r.Author)
-		current.NoticeDirty = true
+		queueReviewNotice(&current, unknownMessage(r.Author))
 	} else {
 		units := result.Units
 		if result.Unknown {
@@ -499,8 +540,7 @@ func (a *adaptiveReviews) process(ctx context.Context, s adaptiveClient, id, rel
 		}
 		// Ordinary non-target posts have no review reply. They are not announced.
 		if current.ReplyID != "" || current.Sending || result.Label == "mockery" {
-			current.Notice = resultMessage(result.Label, r.Author, total)
-			current.NoticeDirty = true
+			queueReviewNotice(&current, resultMessage(result.Label, r.Author, total))
 		}
 	}
 	e = a.save(current)
@@ -522,7 +562,7 @@ func (a *adaptiveReviews) run(ctx context.Context, s adaptiveClient) {
 		a.mu.Lock()
 		cancelled := []string{}
 		for id, r := range a.records {
-			if r.State == "cancelled" && (r.ReplyID != "" || r.Sending || r.CancelPending) {
+			if r.State == "cancelled" && (r.ReplyID != "" || len(r.ReplyHistory) > 0 || r.Sending || r.CancelPending) {
 				cancelled = append(cancelled, id)
 			}
 		}
