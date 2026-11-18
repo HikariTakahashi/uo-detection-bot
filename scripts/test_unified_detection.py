@@ -16,6 +16,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'services/decoder'),str(ROOT/'experiments/laya/luna_decoder')]
 import runtime
 import synthetic
+import production_policy as policy
 from adaptive.engine import explore
 from test_candidate_inference import Registry, execute
 
@@ -45,6 +46,50 @@ class UnifiedDetectionTests(unittest.TestCase):
         return r,seen
 
     def request(self,text):return {'text':text,'revision':'b'*64,'words':['うお','uo']}
+
+    def test_readable_japanese_is_not_held_by_detector_alone(self):
+        cases=json.loads((ROOT/'scripts/fixtures/readable-japanese.json').read_text())
+        cases += [{'id':'greeting','text':'こんにちは！今日もよろしくお願いします。'},
+                  {'id':'quotation','text':'「うおw」はどういう意味？'},
+                  {'id':'conversation','text':'収益化まだかな'}]
+        for suspected,technical_hold in [(True,False),(False,True)]:
+            for case in cases:
+                with self.subTest(case=case['id'],suspected=suspected,technical_hold=technical_hold),tempfile.TemporaryDirectory() as tmp:
+                    r,seen=self.make(tmp)
+                    def predict(route,value):
+                        seen.append((route,value['text']))
+                        if route=='detect':
+                            return {'suspected':suspected,'technical_hold':technical_hold,'has_authored_target':False}
+                        # No model is needed for a target-free ordinary post.
+                        return policy.judge(None,value['text'],value['words'])
+                    r.predict=predict
+                    out=r.analyze(self.request(case['text']))
+                    self.assertEqual((out['unknown'],out['label'],out['units'],out['families']),(False,'other',0,[]))
+                    self.assertEqual(seen,[('detect',case['text']),('judge',case['text'])])
+                    self.assertFalse((Path(tmp)/'discovery').exists())
+
+    def test_restored_readable_japanese_is_not_held_by_detector_alone(self):
+        cases=json.loads((ROOT/'scripts/fixtures/readable-japanese.json').read_text())
+        for case in cases:
+            with self.subTest(case=case['id']),tempfile.TemporaryDirectory() as tmp:
+                r,seen=self.make(tmp)
+                def predict(route,value):
+                    seen.append((route,value['text']))
+                    if route=='detect':return {'suspected':True,'technical_hold':False,'has_authored_target':False}
+                    return policy.judge(None,value['text'],value['words'])
+                r.predict=predict
+                text=synthetic.encode('base64',synthetic.encode('percent',case['text']))
+                out=r.analyze(self.request(text))
+                self.assertEqual((out['unknown'],out['label'],out['units']),(False,'other',0))
+                self.assertEqual(seen[-1],('judge',case['text']))
+                self.assertFalse((Path(tmp)/'discovery').exists())
+
+    def test_japanese_prose_with_encoded_target_still_reaches_judge(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            r,seen=self.make(tmp)
+            out=r.analyze(self.request('まじか、%E3%81%86%E3%81%8Aw'))
+            self.assertEqual((out['unknown'],out['label'],out['units']),(False,'mockery',1))
+            self.assertEqual(seen[-1],('judge','まじか、うおw'))
 
     def test_reusable_adopted_decoder_passes_restored_body_to_laya(self):
         with tempfile.TemporaryDirectory() as tmp:

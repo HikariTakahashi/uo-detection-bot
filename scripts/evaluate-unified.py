@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Synthetic Pi acceptance; requires an ISOLATED copy of the adopted registry.
+"""Pi acceptance; requires an ISOLATED copy of the adopted registry.
 
 No Discord clients, credentials, counts or adoption calls. Writes discoveries
 only next to the supplied isolated state, and calls the local Laya classifier.
+Historical readable-language cases are loaded only when explicitly requested.
 """
 import argparse
 import base64
@@ -17,7 +18,8 @@ import runtime
 import synthetic
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--state',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--state',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--readable-regressions',type=Path);a=p.parse_args()
     state=a.state.resolve(strict=True)
     # Refuse known live paths, including symlinks into them.
     if state==Path('/var/lib/laya-decoder') or Path('/var/lib/laya-decoder') in state.parents:
@@ -39,6 +41,8 @@ def main():
            ('ambiguous','41414141',True,'uncertain',0),
            ('unknown-inner',percent('unseen:!??!!??!'),True,'uncertain',0),
            ('restored-quote',synthetic.encode('hex-or-x9','「うおw」の意味'),False,'other',0)]
+    if a.readable_regressions:
+        cases += [(case['id'],case['text'],False,'other',0) for case in json.loads(a.readable_regressions.read_text())]
     rows=[]
     for name,text,unknown,label,units in cases:
         observed.clear();start=time.monotonic()

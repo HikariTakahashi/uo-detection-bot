@@ -118,6 +118,32 @@ class RuntimeTests(unittest.TestCase):
             with patch.object(runtime,'explore',return_value={'status':'ambiguous'}):
                 self.assertTrue(r.analyze({'text':'encoded','revision':'b'*64,'words':['うお']})['unknown'])
 
+    def test_format_evidence_still_holds_after_model_says_readable(self):
+        for text in ['novel:普通の文章','unknown:!??!!??!','eHh4eHh4']:
+            with self.subTest(text=text),tempfile.TemporaryDirectory() as tmp:
+                def predict(route,value):
+                    self.assertEqual(route,'detect','unresolved encoding reached judge')
+                    return {'suspected':False,'technical_hold':False,'has_authored_target':False}
+                r=self.setup_runtime(tmp,[],predict)
+                out=r.analyze({'text':text,'revision':'b'*64,'words':['うお']})
+                self.assertTrue(out['unknown']);self.assertEqual(out['units'],0)
+                self.assertEqual(len(out['families']),1)
+
+    def test_opaque_ascii_shape_still_needs_model_confirmation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            r=self.setup_runtime(tmp,[],lambda *args:{'suspected':True,'technical_hold':False})
+            out=r.analyze({'text':'!??!!??!','revision':'b'*64,'words':['うお']})
+            self.assertTrue(out['unknown']);self.assertEqual(out['units'],0)
+            self.assertEqual(len(out['families']),1)
+
+    def test_failed_or_bounded_restoration_is_not_dismissed(self):
+        for status in ['ambiguous','invalid','cycle','budget']:
+            with self.subTest(status=status),tempfile.TemporaryDirectory() as tmp:
+                r=self.setup_runtime(tmp,[],lambda *args:self.fail('unresolved restoration reached model'))
+                with patch.object(runtime,'explore',return_value={'status':status}):
+                    out=r.analyze({'text':'input','revision':'b'*64,'words':['うお']})
+                self.assertTrue(out['unknown']);self.assertEqual(out['units'],0)
+
 class GenerationTests(unittest.TestCase):
     def setup_template(self,tmp):
         root=Path(tmp);state=root/'state';templates=root/'templates';templates.mkdir()

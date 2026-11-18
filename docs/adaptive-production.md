@@ -8,6 +8,8 @@ Macは開発・初回配置にだけ使う。稼働中はPiのGo BotがDiscord�
 
 固定変換と承認済み復元器は共通の探索で使用する。元本文の完全一致・既存の繰り返し一致は従来どおり、それ以外は永続キューが担当する。各段で固定変換とselectorが合う承認済み復元器の候補を集め、同じ本文への経路はまとめる。明示的な形式接頭辞は対応復元器が担当する。最大8段・32本文・探索60秒で、循環、候補競合、未対応の残り、実行失敗は加算しない。既存固定変換に加え、UTF-8の16進や外側のpercent・Unicode escape・Ascii85等を、登録語がまだ見えない中間層にも適用する。候補が増えた結果、一部の数値列は従来より保守的に保留になる。
 
+復元探索が一意に完了した本文は、具体的な形式候補が残る場合だけ未知変換として審査する。AIの符号化疑い・入力制限だけでは審査通知を出さず、通常の対象語判定へ進める。対象語のない本文や引用・説明は対象外、対象語のある発言は従来の冷笑判定を行う。形式接頭辞・符号列形状・未対応の内層、復元の競合や失敗による保留は維持する。判定方針の版が変わるため、既存の誤保留投稿も通常の再判定で対象外として完了する。
+
 一意に復元した本文全体の完全一致・繰り返し一致は、既存Goルールの件数を使用する。`うおw` 等は復元後の本文をLayaへ渡す。初回に冷笑と確定した投稿には通常の「冷笑を検知しました！」（複数件なら既存の件数文面）と加算後累計を1件返信する。審査中・保留を経た投稿だけに「再判定完了」を付ける。初回保留も通知・保存し、次のリリースで再判定する。過去の審査返信の文面と待機状態から履歴を識別するため、今回の変更による台帳スキーマ追加はない。
 
 固定変換の二重実装を避けるため、runtimeは同じ配布パッケージの `discord-bot-linux-arm64 -restore-view` を各本文に対して呼び出す。このモードはstdin/stdoutだけを使い、Discord・カウント・設定・資格情報を開かない。生成されたPythonは引き続きDockerだけで実行する。helperは配布manifestの検証対象で、バイナリハッシュも判定方針の版に含める。別版や欠損したhelperのまま本番へ反映しない。
@@ -123,3 +125,5 @@ Piで確認した配備条件として、3つのdecoderサービスのTMPDIRは�
 5. 不具合時はBotとruntimeを同時に直前の互換版へ戻す。現行の台帳・receipt・承認済み復元器は保持し、バックアップで累計を巻き戻さない。
 
 再現用テスト: `go test -race ./...`、`go vet ./...`、`python3 -m unittest discover -s scripts -p 'test_*.py'`、`python3 -m unittest discover -s experiments/laya -p 'test_*.py'`。`scripts/evaluate-unified.py` は承認済みregistryの独立コピーと実Layaで合成11件を検証する。実行結果の `initial-bare.result` をJSONに保存し、`UO_UNIFIED_RESPONSE=<そのJSON> go test ./cmd/discord-bot -run TestUnifiedInitialDetectionAndRestart -v` で通常返信・再起動・応答喪失時の重複防止まで接続検証できる。Discord送信はfake、カウントは一時ファイルだけで行う。
+
+通常日本語の誤審査4件を基に、投稿IDとメンションを合成値に置き換えた公開用回帰例を `scripts/fixtures/readable-japanese.json` に置く。隔離Pi検証に `--readable-regressions scripts/fixtures/readable-japanese.json` を付けると合成11件にこの4件を追加する。結果の4件をfixtureのケースIDから `result` へのJSONオブジェクトとして保存し、`UO_READABLE_RESPONSES=<そのJSON> go test ./cmd/discord-bot -run TestReadableJapaneseNoNoticeAndHeldResolution -v` で、実推論の結果から新規通知なし・既存保留の完了・再起動後の重複防止まで確認できる。実投稿そのものの検証は非公開のローカル入力で行い、その識別子や投稿へのリンクを外部生成・公開用データへ追加しない。

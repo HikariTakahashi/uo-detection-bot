@@ -1,0 +1,850 @@
+{
+  "schema": 1,
+  "purpose": "Fixed local accuracy evaluation; do not submit real regressions to external generation.",
+  "label_definition": {
+    "review": "Unknown format carrying a target reaction; hold without counting.",
+    "other": "No authored mockery target; no review notice or count.",
+    "mockery": "Known target reaction; count expected_units."
+  },
+  "cases": [
+    {
+      "id": "unknown-xor-byte-a7-bare-1",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-bare",
+      "text": "44262144262DD0",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw"
+    },
+    {
+      "id": "unknown-xor-byte-a7-bare-2",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-bare",
+      "text": "44260E44252844241BD0D0",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "unknown-xor-byte-a7-bare-3",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-bare",
+      "text": "44262144262DD0874426194426384F0F274426234F0F1444262C",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か"
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-1",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-wrapped",
+      "text": "benchxor:44262144262DD0",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw"
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-2",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-wrapped",
+      "text": "benchxor:44260E44252844241BD0D0",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-3",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-wrapped",
+      "text": "benchxor:44262144262DD0874426194426384F0F274426234F0F1444262C",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か"
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-1",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-bare",
+      "text": "227129134227129138119",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw"
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-2",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-bare",
+      "text": "227129169227130143227131188119119",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-3",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-bare",
+      "text": "227129134227129138119032227129190227129159232168128227129132232168179227129139",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か"
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-1",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-wrapped",
+      "text": "benchdec:227129134227129138119",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw"
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-2",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-wrapped",
+      "text": "benchdec:227129169227130143227131188119119",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-3",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-wrapped",
+      "text": "benchdec:227129134227129138119032227129190227129159232168128227129132232168179227129139",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か"
+    },
+    {
+      "id": "unknown-reverse-text-bare-1",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-bare",
+      "text": "wおう",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw"
+    },
+    {
+      "id": "unknown-reverse-text-bare-2",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-bare",
+      "text": "wwーわど",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "unknown-reverse-text-bare-3",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-bare",
+      "text": "か訳い言たま wおう",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か"
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-1",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-wrapped",
+      "text": "benchrev:wおう",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw"
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-2",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-wrapped",
+      "text": "benchrev:wwーわど",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-3",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-wrapped",
+      "text": "benchrev:か訳い言たま wおう",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か"
+    },
+    {
+      "id": "unknown-zero-width-bare-1",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-bare",
+      "text": "う​お​w",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw"
+    },
+    {
+      "id": "unknown-zero-width-bare-2",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-bare",
+      "text": "ど​わ​ー​w​w",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "unknown-zero-width-bare-3",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-bare",
+      "text": "う​お​w​ ​ま​た​言​い​訳​か",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か"
+    },
+    {
+      "id": "unknown-zero-width-wrapped-1",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-wrapped",
+      "text": "benchzw:う​お​w",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw"
+    },
+    {
+      "id": "unknown-zero-width-wrapped-2",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-wrapped",
+      "text": "benchzw:ど​わ​ー​w​w",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "unknown-zero-width-wrapped-3",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-wrapped",
+      "text": "benchzw:う​お​w​ ​ま​た​言​い​訳​か",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か"
+    },
+    {
+      "id": "japanese-conversation-1",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "こんにちは！今日もよろしくお願いします。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-2",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "おはよう、よく眠れた？",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-3",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "今日は少し寒いですね。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-4",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "明日は何時に集合しますか？",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-5",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "先ほど資料を送りました。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-6",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "確認できたら教えてください。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-7",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "ありがとう、とても助かりました。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-8",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "ごめん、少し遅れます。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-9",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "お疲れさまです。また明日。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-10",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "それは違うと思います。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-11",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "もういい加減にしてほしい。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-12",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "そんな話は聞いていません。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-13",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "今は休憩しています。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-conversation-14",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "なんでそうなるんだよ。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-positive-target-1",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "うお、ありがとう！",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-positive-target-2",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "どわー、優勝おめでとう！",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-positive-target-3",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "うお！助かった、ありがとう！",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-positive-target-4",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "uo、丁寧な説明ありがとう",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-positive-target-5",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "うお、すごい！よく頑張ったね",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-positive-target-6",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "どわー、無事でよかったね",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-quotation-1",
+      "category": "japanese",
+      "subtype": "quotation",
+      "text": "「うおw」はどういう意味？",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-quotation-2",
+      "category": "japanese",
+      "subtype": "quotation",
+      "text": "彼は「どわーww」と書いていました。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-quotation-3",
+      "category": "japanese",
+      "subtype": "quotation",
+      "text": "> うおw\nという発言を引用します。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-quotation-4",
+      "category": "japanese",
+      "subtype": "quotation",
+      "text": "うおwという表記の使い方を教えて",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-mixed-prose-1",
+      "category": "japanese",
+      "subtype": "mixed-prose",
+      "text": "ログIDはa9Kp7Vm2です。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-mixed-prose-2",
+      "category": "japanese",
+      "subtype": "mixed-prose",
+      "text": "コードは `deadbeef` です。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-mixed-prose-3",
+      "category": "japanese",
+      "subtype": "mixed-prose",
+      "text": "確認先：https://example.com/test です。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "japanese-mixed-prose-4",
+      "category": "japanese",
+      "subtype": "mixed-prose",
+      "text": "明日の予定は18:30からです。",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "regression-case-1",
+      "category": "japanese",
+      "subtype": "previous-regression",
+      "text": "嘘だろお前",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "regression-case-2",
+      "category": "japanese",
+      "subtype": "previous-regression",
+      "text": "射精の疑いがあるメッセージを検知しました！\n<@123456789012345678>さんの射精は現在審査中です！",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "regression-case-3",
+      "category": "japanese",
+      "subtype": "previous-regression",
+      "text": "照れんなよ",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "regression-case-4",
+      "category": "japanese",
+      "subtype": "previous-regression",
+      "text": "もう何なんだお前",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-short-ascii-1",
+      "category": "plain_string",
+      "subtype": "short-ascii",
+      "text": "abc",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-short-ascii-2",
+      "category": "plain_string",
+      "subtype": "short-ascii",
+      "text": "hello",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-short-ascii-3",
+      "category": "plain_string",
+      "subtype": "short-ascii",
+      "text": "test",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-short-ascii-4",
+      "category": "plain_string",
+      "subtype": "short-ascii",
+      "text": "ok",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-identifier-1",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "abcdefgh",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-identifier-2",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "helloWorld",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-identifier-3",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "discord_bot",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-identifier-4",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "user_2026",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-identifier-5",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "deadbeef",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-identifier-6",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "FACEB00C",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-random-token-1",
+      "category": "plain_string",
+      "subtype": "random-token",
+      "text": "a9Kp7Vm2",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-random-token-2",
+      "category": "plain_string",
+      "subtype": "random-token",
+      "text": "Q7m2Z9r4",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-random-token-3",
+      "category": "plain_string",
+      "subtype": "random-token",
+      "text": "01234567",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-random-token-4",
+      "category": "plain_string",
+      "subtype": "random-token",
+      "text": "12345678",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-punctuation-1",
+      "category": "plain_string",
+      "subtype": "punctuation",
+      "text": "!?.,-_/+",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-punctuation-2",
+      "category": "plain_string",
+      "subtype": "punctuation",
+      "text": "--------",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-punctuation-3",
+      "category": "plain_string",
+      "subtype": "punctuation",
+      "text": "!??!!??!",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-punctuation-4",
+      "category": "plain_string",
+      "subtype": "punctuation",
+      "text": "abc-123_",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-formatted-1",
+      "category": "plain_string",
+      "subtype": "formatted",
+      "text": "2026-11-18",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-formatted-2",
+      "category": "plain_string",
+      "subtype": "formatted",
+      "text": "v1.2.3",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-formatted-3",
+      "category": "plain_string",
+      "subtype": "formatted",
+      "text": "key:value",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-formatted-4",
+      "category": "plain_string",
+      "subtype": "formatted",
+      "text": "status:ok",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-url-1",
+      "category": "plain_string",
+      "subtype": "url",
+      "text": "https://example.com/abc123",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "string-url-2",
+      "category": "plain_string",
+      "subtype": "url",
+      "text": "https://example.org/うおw",
+      "expected": "other",
+      "expected_units": 0
+    },
+    {
+      "id": "known-literal-1",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "うお",
+      "expected": "mockery",
+      "expected_units": 1
+    },
+    {
+      "id": "known-literal-2",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "うおうお",
+      "expected": "mockery",
+      "expected_units": 2
+    },
+    {
+      "id": "known-literal-3",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "うおw",
+      "expected": "mockery",
+      "expected_units": 1
+    },
+    {
+      "id": "known-literal-4",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "どわーww",
+      "expected": "mockery",
+      "expected_units": 1
+    },
+    {
+      "id": "known-literal-5",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "uo、それはないよww",
+      "expected": "mockery",
+      "expected_units": 1
+    },
+    {
+      "id": "known-hex-lower-1",
+      "category": "known_mockery",
+      "subtype": "hex-lower",
+      "text": "e38186e3818a77",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw"
+    },
+    {
+      "id": "known-hex-lower-2",
+      "category": "known_mockery",
+      "subtype": "hex-lower",
+      "text": "e381a9e3828fe383bc7777",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "known-hex-lower-3",
+      "category": "known_mockery",
+      "subtype": "hex-lower",
+      "text": "756fe38081e3819de3828ce381afe381aae38184e382887777",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww"
+    },
+    {
+      "id": "known-percent-1",
+      "category": "known_mockery",
+      "subtype": "percent",
+      "text": "%E3%81%86%E3%81%8A%77",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw"
+    },
+    {
+      "id": "known-percent-2",
+      "category": "known_mockery",
+      "subtype": "percent",
+      "text": "%E3%81%A9%E3%82%8F%E3%83%BC%77%77",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "known-percent-3",
+      "category": "known_mockery",
+      "subtype": "percent",
+      "text": "%75%6F%E3%80%81%E3%81%9D%E3%82%8C%E3%81%AF%E3%81%AA%E3%81%84%E3%82%88%77%77",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww"
+    },
+    {
+      "id": "known-base64-1",
+      "category": "known_mockery",
+      "subtype": "base64",
+      "text": "44GG44GKdw==",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw"
+    },
+    {
+      "id": "known-base64-2",
+      "category": "known_mockery",
+      "subtype": "base64",
+      "text": "44Gp44KP44O8d3c=",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "known-base64-3",
+      "category": "known_mockery",
+      "subtype": "base64",
+      "text": "dW/jgIHjgZ3jgozjga/jgarjgYTjgoh3dw==",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww"
+    },
+    {
+      "id": "known-x9-bare-1",
+      "category": "known_mockery",
+      "subtype": "x9-bare",
+      "text": "E4F25FE4F28318",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw"
+    },
+    {
+      "id": "known-x9-bare-2",
+      "category": "known_mockery",
+      "subtype": "x9-bare",
+      "text": "E4F25AE43BF0E484C51818",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "known-x9-bare-3",
+      "category": "known_mockery",
+      "subtype": "x9-bare",
+      "text": "86D0E4A9F2E4F2EEE43B15E4F210E4F2A3E4F2CDE43BF11818",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww"
+    },
+    {
+      "id": "known-multi-layer-1",
+      "category": "known_mockery",
+      "subtype": "multi-layer",
+      "text": "JTQ1JTM0JTQ2JTMyJTM1JTQ2JTQ1JTM0JTQ2JTMyJTM4JTMzJTMxJTM4",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw"
+    },
+    {
+      "id": "known-multi-layer-2",
+      "category": "known_mockery",
+      "subtype": "multi-layer",
+      "text": "JTQ1JTM0JTQ2JTMyJTM1JTQxJTQ1JTM0JTMzJTQyJTQ2JTMwJTQ1JTM0JTM4JTM0JTQzJTM1JTMxJTM4JTMxJTM4",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww"
+    },
+    {
+      "id": "known-multi-layer-3",
+      "category": "known_mockery",
+      "subtype": "multi-layer",
+      "text": "JTM4JTM2JTQ0JTMwJTQ1JTM0JTQxJTM5JTQ2JTMyJTQ1JTM0JTQ2JTMyJTQ1JTQ1JTQ1JTM0JTMzJTQyJTMxJTM1JTQ1JTM0JTQ2JTMyJTMxJTMwJTQ1JTM0JTQ2JTMyJTQxJTMzJTQ1JTM0JTQ2JTMyJTQzJTQ0JTQ1JTM0JTMzJTQyJTQ2JTMxJTMxJTM4JTMxJTM4",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww"
+    }
+  ]
+}

@@ -1,0 +1,3951 @@
+{
+  "metadata": {
+    "case_sha256": "25dd980c771394424c65787adedeba959c2cdb0e194f0088e3c881a0236c8a98",
+    "word_sha256": "92b9973a1d29a054c5be1a23c461b24f65fd502bc1721000d9edbd6be14ac2d5",
+    "words": 270,
+    "runtime_sha256": "8b7784326567426c03c4a56819c09b4d834bc7747eed5796869d7ccc0db2f9c2",
+    "helper_sha256": "e78e9d7cc7e8e3d0b2defc80e84be4c43e7694fff25d4e9bd19223b94a49537c",
+    "registry_revision": "1044bd3c1177d7616282f87b2a2bddd32034b91fb73ecdec546722bd6cd3f0de",
+    "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+    "image": "sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b",
+    "decoders": [
+      {
+        "family": "b7",
+        "selector": null,
+        "id": "7a3d0b98311cce7a2afc0c5ba3f86ddd2f1783fd572465aea09c16f8085efeeb"
+      },
+      {
+        "family": "discovered-3d90e20d1fa58b70",
+        "selector": {
+          "kind": "shape",
+          "value": "percent-upper-token"
+        },
+        "id": "fd84eb4bd26a4736853adcb3ae7fc66c38179cec4038ef1a4f74226ae09fc84e"
+      },
+      {
+        "family": "discovered-6474d540beddd925",
+        "selector": {
+          "kind": "prefix",
+          "value": "x9:"
+        },
+        "id": "4428db69fce7415b6b5037d729cdf843ae223e8dcc01e3977e22639a72a34d5c"
+      },
+      {
+        "family": "discovered-7d1d4300ddd19256",
+        "selector": {
+          "kind": "shape",
+          "value": "hex-upper-token"
+        },
+        "id": "471a2e623df0c446369c306cfc39a3256bbd6bfcd4abfcd28062594ae69d3e4b"
+      },
+      {
+        "family": "discovered-a1dea0ff53390aeb",
+        "selector": {
+          "kind": "shape",
+          "value": "opaque-36e0de58e1e6f976"
+        },
+        "id": "d7fdab57bf5b271ebbb686366f0ce04ead01ae4fe7abeb179e7947d36a850f6c"
+      },
+      {
+        "family": "discovered-b5dce039b216cccb",
+        "selector": {
+          "kind": "shape",
+          "value": "unicode-escape-token"
+        },
+        "id": "52ab5fb9789335ed2cc222dd0c3ef1d6a8ce6b259dc3fcd7a901843eacc021c4"
+      },
+      {
+        "family": "discovered-e5828c407f96611c",
+        "selector": {
+          "kind": "shape",
+          "value": "upper-2to7-token"
+        },
+        "id": "94c5a847fcf2013f17f205b40e049ad6cd25a3233761278047a7082a67800023"
+      },
+      {
+        "family": "discovered-f70df20039a5162d",
+        "selector": {
+          "kind": "shape",
+          "value": "opaque-2d33fa158f22354c"
+        },
+        "id": "77f4578af645f4ca4186909e708e4e716d2598515bf5b40b238fc8d2b813a808"
+      },
+      {
+        "family": "discovered-fcf9ccfa3fce4331",
+        "selector": {
+          "kind": "shape",
+          "value": "ascii-alnum-token"
+        },
+        "id": "c3b7f91e8c9159a499a33caf02eb8007f06559ab12ff5748edcb5192954c466a"
+      },
+      {
+        "family": "n3",
+        "selector": null,
+        "id": "5bdd0c89cd32bc70c33ca5e58b2da57c6f1581a123bf37f3565a68bc8e125d71"
+      },
+      {
+        "family": "p8",
+        "selector": null,
+        "id": "ceb89c38843824191fc47dcc33beb90f8f6a042e6ef951159497949864b3d6a2"
+      },
+      {
+        "family": "q2",
+        "selector": null,
+        "id": "8fb6c62664b997f422c5a1d9da4ac381d339592fdb1f48febf159c4db44fa9b6"
+      },
+      {
+        "family": "z1",
+        "selector": null,
+        "id": "ccb03d67df6cb9b4c9c535adc5569068edcb60ea1790a03322f1fe253c65d8c8"
+      }
+    ],
+    "model": "convaiinnovations/laya-multilingual",
+    "model_revision": "1720e3e3357cfe1e281542e223f8273b0890ca34",
+    "identifiers_anonymized": true
+  },
+  "rows": [
+    {
+      "id": "unknown-xor-byte-a7-bare-1",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-bare",
+      "text": "44262144262DD0",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "44262144262DD0",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.136
+    },
+    {
+      "id": "unknown-xor-byte-a7-bare-2",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-bare",
+      "text": "44260E44252844241BD0D0",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "44260E44252844241BD0D0",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.121
+    },
+    {
+      "id": "unknown-xor-byte-a7-bare-3",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-bare",
+      "text": "44262144262DD0874426194426384F0F274426234F0F1444262C",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "44262144262DD0874426194426384F0F274426234F0F1444262C",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.467
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-1",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-wrapped",
+      "text": "benchxor:44262144262DD0",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchxor:44262144262DD0",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.129
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-2",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-wrapped",
+      "text": "benchxor:44260E44252844241BD0D0",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchxor:44260E44252844241BD0D0",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.279
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-3",
+      "category": "unknown_mockery",
+      "subtype": "xor-byte-a7-wrapped",
+      "text": "benchxor:44262144262DD0874426194426384F0F274426234F0F1444262C",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchxor:44262144262DD0874426194426384F0F274426234F0F1444262C",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.506
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-1",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-bare",
+      "text": "227129134227129138119",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "227129134227129138119",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.274
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-2",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-bare",
+      "text": "227129169227130143227131188119119",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "227129169227130143227131188119119",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.302
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-3",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-bare",
+      "text": "227129134227129138119032227129190227129159232168128227129132232168179227129139",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "227129134227129138119032227129190227129159232168128227129132232168179227129139",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.716
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-1",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-wrapped",
+      "text": "benchdec:227129134227129138119",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchdec:227129134227129138119",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.125
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-2",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-wrapped",
+      "text": "benchdec:227129169227130143227131188119119",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchdec:227129169227130143227131188119119",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.295
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-3",
+      "category": "unknown_mockery",
+      "subtype": "decimal-bytes-wrapped",
+      "text": "benchdec:227129134227129138119032227129190227129159232168128227129132232168179227129139",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchdec:227129134227129138119032227129190227129159232168128227129132232168179227129139",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.777
+    },
+    {
+      "id": "unknown-reverse-text-bare-1",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-bare",
+      "text": "wおう",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw",
+      "passed": false,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "wおう",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "wおう",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.403
+    },
+    {
+      "id": "unknown-reverse-text-bare-2",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-bare",
+      "text": "wwーわど",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww",
+      "passed": false,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "wwーわど",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "wwーわど",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.409
+    },
+    {
+      "id": "unknown-reverse-text-bare-3",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-bare",
+      "text": "か訳い言たま wおう",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か",
+      "passed": false,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "か訳い言たま wおう",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "か訳い言たま wおう",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.494
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-1",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-wrapped",
+      "text": "benchrev:wおう",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-2c658904c217604f"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchrev:wおう",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.415
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-2",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-wrapped",
+      "text": "benchrev:wwーわど",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-2c658904c217604f"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchrev:wwーわど",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.478
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-3",
+      "category": "unknown_mockery",
+      "subtype": "reverse-text-wrapped",
+      "text": "benchrev:か訳い言たま wおう",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-2c658904c217604f"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchrev:か訳い言たま wおう",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.493
+    },
+    {
+      "id": "unknown-zero-width-bare-1",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-bare",
+      "text": "う​お​w",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw",
+      "passed": false,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "う​お​w",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "う​お​w",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.415
+    },
+    {
+      "id": "unknown-zero-width-bare-2",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-bare",
+      "text": "ど​わ​ー​w​w",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww",
+      "passed": false,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "ど​わ​ー​w​w",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "ど​わ​ー​w​w",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.483
+    },
+    {
+      "id": "unknown-zero-width-bare-3",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-bare",
+      "text": "う​お​w​ ​ま​た​言​い​訳​か",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か",
+      "passed": false,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "う​お​w​ ​ま​た​言​い​訳​か",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "う​お​w​ ​ま​た​言​い​訳​か",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.525
+    },
+    {
+      "id": "unknown-zero-width-wrapped-1",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-wrapped",
+      "text": "benchzw:う​お​w",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-0b99ba6674b44159"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchzw:う​お​w",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.496
+    },
+    {
+      "id": "unknown-zero-width-wrapped-2",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-wrapped",
+      "text": "benchzw:ど​わ​ー​w​w",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-0b99ba6674b44159"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchzw:ど​わ​ー​w​w",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.491
+    },
+    {
+      "id": "unknown-zero-width-wrapped-3",
+      "category": "unknown_mockery",
+      "subtype": "zero-width-wrapped",
+      "text": "benchzw:う​お​w​ ​ま​た​言​い​訳​か",
+      "expected": "review",
+      "expected_units": 0,
+      "source_text": "うおw また言い訳か",
+      "passed": true,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-0b99ba6674b44159"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "benchzw:う​お​w​ ​ま​た​言​い​訳​か",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.594
+    },
+    {
+      "id": "japanese-conversation-1",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "こんにちは！今日もよろしくお願いします。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "こんにちは！今日もよろしくお願いします。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "こんにちは！今日もよろしくお願いします。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.508
+    },
+    {
+      "id": "japanese-conversation-2",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "おはよう、よく眠れた？",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "おはよう、よく眠れた？",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "おはよう、よく眠れた？",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.473
+    },
+    {
+      "id": "japanese-conversation-3",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "今日は少し寒いですね。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "今日は少し寒いですね。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "今日は少し寒いですね。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.419
+    },
+    {
+      "id": "japanese-conversation-4",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "明日は何時に集合しますか？",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "明日は何時に集合しますか？",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "明日は何時に集合しますか？",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.478
+    },
+    {
+      "id": "japanese-conversation-5",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "先ほど資料を送りました。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "先ほど資料を送りました。",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "先ほど資料を送りました。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.503
+    },
+    {
+      "id": "japanese-conversation-6",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "確認できたら教えてください。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "確認できたら教えてください。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "確認できたら教えてください。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.418
+    },
+    {
+      "id": "japanese-conversation-7",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "ありがとう、とても助かりました。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "ありがとう、とても助かりました。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "ありがとう、とても助かりました。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.484
+    },
+    {
+      "id": "japanese-conversation-8",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "ごめん、少し遅れます。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "ごめん、少し遅れます。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "ごめん、少し遅れます。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.423
+    },
+    {
+      "id": "japanese-conversation-9",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "お疲れさまです。また明日。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "お疲れさまです。また明日。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "お疲れさまです。また明日。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.488
+    },
+    {
+      "id": "japanese-conversation-10",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "それは違うと思います。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "それは違うと思います。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "それは違うと思います。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.409
+    },
+    {
+      "id": "japanese-conversation-11",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "もういい加減にしてほしい。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "もういい加減にしてほしい。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "もういい加減にしてほしい。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.471
+    },
+    {
+      "id": "japanese-conversation-12",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "そんな話は聞いていません。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "そんな話は聞いていません。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "そんな話は聞いていません。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.438
+    },
+    {
+      "id": "japanese-conversation-13",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "今は休憩しています。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "今は休憩しています。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "今は休憩しています。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.46
+    },
+    {
+      "id": "japanese-conversation-14",
+      "category": "japanese",
+      "subtype": "conversation",
+      "text": "なんでそうなるんだよ。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "なんでそうなるんだよ。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "なんでそうなるんだよ。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.415
+    },
+    {
+      "id": "japanese-positive-target-1",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "うお、ありがとう！",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うお、ありがとう！",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うお、ありがとう！",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.311
+    },
+    {
+      "id": "japanese-positive-target-2",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "どわー、優勝おめでとう！",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "どわー、優勝おめでとう！",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "どわー、優勝おめでとう！",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.385
+    },
+    {
+      "id": "japanese-positive-target-3",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "うお！助かった、ありがとう！",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うお！助かった、ありがとう！",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うお！助かった、ありがとう！",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.323
+    },
+    {
+      "id": "japanese-positive-target-4",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "uo、丁寧な説明ありがとう",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "uo、丁寧な説明ありがとう",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "uo、丁寧な説明ありがとう",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.397
+    },
+    {
+      "id": "japanese-positive-target-5",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "うお、すごい！よく頑張ったね",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うお、すごい！よく頑張ったね",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うお、すごい！よく頑張ったね",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.381
+    },
+    {
+      "id": "japanese-positive-target-6",
+      "category": "japanese",
+      "subtype": "positive-target",
+      "text": "どわー、無事でよかったね",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "どわー、無事でよかったね",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "どわー、無事でよかったね",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.385
+    },
+    {
+      "id": "japanese-quotation-1",
+      "category": "japanese",
+      "subtype": "quotation",
+      "text": "「うおw」はどういう意味？",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "「うおw」はどういう意味？",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "「うおw」はどういう意味？",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.506
+    },
+    {
+      "id": "japanese-quotation-2",
+      "category": "japanese",
+      "subtype": "quotation",
+      "text": "彼は「どわーww」と書いていました。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "彼は「どわーww」と書いていました。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "彼は「どわーww」と書いていました。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.497
+    },
+    {
+      "id": "japanese-quotation-3",
+      "category": "japanese",
+      "subtype": "quotation",
+      "text": "> うおw\nという発言を引用します。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "> うおw\nという発言を引用します。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "> うおw\nという発言を引用します。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.495
+    },
+    {
+      "id": "japanese-quotation-4",
+      "category": "japanese",
+      "subtype": "quotation",
+      "text": "うおwという表記の使い方を教えて",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うおwという表記の使い方を教えて",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うおwという表記の使い方を教えて",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.431
+    },
+    {
+      "id": "japanese-mixed-prose-1",
+      "category": "japanese",
+      "subtype": "mixed-prose",
+      "text": "ログIDはa9Kp7Vm2です。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "ログIDはa9Kp7Vm2です。",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "ログIDはa9Kp7Vm2です。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.561
+    },
+    {
+      "id": "japanese-mixed-prose-2",
+      "category": "japanese",
+      "subtype": "mixed-prose",
+      "text": "コードは `deadbeef` です。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "コードは `deadbeef` です。",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "コードは `deadbeef` です。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.43
+    },
+    {
+      "id": "japanese-mixed-prose-3",
+      "category": "japanese",
+      "subtype": "mixed-prose",
+      "text": "確認先：https://example.com/test です。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "確認先：https://example.com/test です。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "確認先：https://example.com/test です。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.494
+    },
+    {
+      "id": "japanese-mixed-prose-4",
+      "category": "japanese",
+      "subtype": "mixed-prose",
+      "text": "明日の予定は18:30からです。",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "明日の予定は18:30からです。",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "明日の予定は18:30からです。",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.496
+    },
+    {
+      "id": "regression-case-1",
+      "category": "japanese",
+      "subtype": "previous-regression",
+      "text": "嘘だろお前",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "嘘だろお前",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "嘘だろお前",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.478
+    },
+    {
+      "id": "regression-case-2",
+      "category": "japanese",
+      "subtype": "previous-regression",
+      "text": "射精の疑いがあるメッセージを検知しました！\n<@123456789012345678>さんの射精は現在審査中です！",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "射精の疑いがあるメッセージを検知しました！\n<@123456789012345678>さんの射精は現在審査中です！",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "射精の疑いがあるメッセージを検知しました！\n<@123456789012345678>さんの射精は現在審査中です！",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.739
+    },
+    {
+      "id": "regression-case-3",
+      "category": "japanese",
+      "subtype": "previous-regression",
+      "text": "照れんなよ",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "照れんなよ",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "照れんなよ",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.463
+    },
+    {
+      "id": "regression-case-4",
+      "category": "japanese",
+      "subtype": "previous-regression",
+      "text": "もう何なんだお前",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "もう何なんだお前",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "もう何なんだお前",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.426
+    },
+    {
+      "id": "string-short-ascii-1",
+      "category": "plain_string",
+      "subtype": "short-ascii",
+      "text": "abc",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "ɉ",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "ɉ",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.402
+    },
+    {
+      "id": "string-short-ascii-2",
+      "category": "plain_string",
+      "subtype": "short-ascii",
+      "text": "hello",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "hello",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "hello",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.396
+    },
+    {
+      "id": "string-short-ascii-3",
+      "category": "plain_string",
+      "subtype": "short-ascii",
+      "text": "test",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "test",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "test",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.398
+    },
+    {
+      "id": "string-short-ascii-4",
+      "category": "plain_string",
+      "subtype": "short-ascii",
+      "text": "ok",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "ok",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "ok",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.466
+    },
+    {
+      "id": "string-identifier-1",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "abcdefgh",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-fcf9ccfa3fce4331"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "abcdefgh",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.023
+    },
+    {
+      "id": "string-identifier-2",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "helloWorld",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-fcf9ccfa3fce4331"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "helloWorld",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 3
+        }
+      ],
+      "seconds": 3.088
+    },
+    {
+      "id": "string-identifier-3",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "discord_bot",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "discord_bot",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "discord_bot",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.41
+    },
+    {
+      "id": "string-identifier-4",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "user_2026",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "user_2026",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "user_2026",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.472
+    },
+    {
+      "id": "string-identifier-5",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "deadbeef",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-fcf9ccfa3fce4331"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "deadbeef",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.038
+    },
+    {
+      "id": "string-identifier-6",
+      "category": "plain_string",
+      "subtype": "identifier",
+      "text": "FACEB00C",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "FACEB00C",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.979
+    },
+    {
+      "id": "string-random-token-1",
+      "category": "plain_string",
+      "subtype": "random-token",
+      "text": "a9Kp7Vm2",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-fcf9ccfa3fce4331"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "a9Kp7Vm2",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.093
+    },
+    {
+      "id": "string-random-token-2",
+      "category": "plain_string",
+      "subtype": "random-token",
+      "text": "Q7m2Z9r4",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-fcf9ccfa3fce4331"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "Q7m2Z9r4",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.086
+    },
+    {
+      "id": "string-random-token-3",
+      "category": "plain_string",
+      "subtype": "random-token",
+      "text": "01234567",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "01234567",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.026
+    },
+    {
+      "id": "string-random-token-4",
+      "category": "plain_string",
+      "subtype": "random-token",
+      "text": "12345678",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-7d1d4300ddd19256"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "12345678",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 2.077
+    },
+    {
+      "id": "string-punctuation-1",
+      "category": "plain_string",
+      "subtype": "punctuation",
+      "text": "!?.,-_/+",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "!?.,-_/+",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "!?.,-_/+",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.409
+    },
+    {
+      "id": "string-punctuation-2",
+      "category": "plain_string",
+      "subtype": "punctuation",
+      "text": "--------",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "--------",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "--------",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.403
+    },
+    {
+      "id": "string-punctuation-3",
+      "category": "plain_string",
+      "subtype": "punctuation",
+      "text": "!??!!??!",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "!??!!??!",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "!??!!??!",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.407
+    },
+    {
+      "id": "string-punctuation-4",
+      "category": "plain_string",
+      "subtype": "punctuation",
+      "text": "abc-123_",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-ce99655116427d1d"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "abc-123_",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.473
+    },
+    {
+      "id": "string-formatted-1",
+      "category": "plain_string",
+      "subtype": "formatted",
+      "text": "2026-11-18",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "2026-11-18",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "2026-11-18",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.493
+    },
+    {
+      "id": "string-formatted-2",
+      "category": "plain_string",
+      "subtype": "formatted",
+      "text": "v1.2.3",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "v1.2.3",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "v1.2.3",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.421
+    },
+    {
+      "id": "string-formatted-3",
+      "category": "plain_string",
+      "subtype": "formatted",
+      "text": "key:value",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-75e1d31a3c89ae3a"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "key:value",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.42
+    },
+    {
+      "id": "string-formatted-4",
+      "category": "plain_string",
+      "subtype": "formatted",
+      "text": "status:ok",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": false,
+      "outcome": "review",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": true,
+        "label": "uncertain",
+        "units": 0,
+        "families": [
+          "discovered-47604d8945488cc8"
+        ]
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "status:ok",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.453
+    },
+    {
+      "id": "string-url-1",
+      "category": "plain_string",
+      "subtype": "url",
+      "text": "https://example.com/abc123",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "https://example.com/abc123",
+          "answer": {
+            "suspected": true,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "https://example.com/abc123",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.442
+    },
+    {
+      "id": "string-url-2",
+      "category": "plain_string",
+      "subtype": "url",
+      "text": "https://example.org/うおw",
+      "expected": "other",
+      "expected_units": 0,
+      "passed": true,
+      "outcome": "other",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "other",
+        "units": 0,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "https://example.org/うおw",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": false
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "https://example.org/うおw",
+          "answer": {
+            "label": "other",
+            "units": 0
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 1.483
+    },
+    {
+      "id": "known-literal-1",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "うお",
+      "expected": "mockery",
+      "expected_units": 1,
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [],
+      "seconds": 0.021
+    },
+    {
+      "id": "known-literal-2",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "うおうお",
+      "expected": "mockery",
+      "expected_units": 2,
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 2,
+        "families": []
+      },
+      "inference": [],
+      "seconds": 0.022
+    },
+    {
+      "id": "known-literal-3",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "うおw",
+      "expected": "mockery",
+      "expected_units": 1,
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うおw",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うおw",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.33
+    },
+    {
+      "id": "known-literal-4",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "どわーww",
+      "expected": "mockery",
+      "expected_units": 1,
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "どわーww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "どわーww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.326
+    },
+    {
+      "id": "known-literal-5",
+      "category": "known_mockery",
+      "subtype": "readable",
+      "text": "uo、それはないよww",
+      "expected": "mockery",
+      "expected_units": 1,
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "uo、それはないよww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "uo、それはないよww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.366
+    },
+    {
+      "id": "known-hex-lower-1",
+      "category": "known_mockery",
+      "subtype": "hex-lower",
+      "text": "e38186e3818a77",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うおw",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うおw",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 4.432
+    },
+    {
+      "id": "known-hex-lower-2",
+      "category": "known_mockery",
+      "subtype": "hex-lower",
+      "text": "e381a9e3828fe383bc7777",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "どわーww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "どわーww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.886
+    },
+    {
+      "id": "known-hex-lower-3",
+      "category": "known_mockery",
+      "subtype": "hex-lower",
+      "text": "756fe38081e3819de3828ce381afe381aae38184e382887777",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "uo、それはないよww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "uo、それはないよww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.993
+    },
+    {
+      "id": "known-percent-1",
+      "category": "known_mockery",
+      "subtype": "percent",
+      "text": "%E3%81%86%E3%81%8A%77",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うおw",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 3
+        },
+        {
+          "route": "judge",
+          "text": "うおw",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 4.982
+    },
+    {
+      "id": "known-percent-2",
+      "category": "known_mockery",
+      "subtype": "percent",
+      "text": "%E3%81%A9%E3%82%8F%E3%83%BC%77%77",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "どわーww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 3
+        },
+        {
+          "route": "judge",
+          "text": "どわーww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 4.907
+    },
+    {
+      "id": "known-percent-3",
+      "category": "known_mockery",
+      "subtype": "percent",
+      "text": "%75%6F%E3%80%81%E3%81%9D%E3%82%8C%E3%81%AF%E3%81%AA%E3%81%84%E3%82%88%77%77",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "uo、それはないよww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "uo、それはないよww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.928
+    },
+    {
+      "id": "known-base64-1",
+      "category": "known_mockery",
+      "subtype": "base64",
+      "text": "44GG44GKdw==",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うおw",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うおw",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.889
+    },
+    {
+      "id": "known-base64-2",
+      "category": "known_mockery",
+      "subtype": "base64",
+      "text": "44Gp44KP44O8d3c=",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "どわーww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "どわーww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.887
+    },
+    {
+      "id": "known-base64-3",
+      "category": "known_mockery",
+      "subtype": "base64",
+      "text": "dW/jgIHjgZ3jgozjga/jgarjgYTjgoh3dw==",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "uo、それはないよww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "uo、それはないよww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 4.001
+    },
+    {
+      "id": "known-x9-bare-1",
+      "category": "known_mockery",
+      "subtype": "x9-bare",
+      "text": "E4F25FE4F28318",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うおw",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うおw",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.904
+    },
+    {
+      "id": "known-x9-bare-2",
+      "category": "known_mockery",
+      "subtype": "x9-bare",
+      "text": "E4F25AE43BF0E484C51818",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "どわーww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "どわーww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.995
+    },
+    {
+      "id": "known-x9-bare-3",
+      "category": "known_mockery",
+      "subtype": "x9-bare",
+      "text": "86D0E4A9F2E4F2EEE43B15E4F210E4F2A3E4F2CDE43BF11818",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "uo、それはないよww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "uo、それはないよww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 3.989
+    },
+    {
+      "id": "known-multi-layer-1",
+      "category": "known_mockery",
+      "subtype": "multi-layer",
+      "text": "JTQ1JTM0JTQ2JTMyJTM1JTQ2JTQ1JTM0JTQ2JTMyJTM4JTMzJTMxJTM4",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "うおw",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "うおw",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "うおw",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 5.304
+    },
+    {
+      "id": "known-multi-layer-2",
+      "category": "known_mockery",
+      "subtype": "multi-layer",
+      "text": "JTQ1JTM0JTQ2JTMyJTM1JTQxJTQ1JTM0JTMzJTQyJTQ2JTMwJTQ1JTM0JTM4JTM0JTQzJTM1JTMxJTM4JTMxJTM4",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "どわーww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "どわーww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "どわーww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 5.206
+    },
+    {
+      "id": "known-multi-layer-3",
+      "category": "known_mockery",
+      "subtype": "multi-layer",
+      "text": "JTM4JTM2JTQ0JTMwJTQ1JTM0JTQxJTM5JTQ2JTMyJTQ1JTM0JTQ2JTMyJTQ1JTQ1JTQ1JTM0JTMzJTQyJTMxJTM1JTQ1JTM0JTQ2JTMyJTMxJTMwJTQ1JTM0JTQ2JTMyJTQxJTMzJTQ1JTM0JTQ2JTMyJTQzJTQ0JTQ1JTM0JTMzJTQyJTQ2JTMxJTMxJTM4JTMxJTM4",
+      "expected": "mockery",
+      "expected_units": 1,
+      "source_text": "uo、それはないよww",
+      "passed": true,
+      "outcome": "mockery",
+      "result": {
+        "revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "release": "27f60e860386d615c545f104daa6b98fdd4c08dc7f113fd0df338730a9b3a5b3",
+        "unknown": false,
+        "label": "mockery",
+        "units": 1,
+        "families": []
+      },
+      "inference": [
+        {
+          "route": "detect",
+          "text": "uo、それはないよww",
+          "answer": {
+            "suspected": false,
+            "technical_hold": false,
+            "has_authored_target": true
+          },
+          "busy_retries": 0
+        },
+        {
+          "route": "judge",
+          "text": "uo、それはないよww",
+          "answer": {
+            "label": "mockery",
+            "units": 1
+          },
+          "busy_retries": 0
+        }
+      ],
+      "seconds": 5.211
+    }
+  ],
+  "summary": {
+    "japanese": {
+      "n": 32,
+      "correct": 32,
+      "accuracy": 1.0,
+      "outcomes": {
+        "other": 32
+      },
+      "false_reviews": 0,
+      "false_charges": 0
+    },
+    "known_mockery": {
+      "n": 20,
+      "correct": 20,
+      "accuracy": 1.0,
+      "outcomes": {
+        "mockery": 20
+      },
+      "false_reviews": 0,
+      "false_charges": 0
+    },
+    "plain_string": {
+      "n": 24,
+      "correct": 13,
+      "accuracy": 0.5416666666666666,
+      "outcomes": {
+        "other": 13,
+        "review": 11
+      },
+      "false_reviews": 11,
+      "false_charges": 0
+    },
+    "unknown_mockery": {
+      "n": 24,
+      "correct": 18,
+      "accuracy": 0.75,
+      "outcomes": {
+        "review": 18,
+        "other": 6
+      },
+      "false_reviews": 0,
+      "false_charges": 0
+    }
+  },
+  "complete": true,
+  "correct": 83,
+  "n": 100
+}

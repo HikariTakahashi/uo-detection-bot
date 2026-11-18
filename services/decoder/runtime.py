@@ -117,20 +117,20 @@ class Runtime:
         if pending or inference_state=='ambiguous_candidates':return {**result,'unknown':True,'families':pending}
         detection=self.predict('detect',{'text':body,'words':words})
         c=synthetic.explicit_candidate(body) or candidate(body,detection['suspected'])
-        matched=[r for r in records if dispatch(r,body) is not None]
-        unresolved=bool(c or ((detection['suspected'] or detection.get('technical_hold')) and not detection.get('has_authored_target',False)))
-        if unresolved:
+        # A model suspicion or technical hold alone is not format evidence.
+        # Without a concrete candidate, use the target-aware ordinary judgment.
+        if c:
+            matched=[r for r in records if dispatch(r,body) is not None]
             result['unknown']=True
-            if c:
-                result['families']=[c['family']]
-                # Never send a real message or its reversible encoding to Luna.
-                # Discovery persists only the selector. Public synthetic samples
-                # and independent contracts are approved separately by operators.
-                path=self.state.parent/'discovery'/(c['family']+'.json')
-                if not path.exists():
-                    atomic(path,{'family':c['family'],'selector':c['selector'],
-                         'state':'known_rejection' if matched else 'awaiting_public_samples',
-                         'release':release})
+            result['families']=[c['family']]
+            # Never send a real message or its reversible encoding to Luna.
+            # Discovery persists only the selector. Public synthetic samples
+            # and independent contracts are approved separately by operators.
+            path=self.state.parent/'discovery'/(c['family']+'.json')
+            if not path.exists():
+                atomic(path,{'family':c['family'],'selector':c['selector'],
+                     'state':'known_rejection' if matched else 'awaiting_public_samples',
+                     'release':release})
             return result
         judgment=self.predict('judge',{'text':body,'words':words})
         if judgment.get('label') not in ('mockery','other','uncertain') or type(judgment.get('units')) is not int or not 0<=judgment['units']<=2000:raise ValueError('invalid judgment')
