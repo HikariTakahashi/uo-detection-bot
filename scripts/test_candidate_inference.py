@@ -59,7 +59,7 @@ class InferenceTests(unittest.TestCase):
         def predict(route,value):
             seen.append((route,value['text']))
             return {'suspected':False,'has_authored_target':True} if route=='detect' else {'label':'mockery','units':1}
-        r=runtime.Runtime(Path(tmp)/'current','image',predict=predict,execute=execute)
+        r=runtime.Runtime(Path(tmp)/'current','image',predict=predict,execute=execute,fixed=lambda text,words:{'candidates':[],'literal_units':0})
         r.snapshot=lambda:('a'*64,registry)
         return r,registry,seen
     def request(self,text):return {'text':text,'revision':'b'*64,'words':['うお','uo']}

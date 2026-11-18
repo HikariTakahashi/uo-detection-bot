@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import sys
 import threading
 import urllib.request
@@ -30,12 +31,26 @@ def inference(route, value):
 
 
 class Runtime:
-    def __init__(self,state,image,predict=inference,execute=None):
+    def __init__(self,state,image,predict=inference,execute=None,fixed=None):
         self.state=Path(state);self.image=image;self.predict=predict;self.execute=execute
+        self.fixed=fixed or self.fixed_view
+        self.helper=ROOT/'discord-bot-linux-arm64'
         self.policy=digest(canonical([digest(p.read_bytes()) for p in (
             ROOT/'experiments/laya/production_policy.py', Path(__file__),
             ROOT/'services/decoder/synthetic.py',
-            ROOT/'experiments/laya/luna_decoder/adaptive/engine.py')]))
+            ROOT/'experiments/laya/luna_decoder/adaptive/engine.py',
+            *([self.helper] if fixed is None else []))]))
+
+    def fixed_view(self,text,words):
+        raw=subprocess.run([str(self.helper),'-restore-view'],
+            input=json.dumps({'text':text,'words':words},ensure_ascii=False).encode(),
+            stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=3,check=True,
+            env={'LANG':'C.UTF-8'}).stdout
+        if len(raw)>262144:raise ValueError('fixed view bounds')
+        value=json.loads(raw)
+        if set(value)!={'candidates','literal_units'} or type(value['literal_units']) is not int or not 0<=value['literal_units']<=2000:raise ValueError('fixed view contract')
+        if not isinstance(value['candidates'],list) or len(value['candidates'])>32 or any(not isinstance(v,str) or not 0<len(v)<=2000 for v in value['candidates']):raise ValueError('fixed candidates bounds')
+        return value
 
     def snapshot(self):
         snapshot=self.state.resolve(strict=True)
@@ -74,13 +89,16 @@ class Runtime:
         # a deterministic restoration already available in the approved registry.
         kwargs={} if self.execute is None else {'execute':self.execute}
         result={'revision':revision,'release':release,'unknown':False,'label':'uncertain','units':0,'families':[]}
-        pending,inference_state=self.prepare_candidates(text,registry,release)
-        if pending:
-            # Trusted inverses are preparation evidence only. Count/classification
-            # waits for Luna code, independent validation and exact DM adoption.
-            return {**result,'unknown':True,'families':pending}
-        if inference_state=='ambiguous_candidates':return {**result,'unknown':True}
-        graph=explore(text,records,self.image,**kwargs)
+        views={}
+        def view(body):
+            if body not in views:
+                v=self.fixed(body,words)
+                # Competing public interpretations must not be rescued by a
+                # word hit or by one decoder rejecting a competing candidate.
+                v={**v,'blocked':not v['literal_units'] and synthetic.infer_chain(body)['state']=='ambiguous_candidates'}
+                views[body]=v
+            return views[body]
+        graph=explore(text,records,self.image,view=view,**kwargs)
         if graph['status']!='terminal':
             result['unknown']=True
             for body in graph.get('candidates',[])[:8]:
@@ -91,6 +109,10 @@ class Runtime:
         body=graph['text']
         if any(ord(c)<32 and c not in '\n\t' for c in body):
             result['unknown']=True;return result
+        fixed=view(body)
+        if fixed['blocked']:return {**result,'unknown':True}
+        if fixed['literal_units']:
+            return {**result,'label':'mockery','units':fixed['literal_units']}
         pending,inference_state=self.prepare_candidates(body,registry,release)
         if pending or inference_state=='ambiguous_candidates':return {**result,'unknown':True,'families':pending}
         detection=self.predict('detect',{'text':body,'words':words})

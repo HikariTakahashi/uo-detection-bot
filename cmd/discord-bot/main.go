@@ -21,10 +21,17 @@ var version = "development"
 const pingDescription = "Discord Gatewayの現在のレイテンシを表示します"
 
 func main() {
+	restore := flag.Bool("restore-view", false, "isolated data-only restoration on stdin")
 	showVersion := flag.Bool("version", false, "print build commit")
 	flag.Parse()
 	if *showVersion {
 		fmt.Println(version)
+		return
+	}
+	if *restore {
+		if err := restoreView(os.Stdin, os.Stdout); err != nil {
+			os.Exit(1)
+		}
 		return
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

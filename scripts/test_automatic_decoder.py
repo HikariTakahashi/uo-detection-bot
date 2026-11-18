@@ -71,7 +71,7 @@ class SyntheticTests(unittest.TestCase):
         self.assertEqual((g['status'],g['text']),('terminal','うおw'));self.assertEqual(seen,['x9'])
     def test_inner_x9_discovery(self):
         with tempfile.TemporaryDirectory() as tmp:
-            r=runtime.Runtime(Path(tmp)/'current','image',predict=lambda *args:{'suspected':True})
+            r=runtime.Runtime(Path(tmp)/'current','image',predict=lambda *args:{'suspected':True},fixed=lambda text,words:{'candidates':[],'literal_units':0})
             class Empty:
                 def active(self):return []
             r.snapshot=lambda:('a'*64,Empty())

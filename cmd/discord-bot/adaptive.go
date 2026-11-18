@@ -16,6 +16,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 	"unicode/utf8"
@@ -162,7 +163,7 @@ func (a *adaptiveReviews) enqueue(m *discordgo.MessageCreate) (bool, error) {
 	if _, ok := a.records[m.ID]; ok {
 		return true, nil
 	}
-	if a.detector.literalCount(m.Content) > 0 || a.detector.literalCount(a.detector.transformedText(m.Content)) > 0 {
+	if a.detector.literalCount(m.Content) > 0 {
 		return false, nil
 	}
 	if !isSnowflake(m.ID) || m.Content == "" || utf8.RuneCountInString(m.Content) > 2000 {
@@ -194,7 +195,8 @@ func (a *adaptiveReviews) edit(m *discordgo.MessageUpdate) error {
 	// the worker rather than treating an omitted content field as an empty edit.
 	r.Epoch++
 	r.State = "queued"
-	r.Release = ""
+	// Retain the evaluated release so duplicate/partial Gateway updates can
+	// be reconciled against the authoritative unchanged revision.
 	return a.save(r)
 }
 func (a *adaptiveReviews) remove(id, guild string) error {
@@ -452,6 +454,22 @@ func (a *adaptiveReviews) process(ctx context.Context, s adaptiveClient, id, rel
 	if m.Author == nil || m.Author.ID != r.Author {
 		return errors.New("review author changed")
 	}
+	if contentRevision(m) == r.Revision && r.State == "queued" && r.Release != "" {
+		final := r.Label == "mockery" || r.Label == "other"
+		if final || r.Release == release {
+			a.mu.Lock()
+			current := a.records[id]
+			if current.State == "queued" && current.Epoch == r.Epoch && current.Revision == r.Revision {
+				current.State = "waiting"
+				if final {
+					current.State = "done"
+				}
+				e = a.save(current)
+			}
+			a.mu.Unlock()
+			return e
+		}
+	}
 	if contentRevision(m) != r.Revision {
 		a.mu.Lock()
 		current := a.records[id]
@@ -467,7 +485,8 @@ func (a *adaptiveReviews) process(ctx context.Context, s adaptiveClient, id, rel
 		}
 		current.State = "queued"
 		current.Release = ""
-		current.Label = ""
+		// Retain the previous label until the new result commits, including
+		// pre-upgrade holds that did not yet have a notice.
 		current.Units = 0
 		// An edited post is pending again; withdraw this review's prior contribution.
 		_, e = a.detector.applyReview(id, current.Author, current.Revision, 0)
@@ -512,7 +531,8 @@ func (a *adaptiveReviews) process(ctx context.Context, s adaptiveClient, id, rel
 		return nil
 	}
 	// The first unknown result always creates the pending notice without a count.
-	if result.Unknown && current.ReplyID == "" && !current.Sending {
+	wasHeld := current.State == "waiting" || current.Label == "uncertain" || strings.Contains(current.Notice, "現在審査中") || strings.HasPrefix(current.Notice, "**審査継続**") || strings.HasPrefix(current.Notice, "**再判定完了**")
+	if result.Unknown && !wasHeld {
 		current.State = "waiting"
 		current.Release = result.Release
 		current.Families = result.Families
@@ -539,8 +559,15 @@ func (a *adaptiveReviews) process(ctx context.Context, s adaptiveClient, id, rel
 			current.State = "waiting"
 		}
 		// Ordinary non-target posts have no review reply. They are not announced.
-		if current.ReplyID != "" || current.Sending || result.Label == "mockery" {
-			queueReviewNotice(&current, resultMessage(result.Label, r.Author, total))
+		if wasHeld || current.ReplyID != "" || result.Label == "mockery" || result.Label == "uncertain" {
+			notice := resultMessage(result.Label, r.Author, total)
+			if !wasHeld {
+				notice = strings.TrimPrefix(notice, "**再判定完了**\n")
+			}
+			if !wasHeld && result.Label == "mockery" {
+				notice = detectionMessage(r.Author, units, total)
+			}
+			queueReviewNotice(&current, notice)
 		}
 	}
 	e = a.save(current)

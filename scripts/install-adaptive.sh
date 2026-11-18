@@ -41,6 +41,7 @@ install)
     if [[ -e $target ]]; then echo 'Release directory already exists; verify instead of overwriting.' >&2; exit 1; fi
     install -d -m 0755 "$target"
     cp -a "$source_dir/services" "$source_dir/experiments" "$target/"
+    install -m 0755 "$source_dir/discord-bot-linux-arm64" "$target/discord-bot-linux-arm64"
     chown -R root:root "$target"
     chmod -R go-w "$target"
     ln -s "$target" /opt/laya-decoder/next

@@ -150,7 +150,7 @@ func decodeShiftJISText(text string) string {
 	return string(decoded)
 }
 
-func decodeNumber(token string, words []string) string {
+func numberCandidates(token string, words []string) []string {
 	token = strings.NewReplacer(" ", "", "\t", "", "0x", "", "0X", "").Replace(token)
 	var candidates []string
 	for _, base := range []int{16, 2} {
@@ -189,6 +189,11 @@ func decodeNumber(token string, words []string) string {
 			}
 		}
 	}
+	return candidates
+}
+
+func decodeNumber(token string, words []string) string {
+	candidates := numberCandidates(token, words)
 	if len(candidates) == 1 {
 		return candidates[0]
 	}

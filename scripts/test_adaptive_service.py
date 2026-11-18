@@ -67,7 +67,7 @@ class RuntimeTests(unittest.TestCase):
             for invalid in (["語"]*1025,["語"*81],[None]):
                 with self.assertRaises(ValueError):r.analyze({'text':'text','revision':'b'*64,'words':invalid})
     def setup_runtime(self,path,records,predict):
-        r=runtime.Runtime(Path(path)/'current','sha256:'+'0'*64,predict=predict)
+        r=runtime.Runtime(Path(path)/'current','sha256:'+'0'*64,predict=predict,fixed=lambda text,words:{'candidates':[],'literal_units':0})
         r.snapshot=lambda:('a'*64,FakeRegistry(records))
         return r
     def test_short_padded_base64_dispatch(self):
