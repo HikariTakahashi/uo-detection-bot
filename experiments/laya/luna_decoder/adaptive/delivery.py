@@ -151,6 +151,10 @@ def sync(repo,commit,index_sha,installed):
             dest=installed.path/'bundles'/sha;dest.parent.mkdir(exist_ok=True)
             if not dest.exists():shutil.copytree(candidate_registry.path/'bundles'/sha,dest)
             installed.load(sha)
+            # Keep the receiving machine's fresh contract execution evidence.
+            # Bundle verification.json is historical producer evidence, not CD evidence.
+            atomic(installed.path/'receipts'/(sha+'.json'),
+                   read(candidate_registry.path/'receipts'/(sha+'.json')))
         atomic(installed.path/'previous.json',previous)
         atomic(installed.pointer,{**previous,**new})
         receipt={'repository':repo,'commit':commit,'tag':tag,'index_sha256':index_sha,'bundles':new,'production_connected':False}

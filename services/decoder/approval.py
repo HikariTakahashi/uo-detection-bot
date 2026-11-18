@@ -81,7 +81,13 @@ def verify_candidate(state, candidate, image):
         before = read(Path(state)/'current/installed/active.json')
         families = sorted(f for f, sha in receipt['bundles'].items() if before.get(f) != sha)
         # Installation receipts are produced by fresh local contract execution.
-        checks = sum(len(read(p)['execution']['values']) for p in (registry.path/'receipts').glob('*.json'))
+        checks = 0
+        for sha in receipt['bundles'].values():
+            evidence = read(registry.path/'receipts'/(sha+'.json'))
+            values = evidence['execution']['values']
+            if evidence.get('verified') is not True or evidence.get('bundle') != sha or not values or any(v['error'] for v in values):
+                raise ValueError('missing successful receiving-side validation')
+            checks += len(values)
         return {'families': families, 'bundles': len(receipt['bundles']), 'checks': checks}
 
 
