@@ -13,7 +13,7 @@ Restart=on-failure
 RestartSec=15
 StateDirectory=laya-decoder
 StateDirectoryMode=0700
-Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=TMPDIR=/var/lib/laya-decoder PYTHONDONTWRITEBYTECODE=1
 UMask=0077
 NoNewPrivileges=true
 ProtectSystem=strict
@@ -26,7 +26,7 @@ CapabilityBoundingSet=
 CPUQuota=100%
 Nice=10
 TasksMax=64
-LimitAS=536870912
+LimitAS=2147483648
 LimitCORE=0
 
 [Install]

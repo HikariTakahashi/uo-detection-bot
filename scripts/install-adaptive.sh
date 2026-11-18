@@ -45,7 +45,7 @@ install)
     chmod -R go-w "$target"
     ln -s "$target" /opt/laya-decoder/next
     mv -Tf /opt/laya-decoder/next /opt/laya-decoder/current
-    for unit in laya-decoder.service laya-decoder-update.service laya-decoder-update.timer laya-decoder-generate.service laya-decoder-generate.timer; do
+    for unit in laya-decoder.service laya-decoder-update.service laya-decoder-update.timer laya-decoder-generate.service laya-decoder-generate.timer laya-decoder-approval.service laya-decoder-approval.timer; do
         install -m 0644 "$source_dir/deploy/$unit" "/etc/systemd/system/$unit"
     done
     # Backup every replaced inference adapter file. Reuse existing offline model.
@@ -62,6 +62,43 @@ install)
     systemctl start laya-decoder-update.service
     systemctl enable --now laya-decoder.service laya-decoder-update.timer laya-decoder-generate.timer
     echo 'Decoder services installed. Production count connection is still unchanged; run verification before enable.'
+    ;;
+approvals)
+    # Enable only after the release containing the DM handler is installed.
+    (cd "$source_dir" && sha256sum --check --quiet DEPLOY-SHA256SUMS)
+    version=$("$source_dir/discord-bot-linux-arm64" -version)
+    [[ $(/opt/discord-bot/current/discord-bot -version) == "$version" ]] || exit 1
+    test -f /var/lib/laya-decoder/current/active-production.json
+    test -f /opt/laya-decoder/current/services/decoder/approval.py
+    # Fail before switching modes if the private evaluation CI is not readable.
+    systemd-run --quiet --wait --pipe --collect \
+        -p User=laya-decoder \
+        -p LoadCredential=github-token:/etc/laya-decoder/github-token \
+        -p Environment=PYTHONDONTWRITEBYTECODE=1 \
+        /usr/bin/python3 -c 'import sys; sys.path.insert(0,"/opt/laya-decoder/current/services/decoder"); import approval,release; release.credential("github-token","GH_TOKEN"); approval.ci_success(approval.current("/var/lib/laya-decoder"))'
+    getent group laya-approvals >/dev/null || groupadd --system laya-approvals
+    usermod -a -G laya-approvals discord-bot
+    usermod -a -G laya-approvals laya-decoder
+    install -d -o root -g laya-approvals -m 0750 /var/lib/laya-approvals
+    for name in requests results; do
+        install -d -o laya-decoder -g laya-approvals -m 2750 "/var/lib/laya-approvals/$name"
+    done
+    install -d -o discord-bot -g laya-approvals -m 2750 /var/lib/laya-approvals/decisions
+    install -d -m 0755 /etc/systemd/system/discord-bot.service.d
+    cat > /etc/systemd/system/discord-bot.service.d/approval.conf <<'EOF'
+[Service]
+SupplementaryGroups=laya-approvals
+ReadWritePaths=/var/lib/laya-approvals/decisions
+EOF
+    # The root pin remains untouched for audit; DM mode tracks the live snapshot.
+    systemctl disable --now laya-decoder-update.timer
+    systemctl stop laya-decoder-update.service
+    printf '%s\n' '{"enabled":true,"approver":"845282954636951583","repository":"HikariTakahashi/uo-decoder-evaluation"}' > /etc/laya-decoder/dm-approval.json
+    chmod 0644 /etc/laya-decoder/dm-approval.json
+    systemctl daemon-reload
+    systemctl restart discord-bot.service
+    systemctl enable --now laya-decoder-approval.timer
+    echo 'Production adoption DM approvals enabled; current decoder snapshot retained.'
     ;;
 enable)
     test -s /etc/laya-decoder/github-token
@@ -108,5 +145,5 @@ disable)
     systemctl restart discord-bot.service
     echo 'Adaptive intake/counting stopped; receipts/counts retained. Do not restore an old binary over v2 counts.'
     ;;
-*) echo 'Usage: install-adaptive.sh prepare|credentials|install|enable|disable' >&2;exit 2;;
+*) echo 'Usage: install-adaptive.sh prepare|credentials|install|approvals|enable|disable' >&2;exit 2;;
 esac

@@ -1,0 +1,9 @@
+[Unit]
+Description=Check production decoder approval candidates every two minutes
+[Timer]
+OnBootSec=30
+OnUnitInactiveSec=2min
+RandomizedDelaySec=15
+Unit=laya-decoder-approval.service
+[Install]
+WantedBy=timers.target

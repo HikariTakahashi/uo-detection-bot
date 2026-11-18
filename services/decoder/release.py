@@ -20,13 +20,16 @@ def credential(name,env):
     os.environ[env]=path.read_text().strip()
 
 
-def activate(state,approval,image):
+def activate(state,approval,image,expected_base=None):
     state=Path(state);state.mkdir(parents=True,exist_ok=True)
     if set(approval)!={'repository','commit','index_sha256'} or approval['repository']!=REPOSITORY:raise ValueError('explicit production approval required')
     # Single publisher. Readers see a complete installed directory through an
     # atomic symlink, with approval stored inside that same snapshot.
     with (state/'release.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
+        if expected_base is not None:
+            live=read(state/'current/active-production.json')
+            if {k:live[k] for k in expected_base}!=expected_base:raise ValueError('approval base changed')
         if (state/'current/active-production.json').exists():
             current=read(state/'current/active-production.json')
             if all(current.get(k)==v for k,v in approval.items()):

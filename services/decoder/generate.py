@@ -22,7 +22,7 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 def call(path,method='GET',value=None):
     key=(Path(os.environ['CREDENTIALS_DIRECTORY'])/'luna-key').read_text().strip()
     request=urllib.request.Request(ORIGIN+path, None if value is None else json.dumps(value).encode(),
-        {'Authorization':'Bearer '+key,'Content-Type':'application/json','Accept':'application/json'},method=method)
+        {'Authorization':'Bearer '+key,'Content-Type':'application/json','Accept':'application/json','User-Agent':'uo-decoder-pi/1.0'},method=method)
     with urllib.request.build_opener(NoRedirect).open(request,timeout=25) as response:
         raw=response.read(131073)
         if len(raw)>131072:raise ValueError('relay response bound')

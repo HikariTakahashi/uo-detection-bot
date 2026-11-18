@@ -63,6 +63,10 @@ func run(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("adaptive state unavailable: %w", err)
 	}
+	adoptions, err := newReleaseApprovals("/etc/laya-decoder/dm-approval.json", "/var/lib/laya-approvals", "/var/lib/discord-bot/release-approvals")
+	if err != nil {
+		return fmt.Errorf("production approval state unavailable: %w", err)
+	}
 	workerCtx, stopWorker := context.WithCancel(ctx)
 	defer stopWorker()
 	reviews := newReview(shadow)
@@ -132,6 +136,12 @@ func run(ctx context.Context) error {
 		})
 	}
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		if handled, err := adoptions.handle(s, i); handled {
+			if err != nil {
+				slog.Error("production approval failed", "error", safeError(err))
+			}
+			return
+		}
 		if handled, err := reviews.handle(s, i); handled {
 			if err != nil {
 				slog.Error("review interaction failed", "error", safeError(err))
@@ -178,6 +188,10 @@ func run(ctx context.Context) error {
 	if adaptive != nil {
 		adaptive.botID = s.State.User.ID
 		go adaptive.run(workerCtx, s)
+	}
+	if adoptions != nil {
+		adoptions.botID = s.State.User.ID
+		go adoptions.run(workerCtx, s)
 	}
 	if notifications.enabled() {
 		go runScheduledNotifications(ctx, s, notifications)

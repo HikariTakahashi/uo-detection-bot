@@ -80,3 +80,19 @@ GitHubの初期取得は専用repoのContents read権限だけでよい。Piか�
 `enable` は更新タイマーを一時停止する。新コードのGitHub main/Releaseと導入済みcommitが一致し、起動とhealthを確認してからBot更新timerを再開する。旧版への自動更新でv2状態を読めなくなることを避ける。
 
 停止は `disable`。adaptiveの新規受付・加算を止め、累計とreceiptを維持する。停止後も動かす旧来の検知ルートとの重複を避けるため、既存レビューreceiptを持つ投稿は従来ルートから加算しない。旧バイナリへ戻すときはv2互換性を確認し、バックアップを現在の累計にそのまま上書きしない。
+
+## Discord DMでの本番採用承認
+
+`install-adaptive.sh approvals` で有効化する。既存の本番版と累計を引き継ぎ、従来の固定版更新timerを停止して `laya-decoder-approval.timer` に切り替える。Botの新しいバイナリと配布ソースを先に配置する必要がある。GitHub資格情報には専用評価リポジトリの Contents read に加えて **Actions read** が必要。
+
+Piの `publication-pushed.json` に記録されたCommit/indexだけを候補にする。専用評価workflowの最新push実行が成功し、Releaseのハッシュ・全復元器の独立検証が通った後、ユーザー `845282954636951583` のDMに「本番採用を許可／却下」のボタンを1件送る。実投稿本文は送らない。Commit・Pushや合成例登録の承認を代替しない。
+
+回答期限は依頼作成から7日。催促は送らない。本人・DMチャンネル・Bot返信ID・依頼のハッシュを一致確認する。承認は候補Commit/indexと依頼時の本番版に固定され、候補や本番版の変更、期限切れ、却下では使えない。回答を永続化後、PiはCIと配布物を再検証し、同じ配備ロックの中で基準版の一致を確認して切り替える。成功後は既存の保留再判定を使う。DMは同じメッセージを編集し、反映完了・失敗・却下・失効を表示する。
+
+現在版が承認済みの対象と一致し、記録が反映中なら、切り替え直後のクラッシュとして完了記録を復旧する。旧初期承認ファイルは定期処理で再適用しない。取得などの一時失敗は同じ承認だけで再試行し、検証不一致では旧版を保持して停止する。
+
+承認連携は `/var/lib/laya-approvals` 配下だけを専用グループで共有する。requests/resultsはlaya-decoderのみ書き込み、decisionsはdiscord-botのみ書き込む。BotのDM送信記録は `/var/lib/discord-bot/release-approvals` に0700/0600で保存する。BotにsudoやDocker権限を追加しない。
+
+DM拒否時はblocked記録を保持し、公開チャンネルへ転送しない。POST応答不明はBot自身のDM履歴を照合し、見つからなければ再POSTせず運用者確認を待つ。手動で消されたDMも自動再作成しない。却下・失効済みの同じ候補は再通知しない。再依頼が必要な場合は、通常のapprovalサービスと同じユーザー・資格情報・環境で `approval.py` に `--retry-request <終了済み依頼ID>` を指定する。再検証後に新しい依頼ID・期限で作成する。
+
+Piで確認した配備条件として、3つのdecoderサービスのTMPDIRは書き込み可能な専用StateDirectoryを使う。runtime制御プロセスの仮想アドレス上限はDocker CLIが起動できる2GiB、生成コード内部のアドレス上限は128MiBを維持する。Lunaリレーへの通信はアプリ名のUser-Agent `uo-decoder-pi/1.0` を明示する。
