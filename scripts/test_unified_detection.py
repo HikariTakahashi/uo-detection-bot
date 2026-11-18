@@ -91,6 +91,44 @@ class UnifiedDetectionTests(unittest.TestCase):
             self.assertEqual((out['unknown'],out['label'],out['units']),(False,'mockery',1))
             self.assertEqual(seen[-1],('judge','まじか、うおw'))
 
+    def test_selectorless_estimation_is_separate_and_never_counted(self):
+        import estimation
+        for text in ['q7|p2^R9~s4!T6','う\u200bお\u200bw']:
+            with self.subTest(text=text),tempfile.TemporaryDirectory() as tmp:
+                r,seen=self.make(tmp)
+                out=r.analyze({**self.request(text),'channel_id':'123456789012345678'})
+                self.assertEqual((out['unknown'],out['label'],out['units'],out['families']),(True,'uncertain',0,[]))
+                self.assertEqual(out['estimation']['state'],'queued');self.assertEqual(seen,[])
+                queue=estimation.Queue(tmp);job=estimation.read(queue.path(out['estimation']['id']))
+                queue.save(job,'unverified','independent_evidence_required')
+                # Even an apparently successful unverified result is never a decoder.
+                job=estimation.read(queue.path(job['id']));job['candidates']=[{'code':"def decode(text): return 'うお'"}]
+                queue.save(job)
+                again=r.analyze({**self.request(text),'channel_id':'123456789012345678'})
+                self.assertEqual((again['unknown'],again['units']),(True,0))
+                self.assertEqual(again['estimation']['state'],'unverified');self.assertEqual(seen,[])
+
+    def test_ordinary_japanese_with_channel_still_never_queues(self):
+        cases=json.loads((ROOT/'scripts/fixtures/readable-japanese.json').read_text())
+        for case in cases:
+            with self.subTest(case=case['id']),tempfile.TemporaryDirectory() as tmp:
+                r,seen=self.make(tmp)
+                def predict(route,value):
+                    if route=='detect':return {'suspected':True,'has_authored_target':False}
+                    return policy.judge(None,value['text'],value['words'])
+                r.predict=predict
+                out=r.analyze({**self.request(case['text']),'channel_id':'123456789012345678'})
+                self.assertEqual((out['unknown'],out['label'],out['units']),(False,'other',0))
+                self.assertNotIn('estimation',out)
+                self.assertFalse((Path(tmp)/'estimation').exists())
+
+    def test_explicit_reverse_request_creates_queue_without_a_selector(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            r,seen=self.make(tmp)
+            status=r.estimate({'text':'wおう','revision':'b'*64,'channel_id':'123456789012345678','start':0,'end':3})
+            self.assertEqual((status['state'],status['reason']),('queued','external_disabled'))
+            self.assertEqual(status,r.estimate_status(status['id']));self.assertEqual(seen,[])
+
     def test_reusable_adopted_decoder_passes_restored_body_to_laya(self):
         with tempfile.TemporaryDirectory() as tmp:
             r,seen=self.make(tmp)

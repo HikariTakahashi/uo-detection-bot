@@ -1,0 +1,107 @@
+{
+  "synthetic_only": true,
+  "real_luna_requests": 0,
+  "rows": [
+    {
+      "case": "correct-remains-unverified",
+      "passed": true,
+      "state": "unverified",
+      "execution": [
+        {
+          "uid": 65534,
+          "values": [
+            {
+              "value": "cat",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "post_count": 1
+    },
+    {
+      "case": "correct-independent-gold",
+      "passed": true,
+      "state": "awaiting_adoption",
+      "execution": [
+        {
+          "uid": 65534,
+          "values": [
+            {
+              "value": "cat",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "post_count": 1
+    },
+    {
+      "case": "wrong-readable-rejected",
+      "passed": true,
+      "state": "unverified",
+      "execution": [
+        {
+          "uid": 65534,
+          "values": [
+            {
+              "value": "うお",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "post_count": 1
+    },
+    {
+      "case": "three-candidates-still-unverified",
+      "passed": true,
+      "state": "unverified",
+      "execution": [
+        {
+          "uid": 65534,
+          "values": [
+            {
+              "value": "cat",
+              "error": null
+            }
+          ]
+        },
+        {
+          "uid": 65534,
+          "values": [
+            {
+              "value": "うお",
+              "error": null
+            }
+          ]
+        },
+        {
+          "uid": 65534,
+          "values": [
+            {
+              "value": null,
+              "error": null
+            }
+          ]
+        }
+      ],
+      "post_count": 1
+    },
+    {
+      "case": "unable",
+      "passed": true,
+      "state": "unable",
+      "execution": [],
+      "post_count": 1
+    },
+    {
+      "case": "bounded-timeout",
+      "passed": true,
+      "state": "unverified",
+      "execution": [],
+      "post_count": 1
+    }
+  ],
+  "all_passed": true
+}

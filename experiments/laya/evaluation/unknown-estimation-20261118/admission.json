@@ -1,0 +1,691 @@
+{
+  "scope": "Queue admission and default-disabled egress only; fake sentiment and Luna, no inference-accuracy claim.",
+  "source_cases_sha256": "25dd980c771394424c65787adedeba959c2cdb0e194f0088e3c881a0236c8a98",
+  "helper_sha256": "3570ac061aaaaf8864e2b8b0c02aa71116a5bc18217f785039fa27f2007875b9",
+  "runtime_sha256": "8d68c80058b30de9b50b91b31bb5b5279125f43d11ea9377c96683b9091d9556",
+  "estimation_sha256": "13b77a3c584065a98dc469a485aacc37b6128823b0a80355fec14bb26478d57c",
+  "n": 104,
+  "relay_calls": 0,
+  "summary": {
+    "ambiguous_id": {
+      "n": 2,
+      "automatic_queued": 2,
+      "explicit_queued": 0
+    },
+    "japanese": {
+      "n": 32,
+      "automatic_queued": 0,
+      "explicit_queued": 0
+    },
+    "known_mockery": {
+      "n": 20,
+      "automatic_queued": 0,
+      "explicit_queued": 0
+    },
+    "plain_string": {
+      "n": 24,
+      "automatic_queued": 0,
+      "explicit_queued": 0
+    },
+    "unknown_ascii": {
+      "n": 2,
+      "automatic_queued": 2,
+      "explicit_queued": 0
+    },
+    "unknown_mockery": {
+      "n": 24,
+      "automatic_queued": 10,
+      "explicit_queued": 24
+    }
+  },
+  "rows": [
+    {
+      "id": "unknown-xor-byte-a7-bare-1",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-xor-byte-a7-bare-2",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-xor-byte-a7-bare-3",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-1",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-2",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-xor-byte-a7-wrapped-3",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-1",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-2",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-decimal-bytes-bare-3",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-1",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-2",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-decimal-bytes-wrapped-3",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-reverse-text-bare-1",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-reverse-text-bare-2",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-reverse-text-bare-3",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-1",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-2",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-reverse-text-wrapped-3",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-zero-width-bare-1",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-zero-width-bare-2",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-zero-width-bare-3",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-zero-width-wrapped-1",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-zero-width-wrapped-2",
+      "category": "unknown_mockery",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "unknown-zero-width-wrapped-3",
+      "category": "unknown_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true,
+      "explicit_queued": true
+    },
+    {
+      "id": "japanese-conversation-1",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-2",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-3",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-4",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-5",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-6",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-7",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-8",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-9",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-10",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-11",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-12",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-13",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-conversation-14",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-positive-target-1",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-positive-target-2",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-positive-target-3",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-positive-target-4",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-positive-target-5",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-positive-target-6",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-quotation-1",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-quotation-2",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-quotation-3",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-quotation-4",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-mixed-prose-1",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-mixed-prose-2",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-mixed-prose-3",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "japanese-mixed-prose-4",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "regression-case-1",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "regression-case-2",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "regression-case-3",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "regression-case-4",
+      "category": "japanese",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "string-short-ascii-1",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "string-short-ascii-2",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "string-short-ascii-3",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "string-short-ascii-4",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "string-identifier-1",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-identifier-2",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-identifier-3",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-identifier-4",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-identifier-5",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-identifier-6",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-random-token-1",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-random-token-2",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-random-token-3",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-random-token-4",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-punctuation-1",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-punctuation-2",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-punctuation-3",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-punctuation-4",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-formatted-1",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-formatted-2",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "string-formatted-3",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-formatted-4",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "string-url-1",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "string-url-2",
+      "category": "plain_string",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-literal-1",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-literal-2",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-literal-3",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-literal-4",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-literal-5",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-hex-lower-1",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-hex-lower-2",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-hex-lower-3",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-percent-1",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-percent-2",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-percent-3",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-base64-1",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-base64-2",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-base64-3",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-x9-bare-1",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-x9-bare-2",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-x9-bare-3",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-multi-layer-1",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-multi-layer-2",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "known-multi-layer-3",
+      "category": "known_mockery",
+      "automatic_queued": false,
+      "legacy_or_estimation_hold": false
+    },
+    {
+      "id": "selectorless-ascii-1",
+      "category": "unknown_ascii",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "selectorless-ascii-2",
+      "category": "unknown_ascii",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "long-decimal-id",
+      "category": "ambiguous_id",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true
+    },
+    {
+      "id": "long-hex-id",
+      "category": "ambiguous_id",
+      "automatic_queued": true,
+      "legacy_or_estimation_hold": true
+    }
+  ]
+}

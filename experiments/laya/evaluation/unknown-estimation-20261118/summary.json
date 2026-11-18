@@ -1,0 +1,59 @@
+{
+  "base_commit": "9cdb188239005bcf68d3cd5ae278f230a2bfde6f",
+  "branch": "codex/unknown-inference",
+  "checks": {
+    "go_race": "passed",
+    "go_vet": "passed",
+    "python_scripts": 108,
+    "python_laya": 20,
+    "docker_cases": 6,
+    "private_original_messages_fake_only": 4,
+    "diff_identifier_scan": "passed"
+  },
+  "admission": {
+    "ambiguous_id": {
+      "n": 2,
+      "automatic_queued": 2,
+      "explicit_queued": 0
+    },
+    "japanese": {
+      "n": 32,
+      "automatic_queued": 0,
+      "explicit_queued": 0
+    },
+    "known_mockery": {
+      "n": 20,
+      "automatic_queued": 0,
+      "explicit_queued": 0
+    },
+    "plain_string": {
+      "n": 24,
+      "automatic_queued": 0,
+      "explicit_queued": 0
+    },
+    "unknown_ascii": {
+      "n": 2,
+      "automatic_queued": 2,
+      "explicit_queued": 0
+    },
+    "unknown_mockery": {
+      "n": 24,
+      "automatic_queued": 10,
+      "explicit_queued": 24
+    }
+  },
+  "real_luna_requests": 0,
+  "real_discord_posts": 0,
+  "limits": [
+    "Actual Luna method-inference accuracy not measured: transport is fake.",
+    "Short reversal without objective obfuscation signals needs explicit input.",
+    "Long numeric/hex identifiers may be indistinguishable from payloads.",
+    "Independent source correctness and publication consent require operator confirmation."
+  ],
+  "not_performed": [
+    "commit",
+    "push",
+    "production_deployment",
+    "real_input_external_export"
+  ]
+}

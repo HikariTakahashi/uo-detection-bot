@@ -28,36 +28,38 @@ type adaptiveConfig struct {
 	Enabled bool `json:"enabled"`
 }
 type adaptiveRecord struct {
-	CancelPending bool      `json:"cancel_pending"`
-	Epoch         uint64    `json:"epoch"`
-	ID            string    `json:"id"`
-	Channel       string    `json:"channel"`
-	Guild         string    `json:"guild"`
-	Author        string    `json:"author"`
-	Text          string    `json:"text"`
-	Revision      string    `json:"revision"`
-	Edited        string    `json:"edited"`
-	ReplyID       string    `json:"reply_id"`
-	ReplyHistory  []string  `json:"reply_history,omitempty"`
-	NoticeVersion int       `json:"notice_version,omitempty"`
-	Sending       bool      `json:"sending"` // persisted before POST; uncertain POSTs are reconciled, never blindly retried
-	State         string    `json:"state"`   // queued, waiting, done, cancelled
-	Release       string    `json:"release"`
-	Families      []string  `json:"families"`
-	Label         string    `json:"label"`
-	Units         uint64    `json:"units"`
-	Total         uint64    `json:"total"`
-	Notice        string    `json:"notice"`
-	NoticeDirty   bool      `json:"notice_dirty"`
-	Updated       time.Time `json:"updated"`
+	CancelPending bool              `json:"cancel_pending"`
+	Epoch         uint64            `json:"epoch"`
+	ID            string            `json:"id"`
+	Channel       string            `json:"channel"`
+	Guild         string            `json:"guild"`
+	Author        string            `json:"author"`
+	Text          string            `json:"text"`
+	Revision      string            `json:"revision"`
+	Edited        string            `json:"edited"`
+	ReplyID       string            `json:"reply_id"`
+	ReplyHistory  []string          `json:"reply_history,omitempty"`
+	NoticeVersion int               `json:"notice_version,omitempty"`
+	Sending       bool              `json:"sending"` // persisted before POST; uncertain POSTs are reconciled, never blindly retried
+	State         string            `json:"state"`   // queued, waiting, done, cancelled
+	Release       string            `json:"release"`
+	Families      []string          `json:"families"`
+	Label         string            `json:"label"`
+	Units         uint64            `json:"units"`
+	Total         uint64            `json:"total"`
+	Notice        string            `json:"notice"`
+	NoticeDirty   bool              `json:"notice_dirty"`
+	Updated       time.Time         `json:"updated"`
+	Estimation    *estimationStatus `json:"-"`
 }
 type adaptiveResult struct {
-	Revision string   `json:"revision"`
-	Release  string   `json:"release"`
-	Unknown  bool     `json:"unknown"`
-	Label    string   `json:"label"`
-	Units    uint64   `json:"units"`
-	Families []string `json:"families"`
+	Revision   string            `json:"revision"`
+	Release    string            `json:"release"`
+	Unknown    bool              `json:"unknown"`
+	Label      string            `json:"label"`
+	Units      uint64            `json:"units"`
+	Families   []string          `json:"families"`
+	Estimation *estimationStatus `json:"estimation,omitempty"`
 }
 type adaptiveClient interface {
 	messageClient
@@ -124,6 +126,12 @@ func newAdaptive(config, dir string, d *detector) (*adaptiveReviews, error) {
 		if r.State != "queued" && r.State != "waiting" && r.State != "done" && r.State != "cancelled" {
 			return nil, errors.New("invalid review state")
 		}
+		if r.Estimation != nil && !r.Estimation.valid() {
+			return nil, errors.New("invalid estimation status")
+		}
+		if err := a.loadEstimationCache(&r); err != nil {
+			return nil, err
+		}
 		if r.NoticeVersion < 0 || r.NoticeVersion > 1 || (r.ReplyID != "" && !isSnowflake(r.ReplyID)) {
 			return nil, errors.New("invalid review delivery state")
 		}
@@ -150,7 +158,7 @@ func (a *adaptiveReviews) save(r adaptiveRecord) error {
 		return err
 	}
 	a.records[r.ID] = r
-	return nil
+	return a.saveEstimationCache(r)
 }
 
 // Durable ownership is established before existing AI paths can see the post.
@@ -270,7 +278,7 @@ func (a *adaptiveReviews) analyze(ctx context.Context, r adaptiveRecord) (adapti
 		words = append(words, w)
 	}
 	sort.Strings(words)
-	body, _ := json.Marshal(map[string]any{"text": r.Text, "revision": r.Revision, "words": words})
+	body, _ := json.Marshal(map[string]any{"text": r.Text, "revision": r.Revision, "words": words, "channel_id": r.Channel})
 	req, e := http.NewRequestWithContext(ctx, "POST", a.endpoint+"/analyze", bytes.NewReader(body))
 	if e != nil {
 		return out, e
@@ -296,6 +304,9 @@ func (a *adaptiveReviews) analyze(ctx context.Context, r adaptiveRecord) (adapti
 	}
 	if out.Label != "mockery" && out.Units != 0 {
 		return out, errors.New("invalid decoder count")
+	}
+	if out.Estimation != nil && (!out.Estimation.valid() || !out.Unknown || out.Units != 0) {
+		return out, errors.New("invalid estimation result")
 	}
 	return out, nil
 }
@@ -438,6 +449,9 @@ func (a *adaptiveReviews) process(ctx context.Context, s adaptiveClient, id, rel
 		}
 		r, _ = a.snapshot(id)
 	}
+	if r.State == "waiting" && r.Release == release && r.Estimation != nil {
+		return a.refreshEstimation(ctx, s, r)
+	}
 	if r.State == "done" || (r.State == "waiting" && r.Release == release) {
 		return nil
 	}
@@ -532,6 +546,17 @@ func (a *adaptiveReviews) process(ctx context.Context, s adaptiveClient, id, rel
 	}
 	// The first unknown result always creates the pending notice without a count.
 	wasHeld := current.State == "waiting" || current.Label == "uncertain" || strings.Contains(current.Notice, "現在審査中") || strings.HasPrefix(current.Notice, "**審査継続**") || strings.HasPrefix(current.Notice, "**再判定完了**")
+	current.Estimation = result.Estimation
+	if result.Estimation != nil {
+		current.State, current.Release, current.Label, current.Units = "waiting", result.Release, "uncertain", 0
+		queueReviewNotice(&current, estimationMessage(*result.Estimation))
+		e = a.save(current)
+		a.mu.Unlock()
+		if e != nil {
+			return e
+		}
+		return a.notify(s, id)
+	}
 	if result.Unknown && !wasHeld {
 		current.State = "waiting"
 		current.Release = result.Release

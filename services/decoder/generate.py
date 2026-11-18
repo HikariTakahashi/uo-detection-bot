@@ -16,6 +16,7 @@ from adaptive.discovery import blind_prompt,validate_selector
 from adaptive.registry import Registry
 from pipeline import verify_reply
 import synthetic
+import estimation
 
 ORIGIN='https://luna-direct-api.hikarit0407.workers.dev'
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -38,7 +39,7 @@ def advance(state,templates,image,transport=call,automatic=None,now=None):
         jobs=state/'jobs';jobs.mkdir(exist_ok=True)
         now=int(time.time()) if now is None else now
         generated=synthetic.prepare(state,automatic['synthetic_recipes']) if automatic else None
-        attempted=sum(read(p).get('state')!='queued' and (not automatic or read(p).get('submitted_at',now)//86400==now//86400) for p in jobs.glob('*.json'))
+        attempted=estimation.attempted(state,now,daily=bool(automatic))
         # Default lifetime budget three. A new explicitly reviewed batch is needed
         # for more; restarts and retries do not reset this limit.
         for discovery in sorted((state/'discovery').glob('*.json')):
@@ -84,6 +85,9 @@ def advance(state,templates,image,transport=call,automatic=None,now=None):
             contract_path=state/'proposals'/family/'contract.json';atomic(contract_path,contract)
             job.update(state='awaiting_publication_approval',bundle=bundle,contract_sha256=digest(contract_path.read_bytes()))
             atomic(path,job)
+
+        estimation.advance(state,image,transport,estimation.policy(),now=now,
+                           limit=automatic['daily_jobs'] if automatic else 3,daily=bool(automatic),generation_locked=True)
 
 
 def main():

@@ -97,6 +97,7 @@ def advance(state,checkout,shared,image,policy):
         for p in jobs:
             job=read(p)
             if job['state']!='awaiting_publication_approval':continue
+            if job.get('origin_estimation'):continue  # Unknown-method candidates require explicit manual publication review.
             family=p.stem;template=state/'auto-templates'/(family+'.json')
             if not template.exists():continue  # manual proposals still require manual approval
             t=read(template);name=synthetic.template_recipe(t)

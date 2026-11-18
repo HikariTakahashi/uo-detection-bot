@@ -8,12 +8,12 @@ import tarfile
 import tempfile
 
 ROOT=Path(__file__).resolve().parents[1]
-LIBRARY=['fixtures.py','pipeline.py','sandbox.py','adaptive/common.py','adaptive/discovery.py','adaptive/engine.py','adaptive/registry.py','adaptive/catalog.py','adaptive/delivery.py','adaptive/publish.py']
+LIBRARY=['fixtures.py','pipeline.py','sandbox.py','adaptive/common.py','adaptive/discovery.py','adaptive/engine.py','adaptive/registry.py','adaptive/catalog.py','adaptive/delivery.py','adaptive/publish.py','adaptive/estimation_reply.py']
 FILES=[
- 'scripts/install-adaptive.sh','adaptive.config.example.json',
+ 'scripts/install-adaptive.sh','adaptive.config.example.json','estimation.config.example.json',
  'experiments/laya/serve_shadow.py','experiments/laya/production_policy.py',
  *['experiments/laya/luna_decoder/'+p for p in LIBRARY],
- *['services/decoder/'+p for p in ['runtime.py','release.py','generate.py','synthetic.py','autopublish.py','publication.py','approval.py','initial-release.json']],
+ *['services/decoder/'+p for p in ['runtime.py','release.py','generate.py','synthetic.py','autopublish.py','publication.py','approval.py','estimation.py','initial-release.json']],
  *['deploy/'+p for p in ['laya-decoder.service','laya-decoder-update.service','laya-decoder-update.timer','laya-decoder-generate.service','laya-decoder-generate.timer','laya-decoder-approval.service','laya-decoder-approval.timer','laya-decoder-publication.service','laya-decoder-publication.timer']],
 ]
 

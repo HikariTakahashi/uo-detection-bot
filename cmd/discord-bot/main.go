@@ -143,6 +143,12 @@ func run(ctx context.Context) error {
 		})
 	}
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		if handled, err := adaptive.handleEstimation(s, i); handled {
+			if err != nil {
+				slog.Error("estimation interaction failed", "error", safeError(err))
+			}
+			return
+		}
 		if handled, err := adoptions.handle(s, i); handled {
 			if err != nil {
 				slog.Error("production approval failed", "error", safeError(err))
@@ -181,6 +187,11 @@ func run(ctx context.Context) error {
 	}
 	if err := ensureReviewCommand(s, s.State.User.ID, guild); err != nil {
 		slog.Error("review command registration failed", "error", err)
+	}
+	if adaptive != nil {
+		if err := ensureEstimationCommand(s, s.State.User.ID, guild); err != nil {
+			slog.Error("estimation command registration failed", "error", safeError(err))
+		}
 	}
 	if err := notify("READY=1\nSTATUS=Discord connected; /ping registered; commit " + version); err != nil {
 		return fmt.Errorf("notify systemd: %w", err)

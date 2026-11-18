@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Pi-only restoration service. IDs, Discord credentials and counters stay in Go."""
+"""Pi-only restoration service. Message/user IDs, Discord secrets and counts stay in Go.
+Only local channel scope is passed for the opt-in estimation export policy."""
 import argparse
 import hashlib
 import json
@@ -19,6 +20,7 @@ from adaptive.discovery import candidate, dispatch
 from adaptive.engine import explore
 from adaptive.registry import Registry
 import synthetic
+import estimation
 
 
 def inference(route, value):
@@ -38,6 +40,8 @@ class Runtime:
         self.policy=digest(canonical([digest(p.read_bytes()) for p in (
             ROOT/'experiments/laya/production_policy.py', Path(__file__),
             ROOT/'services/decoder/synthetic.py',
+            ROOT/'services/decoder/estimation.py',
+            ROOT/'experiments/laya/luna_decoder/adaptive/estimation_reply.py',
             ROOT/'experiments/laya/luna_decoder/adaptive/engine.py',
             *([self.helper] if fixed is None else []))]))
 
@@ -62,6 +66,21 @@ class Runtime:
     def release(self):
         return self.snapshot()[0]
 
+    def estimate(self,value):
+        if set(value)-{'text','revision','channel_id','start','end'} or not {'text','revision','channel_id'}<=set(value):
+            raise ValueError('explicit estimation fields')
+        status=estimation.Queue(self.state.parent).enqueue(value['text'],value['revision'],self.release(),
+            channel_id=value['channel_id'],explicit=True,start=value.get('start'),end=value.get('end'))
+        return self.estimate_status(status['id'])
+
+    def estimate_status(self,request_id):
+        return estimation.Queue(self.state.parent).refresh_policy(request_id,estimation.policy())
+
+    def queue_unknown(self,text,value,release):
+        if not value.get('channel_id') or not estimation.indicators(text):return None
+        status=estimation.Queue(self.state.parent).enqueue(text,value['revision'],release,channel_id=value['channel_id'],derived=text!=value['text'])
+        return self.estimate_status(status['id']) if status else None
+
     def prepare_candidates(self,text,registry,release):
         inference=synthetic.infer_chain(text)
         records=registry.active();pending=[]
@@ -80,7 +99,8 @@ class Runtime:
         return sorted(set(pending)),inference['state']
 
     def analyze(self,value):
-        if set(value)!={'text','revision','words'}:raise ValueError('invalid fields')
+        if set(value)-{'text','revision','words','channel_id'} or not {'text','revision','words'}<=set(value):raise ValueError('invalid fields')
+        if 'channel_id' in value and (not isinstance(value['channel_id'],str) or not re.fullmatch('[0-9]{17,20}',value['channel_id'])):raise ValueError('invalid channel')
         text,revision,words=value['text'],value['revision'],value['words']
         if not isinstance(text,str) or not 1<=len(text)<=2000 or not re.fullmatch('[a-f0-9]{64}',revision):raise ValueError('input bounds')
         if not isinstance(words,list) or not 1<=len(words)<=1024 or any(not isinstance(w,str) or not 1<=len(w)<=80 for w in words):raise ValueError('word bounds')
@@ -105,6 +125,8 @@ class Runtime:
                 pending,_=self.prepare_candidates(body,registry,release)
                 result['families'].extend(pending)
             result['families']=sorted(set(result['families']))
+            status=self.queue_unknown(text,value,release)
+            if status:result['estimation']=status
             return result
         body=graph['text']
         if any(ord(c)<32 and c not in '\n\t' for c in body):
@@ -115,6 +137,8 @@ class Runtime:
             return {**result,'label':'mockery','units':fixed['literal_units']}
         pending,inference_state=self.prepare_candidates(body,registry,release)
         if pending or inference_state=='ambiguous_candidates':return {**result,'unknown':True,'families':pending}
+        status=self.queue_unknown(body,value,release)
+        if status:return {**result,'unknown':True,'estimation':status}
         detection=self.predict('detect',{'text':body,'words':words})
         c=synthetic.explicit_candidate(body) or candidate(body,detection['suspected'])
         # A model suspicion or technical hold alone is not format evidence.
@@ -162,11 +186,15 @@ class Handler(BaseHTTPRequestHandler):
         raw=json.dumps(value,ensure_ascii=False).encode()
         self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(raw)));self.end_headers();self.wfile.write(raw)
     def do_GET(self):
+        if self.path.startswith('/estimates/'):
+            try:self.respond(200,self.server.runtime.estimate_status(self.path[len('/estimates/'):]))
+            except (ValueError,FileNotFoundError):self.respond(404,{})
+            return
         if self.path!='/health':self.respond(404,{});return
         try:self.respond(200,{'status':'ready','release':self.server.runtime.release()})
         except Exception:self.respond(503,{'status':'not_ready'})
     def do_POST(self):
-        if self.path!='/analyze':self.respond(404,{});return
+        if self.path not in ('/analyze','/estimate'):self.respond(404,{});return
         if not self.server.lock.acquire(False):self.respond(503,{'error':'busy'});return
         try:
             lengths=self.headers.get_all('Content-Length',[])
@@ -175,7 +203,8 @@ class Handler(BaseHTTPRequestHandler):
             if not 0<length<=32768:raise ValueError()
             raw=self.rfile.read(length)
             if len(raw)!=length:raise ValueError()
-            self.respond(200,self.server.runtime.analyze(json.loads(raw)))
+            action=self.server.runtime.analyze if self.path=='/analyze' else self.server.runtime.estimate
+            self.respond(200,action(json.loads(raw)))
         except ValueError:self.respond(400,{'error':'invalid_request_or_result'})
         except Exception:self.respond(503,{'error':'temporarily_unavailable'})
         finally:self.server.lock.release()

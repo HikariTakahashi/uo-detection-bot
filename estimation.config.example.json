@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "external_enabled": false,
+  "synthetic_enabled": false,
+  "channel_ids": [],
+  "input_scopes": [],
+  "max_chars": 400
+}

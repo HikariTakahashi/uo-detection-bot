@@ -7,6 +7,7 @@ from .common import atomic,canonical,digest,read
 from sandbox import evaluate
 from pipeline import extract_code, verify_reply
 from .discovery import validate_selector
+from .estimation_reply import parse_reply
 
 
 class Registry:
@@ -34,15 +35,27 @@ class Registry:
         if digest(code)!=m['code_sha256'] or digest((folder/'verification.json').read_bytes())!=m['verification_sha256']:raise ValueError('bundle content mismatch')
         verify_reply(m['reply'],m['request_id'])
         if extract_code(m['reply']['reply'])!=code:raise ValueError('reply/code mismatch')
+        if 'candidate_index' in m:
+            source=m['estimation_reply'];verify_reply(source,m['request_id'])
+            if parse_reply(source['reply'])[m['candidate_index']]['code']!=code:raise ValueError('estimation/code mismatch')
+            if m['reply'].get('normalization')!='candidate-extraction' or any(m['reply'].get(k)!=v for k,v in source.items() if k!='reply'):
+                raise ValueError('estimation provenance mismatch')
         return m,code
 
-    def stage(self,family,reply,cases,selector=None):
+    def stage(self,family,reply,cases,selector=None,candidate_index=None):
         if selector is not None:
             validate_selector(selector)
             if not any(c['expected'] is not None for c in cases) or not any(c['expected'] is None for c in cases):
                 raise ValueError('independent positive and rejection evidence required')
         verify_reply(reply,reply['request_id'])
-        code=extract_code(reply['reply'])
+        code=(parse_reply(reply['reply'])[candidate_index]['code']
+              if candidate_index is not None else extract_code(reply['reply']))
+        # Preserve the original response and mark the extraction explicitly.
+        # The ordinary code-block view keeps existing independent CI/CD readers
+        # compatible; it is not represented as an unmodified Luna response.
+        original=reply
+        if candidate_index is not None:
+            reply={**reply,'reply':'```python\n'+code+'```','normalization':'candidate-extraction'}
         result=evaluate(code,[c['text'] for c in cases],self.image)
         passed=[v['error'] is None and v['value']==c['expected'] for c,v in zip(cases,result['values'])]
         if len(passed)!=len(cases) or not all(passed):raise ValueError('independent decoder tests failed: '+str([i for i,v in enumerate(passed) if not v]))
@@ -53,6 +66,9 @@ class Registry:
             manifest={'schema':1,'scope':'synthetic-evaluation-only','family':family,'prefix':family+':','code_sha256':digest(code),
                       'verification_sha256':digest((folder/'verification.json').read_bytes()),'request_id':reply['request_id'],'reply':reply,'image':self.image}
             if selector is not None:manifest['selector']=selector
+            if candidate_index is not None:
+                manifest['candidate_index']=candidate_index
+                manifest['estimation_reply']=original
             atomic(folder/'manifest.json',manifest)
             sha=digest((folder/'manifest.json').read_bytes());dest=self.path/'bundles'/sha
             dest.parent.mkdir(exist_ok=True)
